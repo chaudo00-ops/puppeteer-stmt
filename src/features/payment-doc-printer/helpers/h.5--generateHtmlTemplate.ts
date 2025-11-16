@@ -132,6 +132,15 @@ export async function generateHtmlTemplate(
       gap: 20px;
     }
 
+    .detail-row::after, .summary-row::after {
+      content: '';
+      flex: 1;
+      border-bottom: 1px dotted #ccc;
+      margin: 0 10px;
+      align-self: flex-end;
+      margin-bottom: 4px;
+    }
+
     .detail-label, .summary-label {
       white-space: nowrap;
       text-align: left;
