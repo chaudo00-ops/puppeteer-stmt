@@ -119,31 +119,30 @@ export async function generateHtmlTemplate(
       font-weight: 600;
       color: #333;
       margin-bottom: 16px;
+      text-align: left;
     }
 
     .detail-row, .summary-row {
       display: flex;
       justify-content: space-between;
+      align-items: baseline;
       margin: 8px 0;
       color: #555;
-    }
-
-    .detail-row::after, .summary-row::after {
-      content: '';
-      flex: 1;
-      border-bottom: 1px dotted #ccc;
-      margin: 0 10px;
-      align-self: flex-end;
-      margin-bottom: 4px;
+      width: 100%;
+      gap: 20px;
     }
 
     .detail-label, .summary-label {
       white-space: nowrap;
+      text-align: left;
+      flex: 0 0 auto;
     }
 
     .detail-value, .summary-value {
       white-space: nowrap;
       font-weight: 500;
+      text-align: right;
+      flex: 0 0 auto;
     }
 
     .activity-details {
