@@ -82,8 +82,8 @@ interface BillingData {
   totals: Totals;
 }
 
-// Billing data
-const billingData: BillingData = {
+// Billing data (English version)
+const billingDataEn: BillingData = {
   billTo: {
     name: 'Annie Y',
     company: 'Shen Yun New York',
@@ -119,6 +119,57 @@ const billingData: BillingData = {
     totalPaymentsReceived: '$1,657.26'
   }
 };
+
+// Billing data (Traditional Chinese version)
+const billingDataZhTW: BillingData = {
+  billTo: {
+    name: '楊安妮',
+    company: '神韻紐約',
+    address: '美國, 10940'
+  },
+  details: {
+    accountId: '111222333',
+    paymentsProfile: '神韻紐約',
+    paymentsProfileId: '444-555-6666',
+    statementIssueDate: '2025年5月25日'
+  },
+  summary: {
+    period: '2025年9月1日 – 2025年9月30日',
+    openingBalance: '$10,000',
+    totalAdSpend: '-$1,300',
+    totalPaymentsReceived: '$1,657.26',
+    closingBalance: '$8,900'
+  },
+  campaigns: [
+    // Add one long campaign name to test overflow
+    {
+      description: '春季大型促銷活動：全球華人新年慶典特別推廣計劃，包含線上線下整合行銷方案',
+      impressions: '98,765',
+      amount: '-$123.45'
+    },
+    ...Array.from({ length: 4 }, (_, i) => ({
+      description: `廣告活動 ${i + 1}`,
+      impressions: '98,765',
+      amount: '-$123.45'
+    }))
+  ],
+  payments: Array.from({ length: 5 }, () => ({
+    date: '2025-11-15, 16:07 (UTC-05:00)',
+    description: '萬事達卡 ***8888',
+    amount: '$300'
+  })),
+  totals: {
+    subtotal: '-$8,247.50',
+    total: '-$8,247.50',
+    tax: '-$148.50',
+    totalPaymentsReceived: '$1,657.26'
+  }
+};
+
+// Function to get billing data based on language
+function getBillingData(language: Language): BillingData {
+  return language === 'zh-TW' ? billingDataZhTW : billingDataEn;
+}
 
 // Translations
 const translations: Record<Language, Translations> = {
@@ -264,19 +315,22 @@ const generateHTML = (data: BillingData, logoDataUrl: string, language: Language
 // Generate HTML files
 function generateHTMLFiles(): void {
   // Generate English version
-  const htmlEn = generateHTML(billingData, logoBase64, 'en');
+  const billingDataEn = getBillingData('en');
+  const htmlEn = generateHTML(billingDataEn, logoBase64, 'en');
   const outputPathEn = join(__dirname, 'src', 'output-pdfs', 'test-billing-statement-en.html');
   writeFileSync(outputPathEn, htmlEn);
   console.log(`✓ English HTML generated: ${outputPathEn}`);
 
   // Generate Traditional Chinese version
-  const htmlZh = generateHTML(billingData, logoBase64, 'zh-TW');
+  const billingDataZhTW = getBillingData('zh-TW');
+  const htmlZh = generateHTML(billingDataZhTW, logoBase64, 'zh-TW');
   const outputPathZh = join(__dirname, 'src', 'output-pdfs', 'test-billing-statement-zh-TW.html');
   writeFileSync(outputPathZh, htmlZh);
   console.log(`✓ Traditional Chinese HTML generated: ${outputPathZh}`);
 
   console.log('\n✓ Both language versions have been generated successfully!');
   console.log('  You can open these HTML files in a browser to verify the translations.');
+  console.log('  The Traditional Chinese version includes a long campaign name to test text wrapping.');
 }
 
 generateHTMLFiles();
