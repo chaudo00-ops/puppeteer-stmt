@@ -910,7 +910,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -944,7 +943,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -978,7 +976,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -1012,7 +1009,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -1056,7 +1052,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1090,7 +1085,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1124,7 +1118,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1158,7 +1151,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1192,7 +1184,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1290,7 +1281,8 @@ async function getBrowserConfig() {
       ],
     };
 
-    const paths = executablePaths[platform as keyof typeof executablePaths] || [];
+    const paths =
+      executablePaths[platform as keyof typeof executablePaths] || [];
     execPath = paths.find((p) => existsSync(p));
 
     if (execPath) {

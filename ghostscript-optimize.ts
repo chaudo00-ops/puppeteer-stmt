@@ -17,7 +17,7 @@ import { dirname, join } from "path";
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 const OUTPUT_DIR = join(__dirname, "src", "output-pdfs");
-const OPTIMIZED_SUFFIX = "-gs-optimized";
+const OPTIMIZED_SUFFIX = "-optimized";
 
 interface OptimizationResult {
   file: string;
@@ -80,9 +80,11 @@ function optimizePDF(inputPath: string, outputPath: string): void {
     "-dDetectDuplicateImages=true",
     "-dCompressPages=true",
     "-dAutoRotatePages=/None", // Preserve page orientation
-    "-dColorImageResolution=150",
-    "-dGrayImageResolution=150",
-    "-dMonoImageResolution=300",
+    // Logo handling
+    "-dDownsampleImages=false", // Preserve original image resolution
+    "-dColorImageResolution=600", // Increase Resolution Limits
+    "-dGrayImageResolution=600", // Increase Resolution Limits
+    "-dMonoImageResolution=1200", // Increase Resolution Limits
     // Output
     `-sOutputFile=${outputPath}`,
     inputPath,
