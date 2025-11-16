@@ -132,13 +132,13 @@ export async function generateHtmlTemplate(
       gap: 20px;
     }
 
-    .detail-row::after, .summary-row::after {
-      content: '';
+    .dot-fill {
       flex: 1;
       border-bottom: 1px dotted #ccc;
-      margin: 0 10px;
-      align-self: flex-end;
-      margin-bottom: 4px;
+      margin: 0px;
+      min-height: 1px; /* Changed from height: 0 */
+      align-self: flex-end; /* Aligns to bottom of flex container */
+      margin-bottom: 0.3em; /* Adjust vertical position */
     }
 
     .detail-label, .summary-label {
@@ -264,18 +264,22 @@ export async function generateHtmlTemplate(
       <h2>${translations.details}</h2>
       <div class="detail-row">
         <span class="detail-label">${translations.accountId}</span>
+        <span class="dot-fill"></span>
         <span class="detail-value">${account.account_id}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">${translations.paymentsProfile}</span>
+        <span class="dot-fill"></span>
         <span class="detail-value">${paymentProfile.pmt_prf_name}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">${translations.paymentsProfileId}</span>
+        <span class="dot-fill"></span>
         <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
       </div>
       <div class="detail-row">
         <span class="detail-label">${translations.statementIssueDate}</span>
+        <span class="dot-fill"></span>
         <span class="detail-value">${
           monthly_account_balance.created_time
         }</span>
@@ -288,24 +292,28 @@ export async function generateHtmlTemplate(
   } – ${monthly_account_balance.billing_period_end}</h2>
       <div class="summary-row">
         <span class="summary-label">${translations.openingBalance}</span>
+        <span class="dot-fill"></span>
         <span class="summary-value">${
           monthly_account_balance.opening_balance
         }</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">${translations.totalAdSpend}</span>
+        <span class="dot-fill"></span>
         <span class="summary-value">${
           monthly_account_balance.total_ad_spend
         }</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">${translations.totalPaymentsReceived}</span>
+        <span class="dot-fill"></span>
         <span class="summary-value">${
           monthly_account_balance.total_payments_received
         }</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">${translations.closingBalance}</span>
+        <span class="dot-fill"></span>
         <span class="summary-value">${
           monthly_account_balance.closing_balance
         }</span>
