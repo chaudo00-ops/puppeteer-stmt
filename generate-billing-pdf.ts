@@ -7,6 +7,33 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Type definitions
+type Language = 'en' | 'zh-TW';
+
+interface Translations {
+  billingStatements: string;
+  billTo: string;
+  details: string;
+  accountId: string;
+  paymentsProfile: string;
+  paymentsProfileId: string;
+  statementIssueDate: string;
+  summary: string;
+  summaryFor: string;
+  openingBalance: string;
+  totalAdSpend: string;
+  totalPaymentsReceived: string;
+  closingBalance: string;
+  activityDetails: string;
+  description: string;
+  impressions: string;
+  amount: string;
+  subtotal: string;
+  total: string;
+  paymentsReceived: string;
+  date: string;
+  tax: string;
+}
+
 interface BillTo {
   name: string;
   company: string;
@@ -99,8 +126,62 @@ const logoPath = join(__dirname, 'src', 'assets', 'logo-transparent.png');
 const logoBuffer = readFileSync(logoPath);
 const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
 
+// Translations
+const translations: Record<Language, Translations> = {
+  en: {
+    billingStatements: 'Billing Statements',
+    billTo: 'Bill To',
+    details: 'Details',
+    accountId: 'Account ID',
+    paymentsProfile: 'Payments profile',
+    paymentsProfileId: 'Payments profile ID',
+    statementIssueDate: 'Statement issue date',
+    summary: 'Summary',
+    summaryFor: 'Summary for',
+    openingBalance: 'Opening balance',
+    totalAdSpend: 'Total ad spend',
+    totalPaymentsReceived: 'Total payments received',
+    closingBalance: 'Closing balance',
+    activityDetails: 'Activity Details',
+    description: 'Description',
+    impressions: 'Impressions',
+    amount: 'Amount',
+    subtotal: 'Subtotal',
+    total: 'Total',
+    paymentsReceived: 'Payments Received',
+    date: 'Date',
+    tax: 'Tax'
+  },
+  'zh-TW': {
+    billingStatements: '帳單報表',
+    billTo: '帳單收件人',
+    details: '詳細資訊',
+    accountId: '帳戶 ID',
+    paymentsProfile: '付款資料',
+    paymentsProfileId: '付款資料 ID',
+    statementIssueDate: '對帳單發出日期',
+    summary: '摘要',
+    summaryFor: '摘要',
+    openingBalance: '期初餘額',
+    totalAdSpend: '廣告總支出',
+    totalPaymentsReceived: '總收款金額',
+    closingBalance: '期末餘額',
+    activityDetails: '活動詳情',
+    description: '說明',
+    impressions: '曝光次數',
+    amount: '金額',
+    subtotal: '小計',
+    total: '總計',
+    paymentsReceived: '已收款項',
+    date: '日期',
+    tax: '稅金'
+  }
+};
+
 // HTML template
-const generateHTML = (data: BillingData, logoDataUrl: string): string => `
+const generateHTML = (data: BillingData, logoDataUrl: string, language: Language = 'en'): string => {
+  const t = translations[language];
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -113,7 +194,7 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', sans-serif;
       font-size: 14px;
       color: #333;
       line-height: 1.5;
@@ -283,12 +364,12 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
 <body>
   <!-- Page 1 -->
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="bill-to">
-    <h2>Bill To</h2>
+    <h2>${t.billTo}</h2>
     <p>${data.billTo.name}</p>
     <p>${data.billTo.company}</p>
     <p>${data.billTo.address}</p>
@@ -296,54 +377,54 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
 
   <div class="details-summary-container">
     <div class="details">
-      <h2>Details</h2>
+      <h2>${t.details}</h2>
       <div class="detail-row">
-        <span class="detail-label">Account ID</span>
+        <span class="detail-label">${t.accountId}</span>
         <span class="detail-value">${data.details.accountId}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Payments profile</span>
+        <span class="detail-label">${t.paymentsProfile}</span>
         <span class="detail-value">${data.details.paymentsProfile}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Payments profile ID</span>
+        <span class="detail-label">${t.paymentsProfileId}</span>
         <span class="detail-value">${data.details.paymentsProfileId}</span>
       </div>
       <div class="detail-row">
-        <span class="detail-label">Statement issue date</span>
+        <span class="detail-label">${t.statementIssueDate}</span>
         <span class="detail-value">${data.details.statementIssueDate}</span>
       </div>
     </div>
 
     <div class="summary">
-      <h2>Summary for ${data.summary.period}</h2>
+      <h2>${t.summaryFor} ${data.summary.period}</h2>
       <div class="summary-row">
-        <span class="summary-label">Opening balance</span>
+        <span class="summary-label">${t.openingBalance}</span>
         <span class="summary-value">${data.summary.openingBalance}</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Total ad spend</span>
+        <span class="summary-label">${t.totalAdSpend}</span>
         <span class="summary-value">${data.summary.totalAdSpend}</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Total payments received</span>
+        <span class="summary-label">${t.totalPaymentsReceived}</span>
         <span class="summary-value">${data.summary.totalPaymentsReceived}</span>
       </div>
       <div class="summary-row">
-        <span class="summary-label">Closing balance</span>
+        <span class="summary-label">${t.closingBalance}</span>
         <span class="summary-value">${data.summary.closingBalance}</span>
       </div>
     </div>
   </div>
 
   <div class="activity-details">
-    <h2>Activity Details</h2>
+    <h2>${t.activityDetails}</h2>
     <table>
       <thead>
         <tr>
-          <th>Description</th>
-          <th>Impressions</th>
-          <th>Amount</th>
+          <th>${t.description}</th>
+          <th>${t.impressions}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -361,18 +442,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 2 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
-    <h2>Activity Details</h2>
+    <h2>${t.activityDetails}</h2>
     <table>
       <thead>
         <tr>
-          <th>Description</th>
-          <th>Impressions</th>
-          <th>Amount</th>
+          <th>${t.description}</th>
+          <th>${t.impressions}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -390,18 +471,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 3 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
-    <h2>Activity Details</h2>
+    <h2>${t.activityDetails}</h2>
     <table>
       <thead>
         <tr>
-          <th>Description</th>
-          <th>Impressions</th>
-          <th>Amount</th>
+          <th>${t.description}</th>
+          <th>${t.impressions}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -419,18 +500,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 4 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
-    <h2>Activity Details</h2>
+    <h2>${t.activityDetails}</h2>
     <table>
       <thead>
         <tr>
-          <th>Description</th>
-          <th>Impressions</th>
-          <th>Amount</th>
+          <th>${t.description}</th>
+          <th>${t.impressions}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -448,18 +529,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 5 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
-    <h2>Activity Details</h2>
+    <h2>${t.activityDetails}</h2>
     <table>
       <thead>
         <tr>
-          <th>Description</th>
-          <th>Impressions</th>
-          <th>Amount</th>
+          <th>${t.description}</th>
+          <th>${t.impressions}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -472,12 +553,12 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
         `).join('')}
         <tr class="subtotal-row">
           <td></td>
-          <td style="text-align: right;">Subtotal :</td>
+          <td style="text-align: right;">${t.subtotal} :</td>
           <td>${data.totals.subtotal}</td>
         </tr>
         <tr class="total-row">
           <td></td>
-          <td style="text-align: right;">Total :</td>
+          <td style="text-align: right;">${t.total} :</td>
           <td>${data.totals.total}</td>
         </tr>
       </tbody>
@@ -487,18 +568,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 6 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
-    <h2>Payments Received</h2>
+    <h2>${t.paymentsReceived}</h2>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
+          <th>${t.date}</th>
+          <th>${t.description}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -516,18 +597,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 7 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
-    <h2>Payments Received</h2>
+    <h2>${t.paymentsReceived}</h2>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
+          <th>${t.date}</th>
+          <th>${t.description}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -545,18 +626,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 8 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
-    <h2>Payments Received</h2>
+    <h2>${t.paymentsReceived}</h2>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
+          <th>${t.date}</th>
+          <th>${t.description}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -574,18 +655,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 9 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
-    <h2>Payments Received</h2>
+    <h2>${t.paymentsReceived}</h2>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
+          <th>${t.date}</th>
+          <th>${t.description}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -603,18 +684,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
   <!-- Page 10 -->
   <div class="page-break"></div>
   <div class="header">
-    <h1>Billing Statements</h1>
+    <h1>${t.billingStatements}</h1>
     <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
-    <h2>Payments Received</h2>
+    <h2>${t.paymentsReceived}</h2>
     <table>
       <thead>
         <tr>
-          <th>Date</th>
-          <th>Description</th>
-          <th>Amount</th>
+          <th>${t.date}</th>
+          <th>${t.description}</th>
+          <th>${t.amount}</th>
         </tr>
       </thead>
       <tbody>
@@ -627,12 +708,12 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
         `).join('')}
         <tr class="subtotal-row">
           <td></td>
-          <td style="text-align: right;">Tax :</td>
+          <td style="text-align: right;">${t.tax} :</td>
           <td>${data.totals.tax}</td>
         </tr>
         <tr class="total-row">
           <td></td>
-          <td style="text-align: right;">Total payments received</td>
+          <td style="text-align: right;">${t.totalPaymentsReceived}</td>
           <td>${data.totals.totalPaymentsReceived}</td>
         </tr>
       </tbody>
@@ -641,9 +722,10 @@ const generateHTML = (data: BillingData, logoDataUrl: string): string => `
 </body>
 </html>
 `;
+};
 
-async function generatePDF(): Promise<void> {
-  console.log('Launching browser...');
+async function generatePDF(language: Language = 'en'): Promise<void> {
+  console.log(`Launching browser for ${language === 'en' ? 'English' : 'Traditional Chinese'} PDF...`);
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -652,11 +734,12 @@ async function generatePDF(): Promise<void> {
   const page = await browser.newPage();
 
   console.log('Setting content...');
-  const html = generateHTML(billingData, logoBase64);
+  const html = generateHTML(billingData, logoBase64, language);
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
   console.log('Generating PDF...');
-  const outputPath = join(__dirname, 'src', 'output-pdfs', 'generated-billing-statement.pdf');
+  const langSuffix = language === 'en' ? 'en' : 'zh-TW';
+  const outputPath = join(__dirname, 'src', 'output-pdfs', `generated-billing-statement-${langSuffix}.pdf`);
 
   await page.pdf({
     path: outputPath,
@@ -675,4 +758,13 @@ async function generatePDF(): Promise<void> {
   console.log(`PDF generated successfully: ${outputPath}`);
 }
 
-generatePDF().catch(console.error);
+// Main execution
+async function main(): Promise<void> {
+  // Generate English version
+  await generatePDF('en');
+
+  // Generate Traditional Chinese version
+  await generatePDF('zh-TW');
+}
+
+main().catch(console.error);
