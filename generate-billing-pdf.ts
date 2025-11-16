@@ -1,12 +1,63 @@
 import puppeteer from 'puppeteer';
 import { fileURLToPath } from 'url';
 import { dirname, join } from 'path';
+import { readFileSync } from 'fs';
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
+// Type definitions
+interface BillTo {
+  name: string;
+  company: string;
+  address: string;
+}
+
+interface Details {
+  accountId: string;
+  paymentsProfile: string;
+  paymentsProfileId: string;
+  statementIssueDate: string;
+}
+
+interface Summary {
+  period: string;
+  openingBalance: string;
+  totalAdSpend: string;
+  totalPaymentsReceived: string;
+  closingBalance: string;
+}
+
+interface Campaign {
+  description: string;
+  impressions: string;
+  amount: string;
+}
+
+interface Payment {
+  date: string;
+  description: string;
+  amount: string;
+}
+
+interface Totals {
+  subtotal: string;
+  total: string;
+  tax: string;
+  totalPaymentsReceived: string;
+}
+
+interface BillingData {
+  billTo: BillTo;
+  details: Details;
+  summary: Summary;
+  campaigns: Campaign[];
+  payments: Payment[];
+  totals: Totals;
+}
+
 // Billing data
-const billingData = {
+const billingData: BillingData = {
   billTo: {
     name: 'Annie Y',
     company: 'Shen Yun New York',
@@ -43,8 +94,13 @@ const billingData = {
   }
 };
 
+// Load and convert logo to base64
+const logoPath = join(__dirname, 'src', 'assets', 'logo-transparent.png');
+const logoBuffer = readFileSync(logoPath);
+const logoBase64 = `data:image/png;base64,${logoBuffer.toString('base64')}`;
+
 // HTML template
-const generateHTML = (data) => `
+const generateHTML = (data: BillingData, logoDataUrl: string): string => `
 <!DOCTYPE html>
 <html>
 <head>
@@ -79,7 +135,7 @@ const generateHTML = (data) => `
 
     .logo {
       width: 120px;
-      height: 120px;
+      height: auto;
     }
 
     .bill-to {
@@ -228,18 +284,7 @@ const generateHTML = (data) => `
   <!-- Page 1 -->
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <!-- Globe outline -->
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <!-- Latitude lines -->
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <!-- Longitude lines -->
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <!-- Text -->
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="bill-to">
@@ -317,14 +362,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -353,14 +391,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -389,14 +420,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -425,14 +449,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -471,14 +488,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -507,14 +517,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -543,14 +546,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -579,14 +575,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -615,14 +604,7 @@ const generateHTML = (data) => `
   <div class="page-break"></div>
   <div class="header">
     <h1>Billing Statements</h1>
-    <svg class="logo" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
-      <circle cx="100" cy="100" r="60" fill="none" stroke="#4a90e2" stroke-width="2"/>
-      <ellipse cx="100" cy="100" rx="60" ry="20" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="60" ry="40" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="20" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <ellipse cx="100" cy="100" rx="40" ry="60" fill="none" stroke="#4a90e2" stroke-width="1"/>
-      <text x="100" y="150" font-family="Arial, sans-serif" font-size="24" font-weight="bold" fill="#ff8c00" text-anchor="middle">GAMING WORLD</text>
-    </svg>
+    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -660,7 +642,7 @@ const generateHTML = (data) => `
 </html>
 `;
 
-async function generatePDF() {
+async function generatePDF(): Promise<void> {
   console.log('Launching browser...');
   const browser = await puppeteer.launch({
     headless: true,
@@ -670,7 +652,7 @@ async function generatePDF() {
   const page = await browser.newPage();
 
   console.log('Setting content...');
-  const html = generateHTML(billingData);
+  const html = generateHTML(billingData, logoBase64);
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
   console.log('Generating PDF...');
