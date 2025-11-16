@@ -11,6 +11,7 @@
     "generate-pdf": "tsx generate-billing-pdf.ts",
     "optimize-pdf": "tsx ghostscript-optimize.ts",
     "generate-and-optimize": "npm run generate-pdf && npm run optimize-pdf",
+    "generate-optimized": "tsx generate-optimized-pdfs.ts",
     "test-pdf-lib": "tsx test-pdf-lib-pipeline.ts"
   },
   "dependencies": {

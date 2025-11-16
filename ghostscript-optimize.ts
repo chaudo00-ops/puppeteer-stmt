@@ -63,12 +63,12 @@ function checkGhostscript(): boolean {
 function optimizePDF(inputPath: string, outputPath: string): void {
   console.log(`\nOptimizing: ${inputPath}`);
 
-  // Ghostscript command with aggressive font subsetting
+  // Ghostscript command with aggressive font subsetting and compression
   const gsCommand = [
     "gs",
     "-sDEVICE=pdfwrite",
-    "-dCompatibilityLevel=1.4",
-    "-dPDFSETTINGS=/ebook", // Balanced quality/size (other options: /screen, /printer, /prepress)
+    "-dCompatibilityLevel=1.5", // Newer PDF version for better compression
+    "-dPDFSETTINGS=/ebook", // Balanced quality/size (150 DPI for images)
     "-dNOPAUSE",
     "-dQUIET",
     "-dBATCH",
@@ -76,15 +76,22 @@ function optimizePDF(inputPath: string, outputPath: string): void {
     "-dSubsetFonts=true", // Only embed characters actually used
     "-dCompressFonts=true", // Compress font data
     "-dEmbedAllFonts=true", // Ensure fonts are embedded (for subsetting)
-    // Image and content optimization
-    "-dDetectDuplicateImages=true",
-    "-dCompressPages=true",
+    // Advanced compression
+    "-dCompressPages=true", // Compress page content streams
+    "-dUseFlateCompression=true", // Use Flate (ZIP) compression
+    "-dOptimize=true", // Optimize PDF structure
+    // Image optimization
+    "-dDetectDuplicateImages=true", // Remove duplicate images (helps with repeated logos)
+    "-dAutoFilterColorImages=false", // Manual control over image compression
+    "-dAutoFilterGrayImages=false",
+    "-dColorImageFilter=/FlateEncode", // Lossless compression for color images
+    "-dGrayImageFilter=/FlateEncode", // Lossless compression for grayscale
+    "-dDownsampleColorImages=false", // Don't downsample - preserve quality
+    "-dDownsampleGrayImages=false",
+    "-dColorImageResolution=300", // Set max resolution (logos don't need more)
+    "-dGrayImageResolution=300",
+    "-dMonoImageResolution=600",
     "-dAutoRotatePages=/None", // Preserve page orientation
-    // Logo handling
-    "-dDownsampleImages=false", // Preserve original image resolution
-    "-dColorImageResolution=600", // Increase Resolution Limits
-    "-dGrayImageResolution=600", // Increase Resolution Limits
-    "-dMonoImageResolution=1200", // Increase Resolution Limits
     // Output
     `-sOutputFile=${outputPath}`,
     inputPath,
