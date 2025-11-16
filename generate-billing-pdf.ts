@@ -1,8 +1,10 @@
 import puppeteer from "puppeteer-core";
+import puppeteerFull from "puppeteer";
 import chromium from "@sparticuz/chromium";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
-import { readFileSync } from "fs";
+import { readFileSync, existsSync } from "fs";
+import os from "os";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -1244,14 +1246,69 @@ const languageNames: Record<Language, string> = {
   es: "Spanish",
 };
 
+/**
+ * Get browser launch configuration based on platform
+ * - macOS/Windows (development): Use puppeteer's bundled Chromium
+ * - Linux (production/Lambda): Use @sparticuz/chromium
+ */
+async function getBrowserConfig() {
+  const platform = os.platform();
+  const isProduction = process.env.NODE_ENV === "production";
+  const isLambda = !!process.env.AWS_LAMBDA_FUNCTION_NAME;
+
+  // Use @sparticuz/chromium for Linux/production/Lambda
+  if (platform === "linux" || isProduction || isLambda) {
+    console.log("Using @sparticuz/chromium for production/Linux environment");
+    return {
+      args: chromium.args,
+      defaultViewport: chromium.defaultViewport,
+      executablePath: await chromium.executablePath(),
+      headless: chromium.headless,
+    };
+  }
+
+  // For development (macOS/Windows), use puppeteer's bundled Chrome
+  console.log("Using puppeteer bundled Chromium for development");
+
+  // Get the bundled Chromium path from puppeteer
+  let execPath: string | undefined;
+  try {
+    execPath = puppeteerFull.executablePath();
+    console.log(`Found bundled Chromium at: ${execPath}`);
+  } catch (error) {
+    console.log("Could not find bundled Chromium, trying system Chrome...");
+
+    // Fallback to system Chrome if bundled Chromium not found
+    const executablePaths = {
+      darwin: [
+        "/Applications/Google Chrome.app/Contents/MacOS/Google Chrome",
+        "/Applications/Chromium.app/Contents/MacOS/Chromium",
+      ],
+      win32: [
+        "C:\\Program Files\\Google\\Chrome\\Application\\chrome.exe",
+        "C:\\Program Files (x86)\\Google\\Chrome\\Application\\chrome.exe",
+      ],
+    };
+
+    const paths = executablePaths[platform as keyof typeof executablePaths] || [];
+    execPath = paths.find((p) => existsSync(p));
+
+    if (execPath) {
+      console.log(`Found system Chrome at: ${execPath}`);
+    }
+  }
+
+  return {
+    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    headless: true,
+    ...(execPath && { executablePath: execPath }),
+  };
+}
+
 async function generatePDF(language: Language = "en"): Promise<void> {
   console.log(`Launching browser for ${languageNames[language]} PDF...`);
-  const browser = await puppeteer.launch({
-    args: chromium.args,
-    defaultViewport: chromium.defaultViewport,
-    executablePath: await chromium.executablePath(),
-    headless: chromium.headless,
-  });
+  const browserConfig = await getBrowserConfig();
+  const browser = await puppeteer.launch(browserConfig);
 
   const page = await browser.newPage();
 
