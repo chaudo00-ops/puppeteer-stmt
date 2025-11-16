@@ -10,9 +10,13 @@
     "preview": "vite preview",
     "generate-pdf": "tsx generate-billing-pdf.ts",
     "optimize-pdf": "tsx ghostscript-optimize.ts",
-    "generate-and-optimize": "npm run generate-pdf && npm run optimize-pdf"
+    "generate-and-optimize": "npm run generate-pdf && npm run optimize-pdf",
+    "test-pdf-lib": "tsx test-pdf-lib-pipeline.ts"
   },
   "dependencies": {
+    "@pdf-lib/fontkit": "^1.1.1",
+    "luxon": "^3.5.0",
+    "pdf-lib": "^1.17.1",
     "puppeteer": "^23.11.1",
     "react": "^19.2.0",
     "react-dom": "^19.2.0"
