@@ -1,4 +1,5 @@
-import puppeteer from "puppeteer";
+import puppeteer from "puppeteer-core";
+import chromium from "@sparticuz/chromium";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 import { readFileSync } from "fs";
@@ -432,8 +433,8 @@ function getBillingData(language: Language): BillingData {
   }
 }
 
-// Load and convert logo to base64
-const logoPath = join(__dirname, "src", "assets", "logo-transparent.png");
+// Load and convert optimized logo to base64
+const logoPath = join(__dirname, "src", "assets", "logo-optimized.png");
 const logoBuffer = readFileSync(logoPath);
 const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
@@ -640,6 +641,14 @@ const generateHTML = (
   language: Language = "en"
 ): string => {
   const t = translations[language];
+  const isCJK = ["zh-TW", "zh-CN", "ja", "ko"].includes(language);
+  const baseFontSize = isCJK ? "13px" : "14px";
+  const headerFontSize = isCJK ? "32px" : "36px";
+  const h2FontSize = isCJK ? "16px" : "18px";
+  const fontFamily = isCJK
+    ? "Arial, sans-serif"
+    : "-apple-system, BlinkMacSystemFont, 'Segoe UI', Arial, sans-serif";
+
   return `
 <!DOCTYPE html>
 <html>
@@ -653,8 +662,8 @@ const generateHTML = (
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans JP', 'Malgun Gothic', 'Yu Gothic', sans-serif;
-      font-size: 14px;
+      font-family: ${fontFamily};
+      font-size: ${baseFontSize};
       color: #333;
       line-height: 1.5;
       padding: 40px 60px;
@@ -668,13 +677,13 @@ const generateHTML = (
     }
 
     .header h1 {
-      font-size: 36px;
+      font-size: ${headerFontSize};
       font-weight: 400;
       color: #333;
     }
 
     .logo {
-      width: 120px;
+      width: 100px;
       height: auto;
     }
 
@@ -683,7 +692,7 @@ const generateHTML = (
     }
 
     .bill-to h2 {
-      font-size: 18px;
+      font-size: ${h2FontSize};
       font-weight: 600;
       color: #333;
       margin-bottom: 12px;
@@ -704,7 +713,7 @@ const generateHTML = (
     }
 
     .details h2, .summary h2 {
-      font-size: 18px;
+      font-size: ${h2FontSize};
       font-weight: 600;
       color: #333;
       margin-bottom: 16px;
@@ -740,7 +749,7 @@ const generateHTML = (
     }
 
     .activity-details h2 {
-      font-size: 18px;
+      font-size: ${h2FontSize};
       font-weight: 600;
       color: #333;
       margin-bottom: 20px;
@@ -802,7 +811,7 @@ const generateHTML = (
     }
 
     .payments-received h2 {
-      font-size: 18px;
+      font-size: ${h2FontSize};
       font-weight: 600;
       color: #333;
       margin-bottom: 20px;
@@ -907,7 +916,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -941,7 +949,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -975,7 +982,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -1009,7 +1015,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="activity-details">
@@ -1053,7 +1058,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1087,7 +1091,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1121,7 +1124,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1155,7 +1157,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1189,7 +1190,6 @@ const generateHTML = (
   <div class="page-break"></div>
   <div class="header">
     <h1>${t.billingStatements}</h1>
-    <img src="${logoDataUrl}" alt="Gaming World Logo" class="logo" />
   </div>
 
   <div class="payments-received">
@@ -1246,8 +1246,10 @@ const languageNames: Record<Language, string> = {
 async function generatePDF(language: Language = "en"): Promise<void> {
   console.log(`Launching browser for ${languageNames[language]} PDF...`);
   const browser = await puppeteer.launch({
-    headless: true,
-    args: ["--no-sandbox", "--disable-setuid-sandbox"],
+    args: chromium.args,
+    defaultViewport: chromium.defaultViewport,
+    executablePath: await chromium.executablePath(),
+    headless: chromium.headless,
   });
 
   const page = await browser.newPage();
@@ -1265,6 +1267,9 @@ async function generatePDF(language: Language = "en"): Promise<void> {
     `generated-billing-statement-${language}.pdf`
   );
 
+  const isCJK = ["zh-TW", "zh-CN", "ja", "ko"].includes(language);
+  const scale = isCJK ? 0.90 : 0.95;
+
   await page.pdf({
     path: outputPath,
     format: "A4",
@@ -1275,6 +1280,10 @@ async function generatePDF(language: Language = "en"): Promise<void> {
       bottom: "20px",
       left: "40px",
     },
+    tagged: false,
+    outline: false,
+    scale: scale,
+    preferCSSPageSize: true,
   });
 
   await browser.close();
