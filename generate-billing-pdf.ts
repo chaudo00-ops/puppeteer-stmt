@@ -7,7 +7,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
 
 // Type definitions
-type Language = 'en' | 'zh-TW';
+type Language = 'en' | 'zh-TW' | 'zh-CN' | 'vi' | 'ko' | 'ja' | 'es';
 
 interface Translations {
   billingStatements: string;
@@ -167,9 +167,249 @@ const billingDataZhTW: BillingData = {
   }
 };
 
+// Billing data (Chinese Simplified version)
+const billingDataZhCN: BillingData = {
+  billTo: {
+    name: '杨安妮',
+    company: '神韵纽约',
+    address: '美国, 10940'
+  },
+  details: {
+    accountId: '111222333',
+    paymentsProfile: '神韵纽约',
+    paymentsProfileId: '444-555-6666',
+    statementIssueDate: '2025年5月25日'
+  },
+  summary: {
+    period: '2025年9月1日 – 2025年9月30日',
+    openingBalance: '$10,000',
+    totalAdSpend: '-$1,300',
+    totalPaymentsReceived: '$1,657.26',
+    closingBalance: '$8,900'
+  },
+  campaigns: [
+    {
+      description: '春季大型促销活动：全球华人新年庆典特别推广计划，包含线上线下整合营销方案',
+      impressions: '98,765',
+      amount: '-$123.45'
+    },
+    ...Array.from({ length: 90 }, (_, i) => ({
+      description: `广告活动 ${i + 1}`,
+      impressions: '98,765',
+      amount: '-$123.45'
+    }))
+  ],
+  payments: Array.from({ length: 99 }, () => ({
+    date: '2025-11-15, 16:07 (UTC-05:00)',
+    description: '万事达卡 ***8888',
+    amount: '$300'
+  })),
+  totals: {
+    subtotal: '-$8,247.50',
+    total: '-$8,247.50',
+    tax: '-$148.50',
+    totalPaymentsReceived: '$1,657.26'
+  }
+};
+
+// Billing data (Vietnamese version)
+const billingDataVi: BillingData = {
+  billTo: {
+    name: 'Annie Y',
+    company: 'Shen Yun New York',
+    address: 'Hoa Kỳ, 10940'
+  },
+  details: {
+    accountId: '111222333',
+    paymentsProfile: 'Shen Yun New York',
+    paymentsProfileId: '444-555-6666',
+    statementIssueDate: '25 tháng 5, 2025'
+  },
+  summary: {
+    period: '1 tháng 9, 2025 – 30 tháng 9, 2025',
+    openingBalance: '$10,000',
+    totalAdSpend: '-$1,300',
+    totalPaymentsReceived: '$1,657.26',
+    closingBalance: '$8,900'
+  },
+  campaigns: [
+    {
+      description: 'Chiến dịch quảng cáo mùa xuân lớn: Kế hoạch khuyến mãi đặc biệt cho lễ hội năm mới toàn cầu',
+      impressions: '98,765',
+      amount: '-$123.45'
+    },
+    ...Array.from({ length: 90 }, (_, i) => ({
+      description: `Chiến dịch ${i + 1}`,
+      impressions: '98,765',
+      amount: '-$123.45'
+    }))
+  ],
+  payments: Array.from({ length: 99 }, () => ({
+    date: '2025-11-15, 16:07 (UTC-05:00)',
+    description: 'Mastercard ***8888',
+    amount: '$300'
+  })),
+  totals: {
+    subtotal: '-$8,247.50',
+    total: '-$8,247.50',
+    tax: '-$148.50',
+    totalPaymentsReceived: '$1,657.26'
+  }
+};
+
+// Billing data (Korean version)
+const billingDataKo: BillingData = {
+  billTo: {
+    name: '애니 Y',
+    company: '션윈 뉴욕',
+    address: '미국, 10940'
+  },
+  details: {
+    accountId: '111222333',
+    paymentsProfile: '션윈 뉴욕',
+    paymentsProfileId: '444-555-6666',
+    statementIssueDate: '2025년 5월 25일'
+  },
+  summary: {
+    period: '2025년 9월 1일 – 2025년 9월 30일',
+    openingBalance: '$10,000',
+    totalAdSpend: '-$1,300',
+    totalPaymentsReceived: '$1,657.26',
+    closingBalance: '$8,900'
+  },
+  campaigns: [
+    {
+      description: '봄 대규모 프로모션 캠페인: 글로벌 중국 설날 축제 특별 홍보 계획, 온오프라인 통합 마케팅 솔루션 포함',
+      impressions: '98,765',
+      amount: '-$123.45'
+    },
+    ...Array.from({ length: 90 }, (_, i) => ({
+      description: `광고 캠페인 ${i + 1}`,
+      impressions: '98,765',
+      amount: '-$123.45'
+    }))
+  ],
+  payments: Array.from({ length: 99 }, () => ({
+    date: '2025-11-15, 16:07 (UTC-05:00)',
+    description: 'Mastercard ***8888',
+    amount: '$300'
+  })),
+  totals: {
+    subtotal: '-$8,247.50',
+    total: '-$8,247.50',
+    tax: '-$148.50',
+    totalPaymentsReceived: '$1,657.26'
+  }
+};
+
+// Billing data (Japanese version)
+const billingDataJa: BillingData = {
+  billTo: {
+    name: 'アニー Y',
+    company: 'シェンユン・ニューヨーク',
+    address: 'アメリカ, 10940'
+  },
+  details: {
+    accountId: '111222333',
+    paymentsProfile: 'シェンユン・ニューヨーク',
+    paymentsProfileId: '444-555-6666',
+    statementIssueDate: '2025年5月25日'
+  },
+  summary: {
+    period: '2025年9月1日 – 2025年9月30日',
+    openingBalance: '$10,000',
+    totalAdSpend: '-$1,300',
+    totalPaymentsReceived: '$1,657.26',
+    closingBalance: '$8,900'
+  },
+  campaigns: [
+    {
+      description: '春の大規模プロモーションキャンペーン：グローバル中国新年祭特別プロモーション計画、オンライン・オフライン統合マーケティングソリューションを含む',
+      impressions: '98,765',
+      amount: '-$123.45'
+    },
+    ...Array.from({ length: 90 }, (_, i) => ({
+      description: `広告キャンペーン ${i + 1}`,
+      impressions: '98,765',
+      amount: '-$123.45'
+    }))
+  ],
+  payments: Array.from({ length: 99 }, () => ({
+    date: '2025-11-15, 16:07 (UTC-05:00)',
+    description: 'Mastercard ***8888',
+    amount: '$300'
+  })),
+  totals: {
+    subtotal: '-$8,247.50',
+    total: '-$8,247.50',
+    tax: '-$148.50',
+    totalPaymentsReceived: '$1,657.26'
+  }
+};
+
+// Billing data (Spanish version)
+const billingDataEs: BillingData = {
+  billTo: {
+    name: 'Annie Y',
+    company: 'Shen Yun New York',
+    address: 'EE.UU., 10940'
+  },
+  details: {
+    accountId: '111222333',
+    paymentsProfile: 'Shen Yun New York',
+    paymentsProfileId: '444-555-6666',
+    statementIssueDate: '25 de mayo de 2025'
+  },
+  summary: {
+    period: '1 de sep. de 2025 – 30 de sep. de 2025',
+    openingBalance: '$10,000',
+    totalAdSpend: '-$1,300',
+    totalPaymentsReceived: '$1,657.26',
+    closingBalance: '$8,900'
+  },
+  campaigns: [
+    {
+      description: 'Campaña de promoción masiva de primavera: Plan de promoción especial del Festival de Año Nuevo Chino global, incluye solución de marketing integrado en línea y fuera de línea',
+      impressions: '98,765',
+      amount: '-$123.45'
+    },
+    ...Array.from({ length: 90 }, (_, i) => ({
+      description: `Campaña ${i + 1}`,
+      impressions: '98,765',
+      amount: '-$123.45'
+    }))
+  ],
+  payments: Array.from({ length: 99 }, () => ({
+    date: '2025-11-15, 16:07 (UTC-05:00)',
+    description: 'Mastercard ***8888',
+    amount: '$300'
+  })),
+  totals: {
+    subtotal: '-$8,247.50',
+    total: '-$8,247.50',
+    tax: '-$148.50',
+    totalPaymentsReceived: '$1,657.26'
+  }
+};
+
 // Function to get billing data based on language
 function getBillingData(language: Language): BillingData {
-  return language === 'zh-TW' ? billingDataZhTW : billingDataEn;
+  switch (language) {
+    case 'zh-TW':
+      return billingDataZhTW;
+    case 'zh-CN':
+      return billingDataZhCN;
+    case 'vi':
+      return billingDataVi;
+    case 'ko':
+      return billingDataKo;
+    case 'ja':
+      return billingDataJa;
+    case 'es':
+      return billingDataEs;
+    default:
+      return billingDataEn;
+  }
 }
 
 // Load and convert logo to base64
@@ -226,6 +466,126 @@ const translations: Record<Language, Translations> = {
     paymentsReceived: '已收款項',
     date: '日期',
     tax: '稅金'
+  },
+  'zh-CN': {
+    billingStatements: '账单报表',
+    billTo: '账单收件人',
+    details: '详细信息',
+    accountId: '账户 ID',
+    paymentsProfile: '付款资料',
+    paymentsProfileId: '付款资料 ID',
+    statementIssueDate: '对账单发出日期',
+    summary: '摘要',
+    summaryFor: '摘要',
+    openingBalance: '期初余额',
+    totalAdSpend: '广告总支出',
+    totalPaymentsReceived: '总收款金额',
+    closingBalance: '期末余额',
+    activityDetails: '活动详情',
+    description: '说明',
+    impressions: '曝光次数',
+    amount: '金额',
+    subtotal: '小计',
+    total: '总计',
+    paymentsReceived: '已收款项',
+    date: '日期',
+    tax: '税金'
+  },
+  vi: {
+    billingStatements: 'Báo cáo thanh toán',
+    billTo: 'Gửi hóa đơn đến',
+    details: 'Chi tiết',
+    accountId: 'ID tài khoản',
+    paymentsProfile: 'Hồ sơ thanh toán',
+    paymentsProfileId: 'ID hồ sơ thanh toán',
+    statementIssueDate: 'Ngày phát hành báo cáo',
+    summary: 'Tóm tắt',
+    summaryFor: 'Tóm tắt cho',
+    openingBalance: 'Số dư đầu kỳ',
+    totalAdSpend: 'Tổng chi tiêu quảng cáo',
+    totalPaymentsReceived: 'Tổng số tiền đã nhận',
+    closingBalance: 'Số dư cuối kỳ',
+    activityDetails: 'Chi tiết hoạt động',
+    description: 'Mô tả',
+    impressions: 'Lượt hiển thị',
+    amount: 'Số tiền',
+    subtotal: 'Tổng phụ',
+    total: 'Tổng cộng',
+    paymentsReceived: 'Thanh toán đã nhận',
+    date: 'Ngày',
+    tax: 'Thuế'
+  },
+  ko: {
+    billingStatements: '청구서',
+    billTo: '청구 대상',
+    details: '세부 정보',
+    accountId: '계정 ID',
+    paymentsProfile: '결제 프로필',
+    paymentsProfileId: '결제 프로필 ID',
+    statementIssueDate: '명세서 발행일',
+    summary: '요약',
+    summaryFor: '요약',
+    openingBalance: '기초 잔액',
+    totalAdSpend: '총 광고 지출',
+    totalPaymentsReceived: '총 수령액',
+    closingBalance: '기말 잔액',
+    activityDetails: '활동 세부정보',
+    description: '설명',
+    impressions: '노출수',
+    amount: '금액',
+    subtotal: '소계',
+    total: '합계',
+    paymentsReceived: '수령한 결제',
+    date: '날짜',
+    tax: '세금'
+  },
+  ja: {
+    billingStatements: '請求書',
+    billTo: '請求先',
+    details: '詳細',
+    accountId: 'アカウントID',
+    paymentsProfile: '支払いプロファイル',
+    paymentsProfileId: '支払いプロファイルID',
+    statementIssueDate: '明細書発行日',
+    summary: '概要',
+    summaryFor: '概要',
+    openingBalance: '期首残高',
+    totalAdSpend: '広告費総額',
+    totalPaymentsReceived: '受取総額',
+    closingBalance: '期末残高',
+    activityDetails: 'アクティビティの詳細',
+    description: '説明',
+    impressions: 'インプレッション数',
+    amount: '金額',
+    subtotal: '小計',
+    total: '合計',
+    paymentsReceived: '受領済み支払い',
+    date: '日付',
+    tax: '税'
+  },
+  es: {
+    billingStatements: 'Extractos de facturación',
+    billTo: 'Facturar a',
+    details: 'Detalles',
+    accountId: 'ID de cuenta',
+    paymentsProfile: 'Perfil de pagos',
+    paymentsProfileId: 'ID de perfil de pagos',
+    statementIssueDate: 'Fecha de emisión del extracto',
+    summary: 'Resumen',
+    summaryFor: 'Resumen de',
+    openingBalance: 'Saldo inicial',
+    totalAdSpend: 'Gasto total en anuncios',
+    totalPaymentsReceived: 'Total de pagos recibidos',
+    closingBalance: 'Saldo final',
+    activityDetails: 'Detalles de actividad',
+    description: 'Descripción',
+    impressions: 'Impresiones',
+    amount: 'Cantidad',
+    subtotal: 'Subtotal',
+    total: 'Total',
+    paymentsReceived: 'Pagos recibidos',
+    date: 'Fecha',
+    tax: 'Impuesto'
   }
 };
 
@@ -245,7 +605,7 @@ const generateHTML = (data: BillingData, logoDataUrl: string, language: Language
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', sans-serif;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans JP', 'Malgun Gothic', 'Yu Gothic', sans-serif;
       font-size: 14px;
       color: #333;
       line-height: 1.5;
@@ -775,8 +1135,18 @@ const generateHTML = (data: BillingData, logoDataUrl: string, language: Language
 `;
 };
 
+const languageNames: Record<Language, string> = {
+  'en': 'English',
+  'zh-TW': 'Traditional Chinese',
+  'zh-CN': 'Simplified Chinese',
+  'vi': 'Vietnamese',
+  'ko': 'Korean',
+  'ja': 'Japanese',
+  'es': 'Spanish'
+};
+
 async function generatePDF(language: Language = 'en'): Promise<void> {
-  console.log(`Launching browser for ${language === 'en' ? 'English' : 'Traditional Chinese'} PDF...`);
+  console.log(`Launching browser for ${languageNames[language]} PDF...`);
   const browser = await puppeteer.launch({
     headless: true,
     args: ['--no-sandbox', '--disable-setuid-sandbox']
@@ -790,8 +1160,7 @@ async function generatePDF(language: Language = 'en'): Promise<void> {
   await page.setContent(html, { waitUntil: 'networkidle0' });
 
   console.log('Generating PDF...');
-  const langSuffix = language === 'en' ? 'en' : 'zh-TW';
-  const outputPath = join(__dirname, 'src', 'output-pdfs', `generated-billing-statement-${langSuffix}.pdf`);
+  const outputPath = join(__dirname, 'src', 'output-pdfs', `generated-billing-statement-${language}.pdf`);
 
   await page.pdf({
     path: outputPath,
@@ -812,11 +1181,20 @@ async function generatePDF(language: Language = 'en'): Promise<void> {
 
 // Main execution
 async function main(): Promise<void> {
-  // Generate English version
-  await generatePDF('en');
+  const languages: Language[] = ['en', 'zh-TW', 'zh-CN', 'vi', 'ko', 'ja', 'es'];
 
-  // Generate Traditional Chinese version
-  await generatePDF('zh-TW');
+  console.log('Starting PDF generation for all 7 languages...\n');
+
+  for (const language of languages) {
+    await generatePDF(language);
+    console.log('');
+  }
+
+  console.log('All 7 language PDFs generated successfully!');
+  console.log('\nGenerated files:');
+  languages.forEach(lang => {
+    console.log(`  - generated-billing-statement-${lang}.pdf (${languageNames[lang]})`);
+  });
 }
 
 main().catch(console.error);
