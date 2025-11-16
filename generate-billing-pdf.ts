@@ -656,8 +656,8 @@ const generateHTML = (
     }
 
     body {
-      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Microsoft JhengHei', 'PingFang TC', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans JP', 'Malgun Gothic', 'Yu Gothic', sans-serif;
-      font-size: 14px;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Noto Sans TC', 'Noto Sans SC', 'Noto Sans KR', 'Noto Sans JP', sans-serif;
+      font-size: 12px;
       color: #333;
       line-height: 1.5;
       padding: 40px 60px;
@@ -1247,6 +1247,22 @@ const languageNames: Record<Language, string> = {
 };
 
 /**
+ * Check if a language is CJK (Chinese, Japanese, Korean)
+ */
+function isCJKLanguage(language: Language): boolean {
+  return ["zh-TW", "zh-CN", "ko", "ja"].includes(language);
+}
+
+/**
+ * Get PDF scale based on language
+ * - CJK languages: 0.90 (more aggressive scaling for larger fonts)
+ * - Non-CJK languages: 0.95 (moderate scaling)
+ */
+function getPDFScale(language: Language): number {
+  return isCJKLanguage(language) ? 0.90 : 0.95;
+}
+
+/**
  * Get browser launch configuration based on platform
  * - macOS/Windows (development): Use puppeteer's bundled Chromium
  * - Linux (production/Lambda): Use @sparticuz/chromium
@@ -1337,7 +1353,7 @@ async function generatePDF(language: Language = "en"): Promise<void> {
     },
     tagged: false,
     outline: false,
-    scale: 1.0,
+    scale: getPDFScale(language),
     preferCSSPageSize: true,
   });
 

@@ -60,7 +60,7 @@ function checkGhostscript(): boolean {
 function optimizePDF(inputPath: string, outputPath: string): void {
   console.log(`\nOptimizing: ${inputPath}`);
 
-  // Ghostscript command with aggressive font subsetting
+  // Ghostscript command with aggressive font subsetting and high-quality logo preservation
   const gsCommand = [
     "gs",
     "-sDEVICE=pdfwrite",
@@ -73,13 +73,15 @@ function optimizePDF(inputPath: string, outputPath: string): void {
     "-dSubsetFonts=true",        // Only embed characters actually used
     "-dCompressFonts=true",      // Compress font data
     "-dEmbedAllFonts=true",      // Ensure fonts are embedded (for subsetting)
-    // Image and content optimization
+    // Image and content optimization - Higher resolution to preserve logo quality
     "-dDetectDuplicateImages=true",
     "-dCompressPages=true",
     "-dAutoRotatePages=/None",   // Preserve page orientation
-    "-dColorImageResolution=150",
-    "-dGrayImageResolution=150",
-    "-dMonoImageResolution=300",
+    "-dColorImageResolution=300", // Increased from 150 to preserve logo crispness
+    "-dGrayImageResolution=300",  // Increased from 150 to preserve logo crispness
+    "-dMonoImageResolution=600",  // Increased from 300 for better quality
+    "-dDownsampleColorImages=false", // Don't downsample to preserve original quality
+    "-dDownsampleGrayImages=false",  // Don't downsample to preserve original quality
     // Output
     `-sOutputFile=${outputPath}`,
     inputPath,
