@@ -435,8 +435,8 @@ function getBillingData(language: Language): BillingData {
   }
 }
 
-// Load and convert optimized logo to base64
-const logoPath = join(__dirname, "src", "assets", "logo-optimized.png");
+// Load and convert original logo to base64
+const logoPath = join(__dirname, "src", "assets", "logo-transparent.png");
 const logoBuffer = readFileSync(logoPath);
 const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
