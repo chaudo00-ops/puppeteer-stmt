@@ -1,8 +1,11 @@
 import { promises as fs } from "fs";
 import { join, dirname } from "path";
 import { fileURLToPath } from "url";
-import { TBillingStatementDetails_Display } from "./h.0--types";
-import { TBillingStatementTranslations } from "./h.0--translations";
+import type { TBillingStatementDetails_Display } from "./h.0--types";
+import {
+  type TBillingStatementTranslations,
+  type TSupportedLanguage,
+} from "./h.0--translations";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -11,23 +14,37 @@ const __dirname = dirname(__filename);
  * Generate HTML template for billing statement
  */
 export async function generateHtmlTemplate(
-	displayed_details: TBillingStatementDetails_Display,
-	translations: TBillingStatementTranslations,
-	language: "en" | "zh-CN" = "en",
+  displayed_details: TBillingStatementDetails_Display,
+  translations: TBillingStatementTranslations,
+  language: TSupportedLanguage
 ): Promise<string> {
-	// Load logo as base64
-	const logoPath = join(__dirname, "..", "assets", "images", "gjw-logo-transparent.png");
-	const logoBuffer = await fs.readFile(logoPath);
-	const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+  // Load logo as base64
+  const logoPath = join(
+    __dirname,
+    "..",
+    "assets",
+    "images",
+    "gjw-logo-transparent.png"
+  );
+  const logoBuffer = await fs.readFile(logoPath);
+  const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
-	const { account, paymentProfile, monthly_account_balance, monthly_campaign_spends, payments, total_tax } = displayed_details;
+  const {
+    account,
+    paymentProfile,
+    monthly_account_balance,
+    monthly_campaign_spends,
+    payments,
+    total_tax,
+  } = displayed_details;
 
-	// Determine font family based on language
-	const fontFamily = language === "zh-CN"
-		? `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif`
-		: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`;
+  // Determine font family based on language
+  const fontFamily =
+    language === "zh-CN"
+      ? `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif`
+      : `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`;
 
-	return `
+  return `
 <!DOCTYPE html>
 <html>
 <head>
@@ -217,8 +234,14 @@ export async function generateHtmlTemplate(
   <div class="bill-to">
     <h2>${translations.billTo}</h2>
     <p>${paymentProfile.legal_name}</p>
-    ${paymentProfile.type === "organization" ? `<p>${paymentProfile.org_name || ""}</p>` : ""}
-    <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+    ${
+      paymentProfile.type === "organization"
+        ? `<p>${paymentProfile.org_name || ""}</p>`
+        : ""
+    }
+    <p>${paymentProfile.address_country}, ${
+    paymentProfile.address_postal_code
+  }</p>
   </div>
 
   <div class="details-summary-container">
@@ -238,27 +261,39 @@ export async function generateHtmlTemplate(
       </div>
       <div class="detail-row">
         <span class="detail-label">${translations.statementIssueDate}</span>
-        <span class="detail-value">${monthly_account_balance.created_time}</span>
+        <span class="detail-value">${
+          monthly_account_balance.created_time
+        }</span>
       </div>
     </div>
 
     <div class="summary">
-      <h2>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${monthly_account_balance.billing_period_end}</h2>
+      <h2>${translations.summaryFor} ${
+    monthly_account_balance.billing_period_start
+  } – ${monthly_account_balance.billing_period_end}</h2>
       <div class="summary-row">
         <span class="summary-label">${translations.openingBalance}</span>
-        <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+        <span class="summary-value">${
+          monthly_account_balance.opening_balance
+        }</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">${translations.totalAdSpend}</span>
-        <span class="summary-value">${monthly_account_balance.total_ad_spend}</span>
+        <span class="summary-value">${
+          monthly_account_balance.total_ad_spend
+        }</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">${translations.totalPaymentsReceived}</span>
-        <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+        <span class="summary-value">${
+          monthly_account_balance.total_payments_received
+        }</span>
       </div>
       <div class="summary-row">
         <span class="summary-label">${translations.closingBalance}</span>
-        <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+        <span class="summary-value">${
+          monthly_account_balance.closing_balance
+        }</span>
       </div>
     </div>
   </div>
@@ -275,16 +310,16 @@ export async function generateHtmlTemplate(
       </thead>
       <tbody>
         ${monthly_campaign_spends
-					.map(
-						(campaign) => `
+          .map(
+            (campaign) => `
           <tr>
             <td>${campaign.cpgn_name}</td>
             <td>${campaign.imp}</td>
             <td>${campaign.cost}</td>
           </tr>
         `
-					)
-					.join("")}
+          )
+          .join("")}
         <tr class="subtotal-row">
           <td></td>
           <td style="text-align: right;">${translations.subtotal}</td>
@@ -318,16 +353,16 @@ export async function generateHtmlTemplate(
       </thead>
       <tbody>
         ${payments
-					.map(
-						(payment) => `
+          .map(
+            (payment) => `
           <tr>
             <td>${payment.paid_time}</td>
             <td>${payment.description}</td>
             <td>${payment.total_amount}</td>
           </tr>
         `
-					)
-					.join("")}
+          )
+          .join("")}
         <tr class="subtotal-row">
           <td></td>
           <td style="text-align: right;">${translations.tax}</td>
@@ -335,7 +370,9 @@ export async function generateHtmlTemplate(
         </tr>
         <tr class="total-row">
           <td></td>
-          <td style="text-align: right;">${translations.totalPaymentsReceived}</td>
+          <td style="text-align: right;">${
+            translations.totalPaymentsReceived
+          }</td>
           <td>${monthly_account_balance.total_payments_received}</td>
         </tr>
       </tbody>
