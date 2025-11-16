@@ -7,15 +7,15 @@ import { saveStatement } from "./3--saveStatement";
 export async function generateBillingStatementPdf(params: TCreateBillingStatementPdfParams) {
 	const language = params.language || "en";
 
-	// Step 1.
+	// Step 1: Collect and format statement data
 	const statement_details = await collectStatementDetails(params);
 	const displayed_details = formatStatementDisplay(statement_details);
 
-	// Step 2.
-	const { pdf, context } = await drawStatementPdf(displayed_details, language);
+	// Step 2: Generate PDF and HTML using Puppeteer
+	const { pdf, html, context } = await drawStatementPdf(displayed_details, language);
 
-	// Step 3.
-	const statement_uri = await saveStatement(params, pdf);
+	// Step 3: Save PDF and HTML versions
+	const statement_uri = await saveStatement(params, pdf, html);
 
-	return { pdf, context, statement_uri };
+	return { pdf, html, context, statement_uri };
 }
