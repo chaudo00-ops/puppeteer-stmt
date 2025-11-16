@@ -8,7 +8,9 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-pdf": "tsx generate-billing-pdf.ts"
+    "generate-pdf": "tsx generate-billing-pdf.ts",
+    "optimize-pdf": "tsx ghostscript-optimize.ts",
+    "generate-and-optimize": "npm run generate-pdf && npm run optimize-pdf"
   },
   "dependencies": {
     "puppeteer": "^23.11.1",
