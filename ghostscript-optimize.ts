@@ -2,7 +2,8 @@
 
 import { execSync } from "child_process";
 import { readdirSync, statSync, existsSync } from "fs";
-import { join } from "path";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
 
 /**
  * Optimizes PDFs using Ghostscript with aggressive font subsetting
@@ -13,6 +14,8 @@ import { join } from "path";
  * 4. Removing unused resources
  */
 
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 const OUTPUT_DIR = join(__dirname, "src", "output-pdfs");
 const OPTIMIZED_SUFFIX = "-gs-optimized";
 
@@ -106,7 +109,9 @@ async function processAllPDFs(): Promise<void> {
     console.error("\nInstallation instructions:");
     console.error("  macOS:   brew install ghostscript");
     console.error("  Linux:   sudo apt-get install ghostscript");
-    console.error("  Windows: https://www.ghostscript.com/download/gsdnld.html");
+    console.error(
+      "  Windows: https://www.ghostscript.com/download/gsdnld.html"
+    );
     process.exit(1);
   }
 
@@ -131,7 +136,9 @@ async function processAllPDFs(): Promise<void> {
     return;
   }
 
-  console.log(`\n📄 Found ${files.length} PDF(s) to optimize with font subsetting\n`);
+  console.log(
+    `\n📄 Found ${files.length} PDF(s) to optimize with font subsetting\n`
+  );
 
   const results: OptimizationResult[] = [];
 
@@ -170,25 +177,38 @@ async function processAllPDFs(): Promise<void> {
     console.log(`\n${result.file}:`);
     console.log(`  Original:  ${formatBytes(result.originalSize)}`);
     console.log(`  Optimized: ${formatBytes(result.optimizedSize)}`);
-    console.log(`  Reduction: ${formatBytes(result.reduction)} (${result.reductionPercent}%)`);
+    console.log(
+      `  Reduction: ${formatBytes(result.reduction)} (${
+        result.reductionPercent
+      }%)`
+    );
   }
 
   // Calculate totals
   const totalOriginal = results.reduce((sum, r) => sum + r.originalSize, 0);
   const totalOptimized = results.reduce((sum, r) => sum + r.optimizedSize, 0);
   const totalReduction = totalOriginal - totalOptimized;
-  const totalReductionPercent = ((totalReduction / totalOriginal) * 100).toFixed(2);
+  const totalReductionPercent = (
+    (totalReduction / totalOriginal) *
+    100
+  ).toFixed(2);
 
   console.log("\n" + "-".repeat(80));
   console.log("TOTAL:");
   console.log(`  Original:  ${formatBytes(totalOriginal)}`);
   console.log(`  Optimized: ${formatBytes(totalOptimized)}`);
-  console.log(`  Reduction: ${formatBytes(totalReduction)} (${totalReductionPercent}%)`);
+  console.log(
+    `  Reduction: ${formatBytes(totalReduction)} (${totalReductionPercent}%)`
+  );
   console.log("=".repeat(80) + "\n");
 
   console.log("✅ All PDFs optimized successfully!");
-  console.log(`\n💡 Font subsetting keeps only the characters actually used in the document,`);
-  console.log(`   which is especially effective for billing statements with limited character sets.\n`);
+  console.log(
+    `\n💡 Font subsetting keeps only the characters actually used in the document,`
+  );
+  console.log(
+    `   which is especially effective for billing statements with limited character sets.\n`
+  );
 }
 
 // Run the script
