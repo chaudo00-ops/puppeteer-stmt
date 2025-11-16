@@ -1,5 +1,6 @@
 import { TCreateBillingStatementPdfParams } from "../--IPMTDocPrinter";
 import { TBillingStatementDetails } from "../helpers/h.0--types";
+import { TSupportedLanguage } from "../helpers/h.0--translations";
 
 export async function collectStatementDetails(
 	params: TCreateBillingStatementPdfParams,
@@ -15,9 +16,20 @@ export async function collectStatementDetails(
 	const org_name = parts[2];
 	const long_desc = parts[3].toLowerCase() === "true";
 	const payment_profile_type = parts[4].toLowerCase() as TPaymentProfile_Type;
+	const language: TSupportedLanguage = (params.language as TSupportedLanguage) || "en";
 
-	const longDescription =
-		"Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor (N. del T. persona que se dedica a la imprenta) desconocido el cuours";
+	// Language-specific long descriptions
+	const longDescriptions: Record<TSupportedLanguage, string> = {
+		en: "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book.",
+		"zh-TW": "傳統中文範例文字：這是一段用於測試排版和印刷的示範文本。自從十五世紀以來，這類文本一直被用作印刷業的標準範例，當時一位不知名的印刷工匠將字模打亂以製作字體樣本書。",
+		"zh-CN": "简体中文范例文字：这是一段用于测试排版和印刷的示范文本。自从十五世纪以来，这类文本一直被用作印刷业的标准范例，当时一位不知名的印刷工匠将字模打乱以制作字体样本书。",
+		vi: "Văn bản tiếng Việt mẫu: Đây là đoạn văn bản giả được sử dụng trong ngành in ấn và sắp chữ. Lorem Ipsum đã trở thành văn bản giả tiêu chuẩn của ngành kể từ những năm 1500, khi một thợ in không tên đã lấy một dãy chữ và xáo trộn nó để tạo ra một cuốn sách mẫu.",
+		ko: "한국어 샘플 텍스트: 이것은 인쇄 및 조판 산업의 더미 텍스트입니다. Lorem Ipsum은 1500년대 이래로 업계의 표준 더미 텍스트로 사용되어 왔으며, 당시 이름 없는 인쇄업자가 활자를 가져다가 뒤섞어 활자 견본 책을 만들었습니다.",
+		ja: "日本語のサンプルテキスト：これは印刷および組版業界のダミーテキストです。Lorem Ipsumは1500年代以来、業界の標準的なダミーテキストとして使用されてきました。当時、名前の知られていない印刷業者が活字を取り出して混ぜ合わせ、活字見本帳を作成しました。",
+		es: "Lorem Ipsum es simplemente el texto de relleno de las imprentas y archivos de texto. Lorem Ipsum ha sido el texto de relleno estándar de las industrias desde el año 1500, cuando un impresor desconocido tomó una galera de tipos y la mezcló para hacer un libro de muestras tipográficas.",
+	};
+
+	const longDescription = longDescriptions[language];
 
 	const daily_campaign_ad_spend: Pick<
 		TFields_v2_monthly_campaign_spend_ui,
