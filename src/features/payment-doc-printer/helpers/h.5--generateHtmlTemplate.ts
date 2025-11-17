@@ -6,6 +6,12 @@ import {
   type TBillingStatementTranslations,
   type TSupportedLanguage,
 } from "./h.0--translations";
+import {
+  FONT_SIZE_H1,
+  FONT_WEIGHT_H1,
+  MARGIN_TOP_H1,
+  TEXT_COLOR_H1,
+} from "./h.0--consts";
 
 const __filename = fileURLToPath(import.meta.url);
 const __dirname = dirname(__filename);
@@ -66,22 +72,22 @@ export async function generateHtmlTemplate(
     body {
       font-family: ${fontFamily};
       font-size: 14px;
-      color: #333;
+      color: #0F0F0F;
       line-height: 1.5;
-      padding: 40px 60px;
+      padding: 0px;
     }
 
     .header {
       display: flex;
       justify-content: space-between;
       align-items: flex-start;
-      margin-bottom: 40px;
     }
 
     .header h1 {
-      font-size: 36px;
-      font-weight: 400;
-      color: #333;
+      font-size: ${FONT_SIZE_H1}px;
+      font-weight: ${FONT_WEIGHT_H1};
+      color: ${TEXT_COLOR_H1};
+      margin-top: ${MARGIN_TOP_H1};
     }
 
     .logo {

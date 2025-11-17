@@ -91,13 +91,13 @@ export class PuppeteerRenderer<ContextType extends PDFContext> {
       await page.setContent(this.html, { waitUntil: "networkidle0" });
 
       const pdfBuffer = await page.pdf({
-        format: "A4",
+        format: "Letter",
         printBackground: true,
         margin: {
-          top: "20px",
-          right: "40px",
-          bottom: "20px",
-          left: "40px",
+          top: "0px",
+          right: "0x",
+          bottom: "0px",
+          left: "0px",
         },
         tagged: false,
         outline: false,
