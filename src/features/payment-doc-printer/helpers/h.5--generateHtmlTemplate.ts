@@ -10,6 +10,8 @@ import {
   FONT_SIZE_H1,
   FONT_WEIGHT_H1,
   MARGIN_TOP_H1,
+  PAGE_HEIGHT,
+  PAGE_WIDTH,
   TEXT_COLOR_H1,
 } from "./h.0--consts";
 
@@ -65,7 +67,7 @@ export async function generateHtmlTemplate(
   <style>
     /* Define exact page size and margins for 1:1 PDF mapping */
     @page {
-      size: 8.5in 11in; /* Letter size */
+      size: ${PAGE_WIDTH} ${PAGE_HEIGHT}; /* Letter size */
       margin: 0;
     }
 
@@ -80,8 +82,8 @@ export async function generateHtmlTemplate(
     }
 
     html {
-      width: 8.5in;
-      height: 11in;
+      width: ${PAGE_WIDTH};
+      height: ${PAGE_WIDTH};
     }
 
     body {
@@ -89,9 +91,9 @@ export async function generateHtmlTemplate(
       font-size: 14px;
       color: #0F0F0F;
       line-height: 1.5;
-      padding: 20px 40px;
-      width: 8.5in;
-      min-height: 11in;
+      padding: 0px 0px;
+      width: ${PAGE_WIDTH};
+      min-height: ${PAGE_WIDTH};
     }
 
     .header {
