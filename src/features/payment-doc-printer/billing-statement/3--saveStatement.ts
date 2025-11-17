@@ -14,7 +14,7 @@ export async function saveStatement(
   pdf: Uint8Array,
   html?: string
 ): Promise<string> {
-  const { sub_acc_id, month: month_date, language } = params;
+  const { month: month_date, language } = params;
   /** month formatted as YYYY-mm */
   const month = month_date.toISOString().substring(0, 7);
   const languageSuffix = language;
