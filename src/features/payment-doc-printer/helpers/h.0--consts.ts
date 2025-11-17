@@ -1,9 +1,9 @@
 import { rgb } from "pdf-lib";
 
 /** US Letter height (11") */
-export const PAGE_HEIGHT = 1056; // 792 pt
+export const PAGE_HEIGHT = "11in"; // 792 pt
 /** US Letter width (8.5") */
-export const PAGE_WIDTH = 816; // 612 pt
+export const PAGE_WIDTH = "8.5in"; // 612 pt
 /** Ganjing logo width */
 export const LOGO_WIDTH = 131.66; // 98.745 pt
 /** Ganjing logo height */

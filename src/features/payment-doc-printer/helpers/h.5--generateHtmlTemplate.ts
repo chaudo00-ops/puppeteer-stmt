@@ -10,6 +10,8 @@ import {
   FONT_SIZE_H1,
   FONT_WEIGHT_H1,
   MARGIN_TOP_H1,
+  PAGE_HEIGHT,
+  PAGE_WIDTH,
   TEXT_COLOR_H1,
 } from "./h.0--consts";
 
@@ -63,10 +65,25 @@ export async function generateHtmlTemplate(
 <head>
   <meta charset="UTF-8">
   <style>
+    /* Define exact page size and margins for 1:1 PDF mapping */
+    @page {
+      size: ${PAGE_WIDTH} ${PAGE_HEIGHT}; /* Letter size */
+      margin: 0;
+    }
+
+    /* Ensure exact color reproduction in PDF */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    html {
+      width: ${PAGE_WIDTH};
+      height: ${PAGE_WIDTH};
     }
 
     body {
@@ -74,7 +91,9 @@ export async function generateHtmlTemplate(
       font-size: 14px;
       color: #0F0F0F;
       line-height: 1.5;
-      padding: 0px;
+      padding: 0px 0px;
+      width: ${PAGE_WIDTH};
+      min-height: ${PAGE_WIDTH};
     }
 
     .header {
@@ -236,12 +255,6 @@ export async function generateHtmlTemplate(
     /* Page break handling */
     .page-break {
       page-break-before: always;
-    }
-
-    @media print {
-      body {
-        padding: 20px 40px;
-      }
     }
   </style>
 </head>
