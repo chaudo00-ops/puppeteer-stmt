@@ -95,7 +95,7 @@ export class PuppeteerRenderer<ContextType extends PDFContext> {
         printBackground: true,
         margin: {
           top: "0px",
-          right: "0x",
+          right: "0px",
           bottom: "0px",
           left: "0px",
         },

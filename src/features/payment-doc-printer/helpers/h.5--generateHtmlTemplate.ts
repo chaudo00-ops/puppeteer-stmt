@@ -63,10 +63,25 @@ export async function generateHtmlTemplate(
 <head>
   <meta charset="UTF-8">
   <style>
+    /* Define exact page size and margins for 1:1 PDF mapping */
+    @page {
+      size: 8.5in 11in; /* Letter size */
+      margin: 0;
+    }
+
+    /* Ensure exact color reproduction in PDF */
     * {
       margin: 0;
       padding: 0;
       box-sizing: border-box;
+      -webkit-print-color-adjust: exact !important;
+      print-color-adjust: exact !important;
+      color-adjust: exact !important;
+    }
+
+    html {
+      width: 8.5in;
+      height: 11in;
     }
 
     body {
@@ -74,7 +89,9 @@ export async function generateHtmlTemplate(
       font-size: 14px;
       color: #0F0F0F;
       line-height: 1.5;
-      padding: 0px;
+      padding: 20px 40px;
+      width: 8.5in;
+      min-height: 11in;
     }
 
     .header {
@@ -236,12 +253,6 @@ export async function generateHtmlTemplate(
     /* Page break handling */
     .page-break {
       page-break-before: always;
-    }
-
-    @media print {
-      body {
-        padding: 20px 40px;
-      }
     }
   </style>
 </head>
