@@ -7,12 +7,29 @@ import {
   type TSupportedLanguage,
 } from "./h.0--translations";
 import {
+  DIVIDER_LINE_COLOR,
   FONT_SIZE_H1,
+  FONT_SIZE_H3,
+  FONT_SIZE_PARAGRAPH,
+  FONT_SIZE_SUBTITLE,
   FONT_WEIGHT_H1,
+  FONT_WEIGHT_H3,
+  FONT_WEIGHT_SUBTITLE,
+  LEFT_RIGHT_MARGIN,
+  LOGO_HEIGHT,
+  LOGO_WIDTH,
+  PADDING_BOTTOM_SECTION,
   MARGIN_TOP_H1,
+  MARGIN_TOP_LOGO,
+  MARGIN_TOP_SECTION,
   PAGE_HEIGHT,
   PAGE_WIDTH,
   TEXT_COLOR_H1,
+  TEXT_COLOR_H3,
+  TEXT_COLOR_PARAGRAPH,
+  TEXT_COLOR_SUBTITLE,
+  FONT_WEIGHT_PARAGRAPH,
+  COLUMN_GAP,
 } from "./h.0--consts";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -91,7 +108,7 @@ export async function generateHtmlTemplate(
       font-size: 14px;
       color: #0F0F0F;
       line-height: 1.5;
-      padding: 0px 0px;
+      padding: 0px ${LEFT_RIGHT_MARGIN};
       width: ${PAGE_WIDTH};
       min-height: ${PAGE_WIDTH};
     }
@@ -110,51 +127,63 @@ export async function generateHtmlTemplate(
     }
 
     .logo {
-      width: 120px;
-      height: auto;
+      width: ${LOGO_WIDTH};
+      height: ${LOGO_HEIGHT};
+      margin-top: ${MARGIN_TOP_LOGO};
     }
 
-    .bill-to {
-      margin-bottom: 40px;
+    .section {
+      margin-top: ${MARGIN_TOP_SECTION};
+      padding-bottom: ${PADDING_BOTTOM_SECTION};
+      border-bottom: 1px solid ${DIVIDER_LINE_COLOR};
     }
 
-    .bill-to h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 12px;
+    .bill-to h3 {
+      font-size: ${FONT_SIZE_H3};
+      font-weight: ${FONT_WEIGHT_H3};
+      color: ${TEXT_COLOR_H3};
+      line-height: 19px;
+    }
+
+    .bill-to p.subtitle {
+      font-size: ${FONT_SIZE_SUBTITLE};
+      font-weight: ${FONT_WEIGHT_SUBTITLE};
+      color: ${TEXT_COLOR_SUBTITLE};
+      line-height: 19px;
     }
 
     .bill-to p {
-      color: #555;
-      margin: 4px 0;
+      font-size: ${FONT_SIZE_PARAGRAPH};
+      color: ${TEXT_COLOR_PARAGRAPH};
+      line-height: 17px;
     }
 
     .details-summary-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 80px;
-      margin-bottom: 40px;
-      padding-bottom: 40px;
-      border-bottom: 1px solid #e0e0e0;
+      gap: ${COLUMN_GAP}; /* space between two columns */
     }
 
-    .details h2, .summary h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 16px;
+    .details h3, .summary h3 {
+      font-size: ${FONT_SIZE_H3};
+      font-weight: ${FONT_WEIGHT_H3};
+      color: ${TEXT_COLOR_H3};
       text-align: left;
     }
 
     .detail-row, .summary-row {
+      font-size: ${FONT_SIZE_PARAGRAPH};
+      font-weight: ${FONT_WEIGHT_PARAGRAPH};
+      color: ${TEXT_COLOR_PARAGRAPH};
       display: flex;
       justify-content: space-between;
       align-items: baseline;
-      margin: 8px 0;
-      color: #555;
       width: 100%;
-      gap: 20px;
+      gap: 4px; /* spacing between "Label" and "Value" inside each row */
+
+      line-height: 27.93px;
+      padding-top: 5.47pxpx; 
+      padding-bottom: 5.47pxpx; 
     }
 
     .dot-fill {
@@ -162,8 +191,8 @@ export async function generateHtmlTemplate(
       border-bottom: 1px dotted #ccc;
       margin: 0px;
       min-height: 1px; /* Changed from height: 0 */
-      align-self: flex-end; /* Aligns to bottom of flex container */
-      margin-bottom: 0.3em; /* Adjust vertical position */
+      align-self: center; /* Aligns to bottom of flex container */
+      margin-bottom: 0px; /* Adjust vertical position */
     }
 
     .detail-label, .summary-label {
@@ -174,7 +203,6 @@ export async function generateHtmlTemplate(
 
     .detail-value, .summary-value {
       white-space: nowrap;
-      font-weight: 500;
       text-align: right;
       flex: 0 0 auto;
     }
@@ -265,12 +293,12 @@ export async function generateHtmlTemplate(
     <img src="${logoBase64}" alt="Gaming World Logo" class="logo" />
   </div>
 
-  <div class="bill-to">
-    <h2>${translations.billTo}</h2>
-    <p>${paymentProfile.legal_name}</p>
+  <div class="bill-to section">
+    <h3>${translations.billTo}</h3>
+    <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
     ${
       paymentProfile.type === "organization"
-        ? `<p>${paymentProfile.org_name || ""}</p>`
+        ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
         : ""
     }
     <p>${paymentProfile.address_country}, ${
@@ -278,9 +306,9 @@ export async function generateHtmlTemplate(
   }</p>
   </div>
 
-  <div class="details-summary-container">
+  <div class="details-summary-container section">
     <div class="details">
-      <h2>${translations.details}</h2>
+      <h3>${translations.details}</h3>
       <div class="detail-row">
         <span class="detail-label">${translations.accountId}</span>
         <span class="dot-fill"></span>
@@ -306,9 +334,9 @@ export async function generateHtmlTemplate(
     </div>
 
     <div class="summary">
-      <h2>${translations.summaryFor} ${
+      <h3>${translations.summaryFor} ${
     monthly_account_balance.billing_period_start
-  } – ${monthly_account_balance.billing_period_end}</h2>
+  } – ${monthly_account_balance.billing_period_end}</h3>
       <div class="summary-row">
         <span class="summary-label">${translations.openingBalance}</span>
         <span class="dot-fill"></span>
