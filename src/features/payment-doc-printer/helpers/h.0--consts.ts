@@ -8,7 +8,7 @@ export const PAGE_HEIGHT = "11in"; // 792 pt
 export const PAGE_WIDTH = "8.5in"; // 612 pt
 
 /** Left margin (38 pt) */
-export const LEFT_RIGHT_MARGIN = "51px"; // 38 pt
+export const LEFT_RIGHT_MARGIN = "50px"; // 38 pt
 /** Left padding (40 pt) */
 export const LEFT_PADDING = 53.33; // 40 pt
 /** Half-page Left column x starting position for Statement Details Second Column */
@@ -63,7 +63,7 @@ export const DIVIDER_LINE_COLOR = "#DCDCDC";
 // -----------------------------------------------------------------------------
 // Two Column settings
 // -----------------------------------------------------------------------------
-export const COLUMN_GAP = "91.57px";
+export const COLUMN_GAP = "80px";
 
 // -----------------------------------------------------------------------------
 // Line spacing (adjust as needed to match original)

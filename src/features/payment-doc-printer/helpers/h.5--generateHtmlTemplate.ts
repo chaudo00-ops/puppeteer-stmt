@@ -120,7 +120,7 @@ export async function generateHtmlTemplate(
     }
 
     .header h1 {
-      font-size: ${FONT_SIZE_H1}px;
+      font-size: ${FONT_SIZE_H1};
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
       margin-top: ${MARGIN_TOP_H1};
@@ -161,7 +161,8 @@ export async function generateHtmlTemplate(
     .details-summary-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: ${COLUMN_GAP}; /* space between two columns */
+      column-gap: ${COLUMN_GAP}; /* space between two columns */
+      letter-spacing: 0px;
     }
 
     .details h3, .summary h3 {
@@ -169,6 +170,9 @@ export async function generateHtmlTemplate(
       font-weight: ${FONT_WEIGHT_H3};
       color: ${TEXT_COLOR_H3};
       text-align: left;
+      overflow: visible;
+      white-space: nowrap;
+      padding-bottom: 5.47px; 
     }
 
     .detail-row, .summary-row {
@@ -181,9 +185,8 @@ export async function generateHtmlTemplate(
       width: 100%;
       gap: 4px; /* spacing between "Label" and "Value" inside each row */
 
-      line-height: 27.93px;
-      padding-top: 5.47pxpx; 
-      padding-bottom: 5.47pxpx; 
+      padding-top: 5.47px; 
+      padding-bottom: 5.47px; 
     }
 
     .dot-fill {
