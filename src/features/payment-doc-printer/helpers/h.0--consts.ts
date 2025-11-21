@@ -16,17 +16,16 @@ export const LEFT_COLUMN_X = 440; // 330 pt
 // -----------------------------------------------------------------------------
 // Header settings
 // -----------------------------------------------------------------------------
-/** Document header top offset (81 pt) */
-export const MARGIN_TOP_H1 = "70px";
-/** Document footer offset (80 pt) */
+export const PAGE_PADDING_TOP = "142px";
+export const PAGE_PADDING_BOTTOM = "28px";
+export const MARGIN_TOP_HEADER = "60px";
+export const MARGIN_TOP_SECTION = "32px"; // Distance between a section header and the bottom of the previous section
+export const MARGIN_TOP_TABLE = "12px";
+export const PADDING_BOTTOM_SECTION = "16px"; // Distance between a section header and the bottom of the previous section
 export const DOC_FOOTER_OFFSET = 106.67; // 80 pt
-/** Section header offset (25 pt) */
-export const MARGIN_TOP_SECTION = "33.44px"; // Distance between a section header and the bottom of the previous section
-export const PADDING_BOTTOM_SECTION = "16.40px"; // Distance between a section header and the bottom of the previous section
 
-/** Ganjing logo width */
+/** Ganjing logo */
 export const LOGO_WIDTH = "131.66px"; // 98.745 pt
-/** Ganjing logo height */
 export const LOGO_HEIGHT = "66.54px"; // 49.95 pt
 export const MARGIN_TOP_LOGO = "33.6px";
 
@@ -34,18 +33,18 @@ export const MARGIN_TOP_LOGO = "33.6px";
 // Define font sizes
 // -----------------------------------------------------------------------------
 export const FONT_SIZE_H1 = "32px";
+export const FONT_SIZE_H2 = "18x";
 export const FONT_SIZE_H3 = "16px";
 export const FONT_SIZE_PARAGRAPH = "14px";
-/** regular font size (10.5 pt) */
-export const FONT_REG = 14; // 10.5 pt
-/** small font size (9 pt) */
-export const FONT_SM = 12; // 9 pt
+export const FONT_REG = 14;
+export const FONT_SM = 12;
 export const FONT_SIZE_SUBTITLE = "16px";
 
 // -----------------------------------------------------------------------------
 // Font weight
 // -----------------------------------------------------------------------------
 export const FONT_WEIGHT_H1 = 500;
+export const FONT_WEIGHT_H2 = 700;
 export const FONT_WEIGHT_H3 = 700;
 export const FONT_WEIGHT_SUBTITLE = 400;
 export const FONT_WEIGHT_PARAGRAPH = 400;
@@ -53,11 +52,8 @@ export const FONT_WEIGHT_PARAGRAPH = 400;
 // -----------------------------------------------------------------------------
 // Color settings
 // -----------------------------------------------------------------------------
-export const TEXT_COLOR = rgb(50 / 255, 50 / 255, 50 / 255);
+export const TEXT_COLOR = "#0F0F0F";
 export const TEXT_COLOR_H1 = "#000000";
-export const TEXT_COLOR_H3 = "#0F0F0F";
-export const TEXT_COLOR_SUBTITLE = "#0F0F0F";
-export const TEXT_COLOR_PARAGRAPH = "#0F0F0F";
 export const DIVIDER_LINE_COLOR = "#DCDCDC";
 
 // -----------------------------------------------------------------------------
@@ -78,10 +74,9 @@ export const TEXT_SPACING_NARROW = 18.67; // 14 pt
 // -----------------------------------------------------------------------------
 // Table constant values
 // -----------------------------------------------------------------------------
-/** Table header row height (20.5 pt) */
-export const TBL_HEADER_HEIGHT = 27.33; // 20.5 pt
+export const TBL_HEADER_HEIGHT = "28px";
 /** Table row height (29 pt) */
-export const TBL_ROW_HEIGHT = 38.67; // 29 pt
+export const TBL_ROW_HEIGHT = "38px"; // 29 pt
 /** Line spacing with in table row (12.75 pt)  */
 export const TBL_LINE_SPACING = 17; // 12.75 pt
 /** Table column width - SMALL (120 pt) */
@@ -91,6 +86,21 @@ export const COL_WIDTH_MD = 237.33; // 178 pt
 /** Table column width - LARGE (295 pt) */
 export const COL_WIDTH_LG = 393.33; // 295 pt
 /** Table cell padding (12 pt) */
-export const CELL_PADDING = 16; // 12 pt
+export const TABLE_DATA_PADDING_LR = "16px"; // 12 pt
+export const TABLE_DATA_PADDING_TB = "12px"; // 12 pt
+
 /** Table header border color */
 export const TBL_BORDER_COLOR = rgb(220 / 255, 220 / 255, 220 / 255);
+
+export const TABLE_HEADER_BG_COLOR = "#16355A";
+export const TABLE_HEADER_TEXT_COLOR = "#FFFFFF";
+
+export const TABLE_HEADER_FONT_SIZE = "12px";
+export const TABLE_HEADER_FONT_WEIGHT = 700;
+
+export const TABLE_EVEN_ROW_COLOR = "#F1F6FC";
+
+export const TABLE_TEXT_COLOR = "#2B2B2B";
+
+export const TABLE_DATA_FONT_SIZE = "12px";
+export const TABLE_DATA_FONT_WEIGHT = 400;

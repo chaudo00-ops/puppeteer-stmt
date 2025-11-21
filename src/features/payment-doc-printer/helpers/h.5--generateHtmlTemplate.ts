@@ -19,17 +19,32 @@ import {
   LOGO_HEIGHT,
   LOGO_WIDTH,
   PADDING_BOTTOM_SECTION,
-  MARGIN_TOP_H1,
+  MARGIN_TOP_HEADER,
   MARGIN_TOP_LOGO,
   MARGIN_TOP_SECTION,
   PAGE_HEIGHT,
   PAGE_WIDTH,
   TEXT_COLOR_H1,
-  TEXT_COLOR_H3,
-  TEXT_COLOR_PARAGRAPH,
-  TEXT_COLOR_SUBTITLE,
+  TEXT_COLOR,
   FONT_WEIGHT_PARAGRAPH,
   COLUMN_GAP,
+  FONT_SIZE_H2,
+  FONT_WEIGHT_H2,
+  MARGIN_TOP_TABLE,
+  TABLE_HEADER_BG_COLOR,
+  TABLE_HEADER_TEXT_COLOR,
+  TBL_HEADER_HEIGHT,
+  TABLE_HEADER_FONT_SIZE,
+  TABLE_HEADER_FONT_WEIGHT,
+  TABLE_EVEN_ROW_COLOR,
+  TABLE_TEXT_COLOR,
+  PAGE_PADDING_TOP,
+  PAGE_PADDING_BOTTOM,
+  TBL_ROW_HEIGHT,
+  TABLE_DATA_PADDING_LR,
+  TABLE_DATA_PADDING_TB,
+  TABLE_DATA_FONT_SIZE,
+  TABLE_DATA_FONT_WEIGHT,
 } from "./h.0--consts";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -85,7 +100,8 @@ export async function generateHtmlTemplate(
     /* Define exact page size and margins for 1:1 PDF mapping */
     @page {
       size: ${PAGE_WIDTH} ${PAGE_HEIGHT}; /* Letter size */
-      margin: 0;
+      padding-top: ${PAGE_PADDING_TOP};
+      padding-bottom: ${PAGE_PADDING_BOTTOM};
     }
 
     /* Ensure exact color reproduction in PDF */
@@ -100,17 +116,17 @@ export async function generateHtmlTemplate(
 
     html {
       width: ${PAGE_WIDTH};
-      height: ${PAGE_WIDTH};
+      height: ${PAGE_HEIGHT};
     }
 
     body {
       font-family: ${fontFamily};
       font-size: 14px;
-      color: #0F0F0F;
+      color: ${TEXT_COLOR};
       line-height: 1.5;
       padding: 0px ${LEFT_RIGHT_MARGIN};
       width: ${PAGE_WIDTH};
-      min-height: ${PAGE_WIDTH};
+      min-height: ${PAGE_HEIGHT};
     }
 
     .header {
@@ -123,7 +139,7 @@ export async function generateHtmlTemplate(
       font-size: ${FONT_SIZE_H1};
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
-      margin-top: ${MARGIN_TOP_H1};
+      margin-top: ${MARGIN_TOP_HEADER};
     }
 
     .logo {
@@ -141,20 +157,20 @@ export async function generateHtmlTemplate(
     .bill-to h3 {
       font-size: ${FONT_SIZE_H3};
       font-weight: ${FONT_WEIGHT_H3};
-      color: ${TEXT_COLOR_H3};
+      color: ${TEXT_COLOR};
       line-height: 19px;
     }
 
     .bill-to p.subtitle {
       font-size: ${FONT_SIZE_SUBTITLE};
       font-weight: ${FONT_WEIGHT_SUBTITLE};
-      color: ${TEXT_COLOR_SUBTITLE};
+      color: ${TEXT_COLOR};
       line-height: 19px;
     }
 
     .bill-to p {
       font-size: ${FONT_SIZE_PARAGRAPH};
-      color: ${TEXT_COLOR_PARAGRAPH};
+      color: ${TEXT_COLOR};
       line-height: 17px;
     }
 
@@ -168,7 +184,7 @@ export async function generateHtmlTemplate(
     .details h3, .summary h3 {
       font-size: ${FONT_SIZE_H3};
       font-weight: ${FONT_WEIGHT_H3};
-      color: ${TEXT_COLOR_H3};
+      color: ${TEXT_COLOR};
       text-align: left;
       overflow: visible;
       white-space: nowrap;
@@ -178,7 +194,7 @@ export async function generateHtmlTemplate(
     .detail-row, .summary-row {
       font-size: ${FONT_SIZE_PARAGRAPH};
       font-weight: ${FONT_WEIGHT_PARAGRAPH};
-      color: ${TEXT_COLOR_PARAGRAPH};
+      color: ${TEXT_COLOR};
       display: flex;
       justify-content: space-between;
       align-items: baseline;
@@ -215,45 +231,57 @@ export async function generateHtmlTemplate(
     }
 
     .activity-details h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 20px;
+      font-size: ${FONT_SIZE_H2};
+      font-weight: ${FONT_WEIGHT_H2};
+      color: ${TEXT_COLOR};
     }
 
     table {
       width: 100%;
       border-collapse: collapse;
-      margin-bottom: 20px;
+      margin-top: ${MARGIN_TOP_TABLE};
     }
 
     thead {
-      background-color: #2c4a6e;
-      color: white;
+      background-color: ${TABLE_HEADER_BG_COLOR};
+      color: ${TABLE_HEADER_TEXT_COLOR};
     }
 
     th {
-      padding: 12px 16px;
+      padding: 7px ${TABLE_DATA_PADDING_LR};
       text-align: left;
-      font-weight: 600;
-      font-size: 14px;
+      font-weight: ${TABLE_HEADER_FONT_WEIGHT};
+      font-size: ${TABLE_HEADER_FONT_SIZE};
+      height: ${TBL_HEADER_HEIGHT};
     }
 
-    th:last-child, td:last-child {
-      text-align: right;
+    tbody tr: {
+      height: ${TBL_ROW_HEIGHT};
     }
 
     tbody tr:nth-child(odd) {
-      background-color: #f8f9fa;
-    }
-
-    tbody tr:nth-child(even) {
       background-color: white;
     }
 
+    tbody tr:nth-child(even) {
+      background-color: ${TABLE_EVEN_ROW_COLOR};
+    }
+
     td {
+      padding: ${TABLE_DATA_PADDING_TB} ${TABLE_DATA_PADDING_LR};
+      color: ${TABLE_TEXT_COLOR};
+      font-size: ${TABLE_DATA_FONT_SIZE};
+      font-weight: ${TABLE_DATA_FONT_WEIGHT};
+    }
+
+    .subtotal-row {
+      background-color: white !important;
+    }
+
+    .subtotal-row td {
+      text-align: right;
       padding: 12px 16px;
-      color: #333;
+      font-weight: 500;
     }
 
     .total-row {
@@ -266,11 +294,6 @@ export async function generateHtmlTemplate(
       padding: 16px;
     }
 
-    .subtotal-row td {
-      text-align: right;
-      padding: 12px 16px;
-      font-weight: 500;
-    }
 
     .payments-received {
       margin-top: 40px;
@@ -291,10 +314,10 @@ export async function generateHtmlTemplate(
 </head>
 <body>
   <!-- Page 1 -->
-  <div class="header">
-    <h1>${translations.documentTitle}</h1>
-    <img src="${logoBase64}" alt="Gaming World Logo" class="logo" />
-  </div>
+  <!-- <div class="header"> -->
+  <!--   <h1>${translations.documentTitle}</h1> -->
+  <!--   <img src="${logoBase64}" alt="Ganjing World Logo" class="logo" /> -->
+  <!-- </div> -->
 
   <div class="bill-to section">
     <h3>${translations.billTo}</h3>
@@ -371,7 +394,7 @@ export async function generateHtmlTemplate(
     </div>
   </div>
 
-  <div class="activity-details">
+  <div class="activity-details section">
     <h2>${translations.activityDetails}</h2>
     <table>
       <thead>

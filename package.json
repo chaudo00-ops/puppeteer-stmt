@@ -8,7 +8,6 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "generate-pdf": "tsx generate-billing-pdf.ts",
     "optimize-pdf": "tsx ghostscript-optimize.ts",
     "test-pdf-lib": "tsx test-pdf-lib-pipeline.ts",
     "generate-and-optimize": "npm run test-pdf-lib && npm run optimize-pdf"
