@@ -249,7 +249,7 @@ export async function generateHtmlTemplate(
 
     table {
       width: 100%;
-      border-collapse: separate;
+      border-collapse: collapse;
       border-spacing: 0;
     }
 
