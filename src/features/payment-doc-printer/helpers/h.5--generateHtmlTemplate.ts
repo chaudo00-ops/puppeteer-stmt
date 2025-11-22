@@ -45,6 +45,8 @@ import {
   TABLE_DATA_PADDING_TB,
   TABLE_DATA_FONT_SIZE,
   TABLE_DATA_FONT_WEIGHT,
+  FONT_SIZE_TOTAL,
+  FONT_WEIGHT_TOTAL,
 } from "./h.0--consts";
 
 const __filename = fileURLToPath(import.meta.url);
@@ -121,7 +123,8 @@ export async function generateHtmlTemplate(
 
     body {
       font-family: ${fontFamily};
-      font-size: 14px;
+      font-size: ${FONT_SIZE_PARAGRAPH};
+      font-weight: ${FONT_WEIGHT_PARAGRAPH};
       color: ${TEXT_COLOR};
       line-height: 1.5;
       padding: 0px ${LEFT_RIGHT_MARGIN};
@@ -193,7 +196,6 @@ export async function generateHtmlTemplate(
 
     .detail-row, .summary-row {
       font-size: ${FONT_SIZE_PARAGRAPH};
-      font-weight: ${FONT_WEIGHT_PARAGRAPH};
       color: ${TEXT_COLOR};
       display: flex;
       justify-content: space-between;
@@ -227,32 +229,58 @@ export async function generateHtmlTemplate(
     }
 
     .activity-details {
-      margin-bottom: 40px;
+      border-bottom: none !important;
     }
 
-    .activity-details h2 {
+    .payments-received {
+      border-bottom: none !important;
+    }
+
+    .payments-received h2 {
       font-size: ${FONT_SIZE_H2};
       font-weight: ${FONT_WEIGHT_H2};
       color: ${TEXT_COLOR};
     }
 
+    /* Page break handling */
+    .page-break {
+      page-break-before: always;
+    }
+
     table {
       width: 100%;
-      border-collapse: collapse;
-      margin-top: ${MARGIN_TOP_TABLE};
+      border-collapse: separate;
+      border-spacing: 0;
     }
 
-    thead {
-      background-color: ${TABLE_HEADER_BG_COLOR};
+    /* Use box-shadow instead of background-color for cleaner PDF rendering */
+    thead tr:not(.table-title) th {
       color: ${TABLE_HEADER_TEXT_COLOR};
+      background-color: ${TABLE_HEADER_BG_COLOR};
+      font-size: ${TABLE_HEADER_FONT_SIZE};
+      font-weight: ${TABLE_HEADER_FONT_WEIGHT};
+      text-align: left;
+      height: ${TBL_HEADER_HEIGHT};
+      padding: 7px ${TABLE_DATA_PADDING_LR};
     }
 
-    th {
-      padding: 7px ${TABLE_DATA_PADDING_LR};
-      text-align: left;
-      font-weight: ${TABLE_HEADER_FONT_WEIGHT};
-      font-size: ${TABLE_HEADER_FONT_SIZE};
-      height: ${TBL_HEADER_HEIGHT};
+    .table-title tr {
+      background-color: white; /* ensure white background */
+    }
+
+    /* Remove border and padding from the table title row */
+    .table-title th {
+      text-align: left;        /* optional: align text */
+      padding: 0;              /* remove padding */
+      padding-bottom: ${MARGIN_TOP_TABLE};
+    }
+
+    .table-title h3 {
+      font-size: ${FONT_SIZE_H3};
+      font-weight: ${FONT_WEIGHT_H3};
+      color: ${TEXT_COLOR};
+      margin: 0;           /* remove default margin of h2 */
+      padding: 0;          /* remove default padding */
     }
 
     tbody tr: {
@@ -267,6 +295,10 @@ export async function generateHtmlTemplate(
       background-color: ${TABLE_EVEN_ROW_COLOR};
     }
 
+    tbody tr:nth-last-child(3) {
+      border-bottom: 1px solid ${DIVIDER_LINE_COLOR} !important;
+    }
+
     td {
       padding: ${TABLE_DATA_PADDING_TB} ${TABLE_DATA_PADDING_LR};
       color: ${TABLE_TEXT_COLOR};
@@ -276,48 +308,28 @@ export async function generateHtmlTemplate(
 
     .subtotal-row {
       background-color: white !important;
-    }
-
-    .subtotal-row td {
-      text-align: right;
-      padding: 12px 16px;
-      font-weight: 500;
+      border-bottom: 1px solid ${DIVIDER_LINE_COLOR} !important;
     }
 
     .total-row {
+      font-weight: ${FONT_WEIGHT_TOTAL} !important;
       background-color: white !important;
     }
 
-    .total-row td {
-      font-weight: 600;
-      font-size: 16px;
-      padding: 16px;
+    .total-row td.label {
+    font-weight: ${FONT_WEIGHT_TOTAL} !important;
+      text-align: right;
     }
 
-
-    .payments-received {
-      margin-top: 40px;
+    .total-row td.value {
+    font-weight: ${FONT_WEIGHT_TOTAL} !important;
+      font-size: ${FONT_SIZE_TOTAL};
     }
 
-    .payments-received h2 {
-      font-size: 18px;
-      font-weight: 600;
-      color: #333;
-      margin-bottom: 20px;
-    }
-
-    /* Page break handling */
-    .page-break {
-      page-break-before: always;
-    }
   </style>
 </head>
 <body>
   <!-- Page 1 -->
-  <!-- <div class="header"> -->
-  <!--   <h1>${translations.documentTitle}</h1> -->
-  <!--   <img src="${logoBase64}" alt="Ganjing World Logo" class="logo" /> -->
-  <!-- </div> -->
 
   <div class="bill-to section">
     <h3>${translations.billTo}</h3>
@@ -395,9 +407,14 @@ export async function generateHtmlTemplate(
   </div>
 
   <div class="activity-details section">
-    <h2>${translations.activityDetails}</h2>
+    
     <table>
       <thead>
+        <tr class="table-title">
+          <th colspan="3">
+            <h3>${translations.activityDetails}</h3>
+          </th>
+        </tr>
         <tr>
           <th>${translations.description}</th>
           <th>${translations.impressions}</th>
@@ -418,13 +435,21 @@ export async function generateHtmlTemplate(
           .join("")}
         <tr class="subtotal-row">
           <td></td>
-          <td style="text-align: right;">${translations.subtotal}</td>
-          <td>${monthly_account_balance.total_ad_spend_adjusted}</td>
+          <td class="label" style="text-align: right;">${
+            translations.subtotal
+          }</td>
+          <td class="value">${
+            monthly_account_balance.total_ad_spend_adjusted
+          }</td>
         </tr>
         <tr class="total-row">
           <td></td>
-          <td style="text-align: right;">${translations.total}</td>
-          <td>${monthly_account_balance.total_ad_spend_adjusted}</td>
+          <td class="label" style="text-align: right;">${
+            translations.total
+          }</td>
+          <td class="value">${
+            monthly_account_balance.total_ad_spend_adjusted
+          }</td>
         </tr>
       </tbody>
     </table>
@@ -432,15 +457,15 @@ export async function generateHtmlTemplate(
 
   <!-- Page break for payments -->
   <div class="page-break"></div>
-  <div class="header">
-    <h1>${translations.documentTitle}</h1>
-    <img src="${logoBase64}" alt="Gaming World Logo" class="logo" />
-  </div>
 
-  <div class="payments-received">
-    <h2>${translations.paymentsReceived}</h2>
+  <div class="payments-received section">
     <table>
       <thead>
+        <tr class="table-title">
+          <th colspan="3">
+            <h3>${translations.paymentsReceived}</h3>
+          </th>
+        </tr>
         <tr>
           <th>${translations.date}</th>
           <th>${translations.description}</th>
@@ -466,10 +491,12 @@ export async function generateHtmlTemplate(
         </tr>
         <tr class="total-row">
           <td></td>
-          <td style="text-align: right;">${
+          <td class="label" style="text-align: right;">${
             translations.totalPaymentsReceived
           }</td>
-          <td>${monthly_account_balance.total_payments_received}</td>
+          <td class="value">${
+            monthly_account_balance.total_payments_received
+          }</td>
         </tr>
       </tbody>
     </table>

@@ -15,8 +15,6 @@ import {
   LOGO_HEIGHT,
   MARGIN_TOP_LOGO,
   LEFT_RIGHT_MARGIN,
-  PAGE_WIDTH,
-  PAGE_HEIGHT,
 } from "./h.0--consts";
 import { fileURLToPath } from "url";
 

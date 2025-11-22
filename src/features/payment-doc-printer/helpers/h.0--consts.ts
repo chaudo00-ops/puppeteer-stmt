@@ -19,7 +19,7 @@ export const LEFT_COLUMN_X = 440; // 330 pt
 export const PAGE_PADDING_TOP = "142px";
 export const PAGE_PADDING_BOTTOM = "28px";
 export const MARGIN_TOP_HEADER = "60px";
-export const MARGIN_TOP_SECTION = "32px"; // Distance between a section header and the bottom of the previous section
+export const MARGIN_TOP_SECTION = "30px"; // Distance between a section header and the bottom of the previous section
 export const MARGIN_TOP_TABLE = "12px";
 export const PADDING_BOTTOM_SECTION = "16px"; // Distance between a section header and the bottom of the previous section
 export const DOC_FOOTER_OFFSET = 106.67; // 80 pt
@@ -39,6 +39,7 @@ export const FONT_SIZE_PARAGRAPH = "14px";
 export const FONT_REG = 14;
 export const FONT_SM = 12;
 export const FONT_SIZE_SUBTITLE = "16px";
+export const FONT_SIZE_TOTAL = "22px";
 
 // -----------------------------------------------------------------------------
 // Font weight
@@ -48,6 +49,7 @@ export const FONT_WEIGHT_H2 = 700;
 export const FONT_WEIGHT_H3 = 700;
 export const FONT_WEIGHT_SUBTITLE = 400;
 export const FONT_WEIGHT_PARAGRAPH = 400;
+export const FONT_WEIGHT_TOTAL = 600;
 
 // -----------------------------------------------------------------------------
 // Color settings
