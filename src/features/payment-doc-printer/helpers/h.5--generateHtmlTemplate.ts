@@ -11,10 +11,10 @@ import {
   FONT_SIZE_H1,
   FONT_SIZE_H3,
   FONT_SIZE_PARAGRAPH,
-  FONT_SIZE_SUBTITLE,
+  FONT_SIZE_H3,
   FONT_WEIGHT_H1,
   FONT_WEIGHT_H3,
-  FONT_WEIGHT_SUBTITLE,
+  FONT_WEIGHT_PARAGRAPH,
   LEFT_RIGHT_MARGIN,
   LOGO_HEIGHT,
   LOGO_WIDTH,
@@ -47,10 +47,10 @@ import {
   TABLE_DATA_FONT_WEIGHT,
   FONT_SIZE_TOTAL,
   FONT_WEIGHT_TOTAL,
+  COL_WIDTH_LG,
+  COL_WIDTH_SM,
+  COL_WIDTH_MD,
 } from "./h.0--consts";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 /**
  * Generate HTML template for billing statement
@@ -60,17 +60,6 @@ export async function generateHtmlTemplate(
   translations: TBillingStatementTranslations,
   language: TSupportedLanguage
 ): Promise<string> {
-  // Load logo as base64
-  const logoPath = join(
-    __dirname,
-    "..",
-    "assets",
-    "images",
-    "gjw-logo-transparent.png"
-  );
-  const logoBuffer = await fs.readFile(logoPath);
-  const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
-
   const {
     account,
     paymentProfile,
@@ -165,8 +154,8 @@ export async function generateHtmlTemplate(
     }
 
     .bill-to p.subtitle {
-      font-size: ${FONT_SIZE_SUBTITLE};
-      font-weight: ${FONT_WEIGHT_SUBTITLE};
+      font-size: ${FONT_SIZE_H3};
+      font-weight: ${FONT_WEIGHT_PARAGRAPH};
       color: ${TEXT_COLOR};
       line-height: 19px;
     }
@@ -249,6 +238,7 @@ export async function generateHtmlTemplate(
 
     table {
       width: 100%;
+      table-layout: fixed;
       border-collapse: collapse;
       border-spacing: 0;
     }
@@ -407,8 +397,13 @@ export async function generateHtmlTemplate(
   </div>
 
   <div class="activity-details section">
-    
     <table>
+      <colgroup>
+        <col style="width: ${COL_WIDTH_LG};">
+        <col style="width: ${COL_WIDTH_SM};">
+        <col style="width: ${COL_WIDTH_SM};">
+      </colgroup>
+
       <thead>
         <tr class="table-title">
           <th colspan="3">
@@ -460,6 +455,11 @@ export async function generateHtmlTemplate(
 
   <div class="payments-received section">
     <table>
+      <colgroup>
+        <col style="width: ${COL_WIDTH_MD};">
+        <col style="width: ${COL_WIDTH_MD};">
+        <col style="width: ${COL_WIDTH_MD};">
+      </colgroup>
       <thead>
         <tr class="table-title">
           <th colspan="3">
