@@ -285,6 +285,21 @@ export async function generateHtmlTemplate(
       border-spacing: 0;
     }
 
+    /* Ensure table headers repeat on each page when table spans multiple pages */
+    thead {
+      display: table-header-group;
+    }
+
+    tbody {
+      display: table-row-group;
+    }
+
+    /* Prevent table rows from being split across pages */
+    tr {
+      page-break-inside: avoid;
+      break-inside: avoid;
+    }
+
     /* Use box-shadow instead of background-color for cleaner PDF rendering */
     thead tr:not(.table-title) th {
       color: ${TABLE_HEADER_TEXT_COLOR};
@@ -363,15 +378,39 @@ export async function generateHtmlTemplate(
       html, body {
         background: white; /* Remove gray background in print */
       }
-      
+
       .page {
         margin: 0; /* Remove margins between pages */
         box-shadow: none; /* Remove visual separators */
         page-break-after: always;
+        height: auto; /* Allow page to expand for content */
+        min-height: ${PAGE_HEIGHT};
       }
-      
+
       .page:last-child {
         page-break-after: auto;
+      }
+
+      .page-content {
+        height: auto; /* Remove fixed height to allow content flow */
+        overflow: visible; /* Allow content to flow to next page */
+      }
+
+      /* Ensure sections don't break awkwardly */
+      .section {
+        page-break-inside: avoid;
+        break-inside: avoid;
+      }
+
+      /* Allow tables to break across pages but keep rows together */
+      table {
+        page-break-inside: auto;
+      }
+
+      /* Keep table title with its header */
+      .table-title {
+        page-break-after: avoid;
+        break-after: avoid;
       }
     }
   </style>
