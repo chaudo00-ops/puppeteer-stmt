@@ -112,4 +112,4 @@ export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 190;
 export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
 export const TABLE_HEADER_HEIGHT_PX = 28;
 export const TABLE_ROW_HEIGHT_PX = 38;
-export const TABLE_FOOTER_ROWS_HEIGHT_PX = 76; // subtotal + total rows
+export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows

@@ -53,7 +53,7 @@ import {
   TABLE_TITLE_HEIGHT_PX,
   TABLE_HEADER_HEIGHT_PX,
   TABLE_ROW_HEIGHT_PX,
-  TABLE_FOOTER_ROWS_HEIGHT_PX,
+  TABLE_SUBTOTAL_TOTAL_ROWS,
   PAGE_HEADER_HEIGHT_PX,
   PAGE_FOOTER_HEIGHT_PX,
 } from "./h.0--consts";
@@ -109,48 +109,101 @@ export async function generateHtmlTemplate(
     TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT_PX;
 
   // Available height for table rows on first page (after fixed sections)
+  // Calculate both with and without footer rows
   const firstPageAvailableForActivity =
     PAGE_CONTENT_HEIGHT_PX - firstPageFixedHeight - activityTableOverhead;
-  const firstPageActivityRows = Math.floor(
+
+  const firstPageActivityRowsWithFooter = Math.floor(
+    (firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS) /
+      TABLE_ROW_HEIGHT_PX
+  );
+  const firstPageActivityRowsWithoutFooter = Math.floor(
     firstPageAvailableForActivity / TABLE_ROW_HEIGHT_PX
   );
 
   // Available height for table rows on continuation pages
   const continuationPageAvailable =
     PAGE_CONTENT_HEIGHT_PX - activityTableOverhead;
-  const continuationPageRows = Math.floor(
+
+  const continuationPageRowsWithFooter = Math.floor(
+    (continuationPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) /
+      TABLE_ROW_HEIGHT_PX
+  );
+  const continuationPageRowsWithoutFooter = Math.floor(
     continuationPageAvailable / TABLE_ROW_HEIGHT_PX
   );
 
   // Full page for payments table
   const paymentsPageAvailable = PAGE_CONTENT_HEIGHT_PX - paymentsTableOverhead;
-  const paymentsPageRows = Math.floor(
+  const paymentsPageRowsWithFooter = Math.floor(
+    (paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT_PX
+  );
+  const paymentsPageRowsWithoutFooter = Math.floor(
     paymentsPageAvailable / TABLE_ROW_HEIGHT_PX
   );
 
   // Split activity campaigns into pages
   const activityPages: (typeof monthly_campaign_spends)[] = [];
-  let remainingCampaigns = [...monthly_campaign_spends];
+  const remainingCampaigns = [...monthly_campaign_spends];
 
-  // First page gets fewer rows due to fixed sections
   if (remainingCampaigns.length > 0) {
-    const firstChunk = remainingCampaigns.splice(0, firstPageActivityRows);
-    activityPages.push(firstChunk);
-  }
+    // Check if everything fits on first page (with footer)
+    if (remainingCampaigns.length <= firstPageActivityRowsWithFooter) {
+      activityPages.push(remainingCampaigns.splice(0));
+    } else {
+      // First page without footer (more rows can fit since no footer needed)
+      const firstChunk = remainingCampaigns.splice(
+        0,
+        firstPageActivityRowsWithoutFooter
+      );
+      activityPages.push(firstChunk);
 
-  // Continuation pages get more rows
-  while (remainingCampaigns.length > 0) {
-    const chunk = remainingCampaigns.splice(0, continuationPageRows);
-    activityPages.push(chunk);
+      // Continue with remaining rows - use without footer until last page
+      while (remainingCampaigns.length > continuationPageRowsWithFooter) {
+        const chunk = remainingCampaigns.splice(
+          0,
+          continuationPageRowsWithoutFooter
+        );
+        activityPages.push(chunk);
+      }
+
+      // Last chunk (will have footer, so we already ensured it fits)
+      if (remainingCampaigns.length > 0) {
+        activityPages.push(remainingCampaigns.splice(0));
+      }
+    }
   }
 
   // Split payments into pages
   const paymentPages: (typeof payments)[] = [];
-  let remainingPayments = [...payments];
+  const remainingPayments = [...payments];
 
-  while (remainingPayments.length > 0) {
-    const chunk = remainingPayments.splice(0, paymentsPageRows);
-    paymentPages.push(chunk);
+  if (remainingPayments.length > 0) {
+    // Check if everything fits on first payment page (with footer)
+    if (remainingPayments.length <= paymentsPageRowsWithFooter) {
+      paymentPages.push(remainingPayments.splice(0));
+    } else {
+      // First payment page without footer
+      const firstChunk = remainingPayments.splice(
+        0,
+        paymentsPageRowsWithoutFooter
+      );
+      paymentPages.push(firstChunk);
+
+      // Continue with remaining rows - use without footer until last page
+      while (remainingPayments.length > paymentsPageRowsWithFooter) {
+        const chunk = remainingPayments.splice(
+          0,
+          paymentsPageRowsWithoutFooter
+        );
+        paymentPages.push(chunk);
+      }
+
+      // Last chunk (will have footer)
+      if (remainingPayments.length > 0) {
+        paymentPages.push(remainingPayments.splice(0));
+      }
+    }
   }
 
   // Helper to generate page header
