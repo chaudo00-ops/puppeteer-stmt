@@ -99,24 +99,41 @@ export async function generateHtmlTemplate(
   const fontFamily = fontFamilyMap[language];
 
   // Calculate page capacities for table rows
-  const firstPageFixedHeight = BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
-  const activityTableOverhead = TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + TABLE_FOOTER_ROWS_HEIGHT_PX;
-  const paymentsTableOverhead = TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + TABLE_FOOTER_ROWS_HEIGHT_PX;
+  const firstPageFixedHeight =
+    BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
+  const activityTableOverhead =
+    TABLE_TITLE_HEIGHT_PX +
+    TABLE_HEADER_HEIGHT_PX +
+    TABLE_FOOTER_ROWS_HEIGHT_PX;
+  const paymentsTableOverhead =
+    TABLE_TITLE_HEIGHT_PX +
+    TABLE_HEADER_HEIGHT_PX +
+    TABLE_FOOTER_ROWS_HEIGHT_PX;
 
   // Available height for table rows on first page (after fixed sections)
-  const firstPageAvailableForActivity = PAGE_CONTENT_HEIGHT_PX - firstPageFixedHeight - activityTableOverhead;
-  const firstPageActivityRows = Math.floor(firstPageAvailableForActivity / TABLE_ROW_HEIGHT_PX);
+  const firstPageAvailableForActivity =
+    PAGE_CONTENT_HEIGHT_PX - firstPageFixedHeight - activityTableOverhead;
+  const firstPageActivityRows = Math.floor(
+    firstPageAvailableForActivity / TABLE_ROW_HEIGHT_PX
+  );
 
   // Available height for table rows on continuation pages
-  const continuationPageAvailable = PAGE_CONTENT_HEIGHT_PX - TABLE_HEADER_HEIGHT_PX - TABLE_FOOTER_ROWS_HEIGHT_PX;
-  const continuationPageRows = Math.floor(continuationPageAvailable / TABLE_ROW_HEIGHT_PX);
+  const continuationPageAvailable =
+    PAGE_CONTENT_HEIGHT_PX -
+    TABLE_HEADER_HEIGHT_PX -
+    TABLE_FOOTER_ROWS_HEIGHT_PX;
+  const continuationPageRows = Math.floor(
+    continuationPageAvailable / TABLE_ROW_HEIGHT_PX
+  );
 
   // Full page for payments table
   const paymentsPageAvailable = PAGE_CONTENT_HEIGHT_PX - paymentsTableOverhead;
-  const paymentsPageRows = Math.floor(paymentsPageAvailable / TABLE_ROW_HEIGHT_PX);
+  const paymentsPageRows = Math.floor(
+    paymentsPageAvailable / TABLE_ROW_HEIGHT_PX
+  );
 
   // Split activity campaigns into pages
-  const activityPages: typeof monthly_campaign_spends[] = [];
+  const activityPages: (typeof monthly_campaign_spends)[] = [];
   let remainingCampaigns = [...monthly_campaign_spends];
 
   // First page gets fewer rows due to fixed sections
@@ -132,7 +149,7 @@ export async function generateHtmlTemplate(
   }
 
   // Split payments into pages
-  const paymentPages: typeof payments[] = [];
+  const paymentPages: (typeof payments)[] = [];
   let remainingPayments = [...payments];
 
   while (remainingPayments.length > 0) {
@@ -155,19 +172,18 @@ export async function generateHtmlTemplate(
     </div>`;
 
   // Helper to generate activity table header (without title for continuation)
-  const generateActivityTableHeader = (includeTitle: boolean) => `
+  const generateActivityTableHeader = () => `
           <colgroup>
             <col style="width: ${COL_WIDTH_LG};">
             <col style="width: ${COL_WIDTH_SM};">
             <col style="width: ${COL_WIDTH_SM};">
           </colgroup>
           <thead>
-            ${includeTitle ? `
             <tr class="table-title">
               <th colspan="3">
                 <h3>${translations.activityDetails}</h3>
               </th>
-            </tr>` : ''}
+            </tr>
             <tr>
               <th>${translations.description}</th>
               <th>${translations.impressions}</th>
@@ -176,19 +192,18 @@ export async function generateHtmlTemplate(
           </thead>`;
 
   // Helper to generate payments table header (without title for continuation)
-  const generatePaymentsTableHeader = (includeTitle: boolean) => `
+  const generatePaymentsTableHeader = () => `
           <colgroup>
             <col style="width: ${COL_WIDTH_MD};">
             <col style="width: ${COL_WIDTH_MD};">
             <col style="width: ${COL_WIDTH_MD};">
           </colgroup>
           <thead>
-            ${includeTitle ? `
             <tr class="table-title">
               <th colspan="3">
                 <h3>${translations.paymentsReceived}</h3>
               </th>
-            </tr>` : ''}
+            </tr>
             <tr>
               <th>${translations.date}</th>
               <th>${translations.description}</th>
@@ -197,7 +212,7 @@ export async function generateHtmlTemplate(
           </thead>`;
 
   // Generate all pages
-  let pagesHtml = '';
+  let pagesHtml = "";
   let pageNumber = 1;
 
   // Generate activity detail pages
@@ -217,8 +232,14 @@ export async function generateHtmlTemplate(
       <div class="bill-to section">
         <h3>${translations.billTo}</h3>
         <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
-        ${paymentProfile.type === "organization" ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>` : ""}
-        <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+        ${
+          paymentProfile.type === "organization"
+            ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
+            : ""
+        }
+        <p>${paymentProfile.address_country}, ${
+        paymentProfile.address_postal_code
+      }</p>
       </div>
 
       <div class="details-summary-container section">
@@ -242,31 +263,45 @@ export async function generateHtmlTemplate(
           <div class="detail-row">
             <span class="detail-label">${translations.statementIssueDate}</span>
             <span class="dot-fill"></span>
-            <span class="detail-value">${monthly_account_balance.created_time}</span>
+            <span class="detail-value">${
+              monthly_account_balance.created_time
+            }</span>
           </div>
         </div>
 
         <div class="summary">
-          <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${monthly_account_balance.billing_period_end}</h3>
+          <h3>${translations.summaryFor} ${
+        monthly_account_balance.billing_period_start
+      } – ${monthly_account_balance.billing_period_end}</h3>
           <div class="summary-row">
             <span class="summary-label">${translations.openingBalance}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+            <span class="summary-value">${
+              monthly_account_balance.opening_balance
+            }</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">${translations.totalAdSpend}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_ad_spend}</span>
+            <span class="summary-value">${
+              monthly_account_balance.total_ad_spend
+            }</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">${translations.totalPaymentsReceived}</span>
+            <span class="summary-label">${
+              translations.totalPaymentsReceived
+            }</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+            <span class="summary-value">${
+              monthly_account_balance.total_payments_received
+            }</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">${translations.closingBalance}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+            <span class="summary-value">${
+              monthly_account_balance.closing_balance
+            }</span>
           </div>
         </div>
       </div>`;
@@ -276,15 +311,21 @@ export async function generateHtmlTemplate(
     pagesHtml += `
       <div class="activity-details section">
         <table>
-          ${generateActivityTableHeader(isFirstPage)}
+          ${generateActivityTableHeader()}
           <tbody>
-            ${campaigns.map((campaign) => `
+            ${campaigns
+              .map(
+                (campaign) => `
             <tr>
               <td>${campaign.cpgn_name}</td>
               <td>${campaign.imp}</td>
               <td>${campaign.cost}</td>
-            </tr>`).join('')}
-            ${isLastActivityPage ? `
+            </tr>`
+              )
+              .join("")}
+            ${
+              isLastActivityPage
+                ? `
             <tr class="subtotal-row">
               <td></td>
               <td class="label" style="text-align: right;">${translations.subtotal}</td>
@@ -294,7 +335,9 @@ export async function generateHtmlTemplate(
               <td></td>
               <td class="label" style="text-align: right;">${translations.total}</td>
               <td class="value">${monthly_account_balance.total_ad_spend_adjusted}</td>
-            </tr>` : ''}
+            </tr>`
+                : ""
+            }
           </tbody>
         </table>
       </div>
@@ -307,7 +350,6 @@ export async function generateHtmlTemplate(
 
   // Generate payment pages
   paymentPages.forEach((pagePayments, pageIndex) => {
-    const isFirstPaymentPage = pageIndex === 0;
     const isLastPaymentPage = pageIndex === paymentPages.length - 1;
 
     pagesHtml += `
@@ -317,15 +359,21 @@ export async function generateHtmlTemplate(
     <div class="page-content">
       <div class="payments-received section">
         <table>
-          ${generatePaymentsTableHeader(isFirstPaymentPage)}
+          ${generatePaymentsTableHeader()}
           <tbody>
-            ${pagePayments.map((payment) => `
+            ${pagePayments
+              .map(
+                (payment) => `
             <tr>
               <td>${payment.paid_time}</td>
               <td>${payment.description}</td>
               <td>${payment.total_amount}</td>
-            </tr>`).join('')}
-            ${isLastPaymentPage ? `
+            </tr>`
+              )
+              .join("")}
+            ${
+              isLastPaymentPage
+                ? `
             <tr class="subtotal-row">
               <td></td>
               <td style="text-align: right;">${translations.tax}</td>
@@ -335,7 +383,9 @@ export async function generateHtmlTemplate(
               <td></td>
               <td class="label" style="text-align: right;">${translations.totalPaymentsReceived}</td>
               <td class="value">${monthly_account_balance.total_payments_received}</td>
-            </tr>` : ''}
+            </tr>`
+                : ""
+            }
           </tbody>
         </table>
       </div>
