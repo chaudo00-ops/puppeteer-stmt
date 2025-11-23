@@ -95,3 +95,21 @@ export const TABLE_HEADER_FONT_SIZE = "12px";
 export const TABLE_HEADER_FONT_WEIGHT = 700;
 export const TABLE_DATA_FONT_SIZE = "12px";
 export const TABLE_DATA_FONT_WEIGHT = 400;
+
+// -----------------------------------------------------------------------------
+// NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
+// -----------------------------------------------------------------------------
+export const PAGE_HEIGHT_PX = 1056; // 11in at 96dpi
+export const PAGE_HEADER_HEIGHT_PX = 108;
+export const PAGE_FOOTER_HEIGHT_PX = 28;
+export const PAGE_CONTENT_HEIGHT_PX = 920; // PAGE_HEIGHT - header - footer
+
+// Section heights (approximate)
+export const BILL_TO_SECTION_HEIGHT_PX = 140;
+export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 190;
+
+// Table component heights
+export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
+export const TABLE_HEADER_HEIGHT_PX = 28;
+export const TABLE_ROW_HEIGHT_PX = 38;
+export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
