@@ -1,6 +1,8 @@
-import { TCreateBillingStatementPdfParams } from "../--IPMTDocPrinter";
-import { TBillingStatementDetails } from "../helpers/h.0--types";
-import { TSupportedLanguage } from "../helpers/h.0--translations";
+import { type TCreateBillingStatementPdfParams } from "../--IPMTDocPrinter";
+import { type TBillingStatementDetails } from "../helpers/h.0--types";
+import { type TSupportedLanguage } from "../helpers/h.0--translations";
+
+type TPaymentProfile_Type = "individual" | "organization";
 
 export async function collectStatementDetails(
 	params: TCreateBillingStatementPdfParams,

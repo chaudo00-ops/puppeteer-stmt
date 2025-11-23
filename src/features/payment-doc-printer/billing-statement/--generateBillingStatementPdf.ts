@@ -4,7 +4,7 @@ import { collectStatementDetails } from "./1--collectStatementDetails";
 import { drawStatementPdf } from "./2--drawBillingStatementPdf";
 import { saveStatement } from "./3--saveStatement";
 
-export async function generateBillingStatementPdf(
+export async function puppeteerBillingStatementPdf(
   params: TCreateBillingStatementPdfParams
 ) {
   const language = params.language || "en";
