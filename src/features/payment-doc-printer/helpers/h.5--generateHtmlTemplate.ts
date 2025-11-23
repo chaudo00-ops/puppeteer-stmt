@@ -54,6 +54,8 @@ import {
   TABLE_HEADER_HEIGHT_PX,
   TABLE_ROW_HEIGHT_PX,
   TABLE_FOOTER_ROWS_HEIGHT_PX,
+  PAGE_HEADER_HEIGHT_PX,
+  PAGE_FOOTER_HEIGHT_PX,
 } from "./h.0--consts";
 
 /**
@@ -102,13 +104,9 @@ export async function generateHtmlTemplate(
   const firstPageFixedHeight =
     BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
   const activityTableOverhead =
-    TABLE_TITLE_HEIGHT_PX +
-    TABLE_HEADER_HEIGHT_PX +
-    TABLE_FOOTER_ROWS_HEIGHT_PX;
+    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT_PX;
   const paymentsTableOverhead =
-    TABLE_TITLE_HEIGHT_PX +
-    TABLE_HEADER_HEIGHT_PX +
-    TABLE_FOOTER_ROWS_HEIGHT_PX;
+    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT_PX;
 
   // Available height for table rows on first page (after fixed sections)
   const firstPageAvailableForActivity =
@@ -119,9 +117,7 @@ export async function generateHtmlTemplate(
 
   // Available height for table rows on continuation pages
   const continuationPageAvailable =
-    PAGE_CONTENT_HEIGHT_PX -
-    TABLE_HEADER_HEIGHT_PX -
-    TABLE_FOOTER_ROWS_HEIGHT_PX;
+    PAGE_CONTENT_HEIGHT_PX - activityTableOverhead;
   const continuationPageRows = Math.floor(
     continuationPageAvailable / TABLE_ROW_HEIGHT_PX
   );
@@ -222,7 +218,7 @@ export async function generateHtmlTemplate(
 
     pagesHtml += `
   <!-- Page ${pageNumber} -->
-  <div class="page">
+  <div class="page ${isLastActivityPage ? "last-page" : ""}">
     ${generatePageHeader()}
     <div class="page-content">`;
 
@@ -354,7 +350,7 @@ export async function generateHtmlTemplate(
 
     pagesHtml += `
   <!-- Page ${pageNumber} -->
-  <div class="page">
+  <div class="page ${isLastPaymentPage ? "last-page" : ""}">
     ${generatePageHeader()}
     <div class="page-content">
       <div class="payments-received section">
@@ -451,7 +447,7 @@ export async function generateHtmlTemplate(
     .page-header {
       background: white;
       width: 100%;
-      height: 108px;
+      height: ${PAGE_HEADER_HEIGHT_PX}px;
       font-size: ${FONT_SIZE_H1}; /* CRITICAL: Base font size must be set */
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
@@ -460,12 +456,12 @@ export async function generateHtmlTemplate(
     }
 
     .page-content {
-      min-height: 920px;  /* 11in - 142px header - 28px footer */
+      min-height: ${PAGE_CONTENT_HEIGHT_PX}px;  /* 11in - 142px header - 28px footer */
       margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .page-footer {
-      height: 28px;
+      height: ${PAGE_FOOTER_HEIGHT_PX}px;
     }
 
     .header {
@@ -647,7 +643,7 @@ export async function generateHtmlTemplate(
       background-color: ${TABLE_EVEN_ROW_COLOR};
     }
 
-    tbody tr:nth-last-child(3) {
+    .last-page tbody tr:nth-last-child(3) {
       border-bottom: 1px solid ${DIVIDER_LINE_COLOR} !important;
     }
 

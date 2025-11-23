@@ -105,11 +105,11 @@ export const PAGE_FOOTER_HEIGHT_PX = 28;
 export const PAGE_CONTENT_HEIGHT_PX = 920; // PAGE_HEIGHT - header - footer
 
 // Section heights (approximate)
-export const BILL_TO_SECTION_HEIGHT_PX = 100;
-export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 180;
+export const BILL_TO_SECTION_HEIGHT_PX = 140;
+export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 190;
 
 // Table component heights
-export const TABLE_TITLE_HEIGHT_PX = 40; // h3 title + margin
+export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
 export const TABLE_HEADER_HEIGHT_PX = 28;
 export const TABLE_ROW_HEIGHT_PX = 38;
 export const TABLE_FOOTER_ROWS_HEIGHT_PX = 76; // subtotal + total rows
