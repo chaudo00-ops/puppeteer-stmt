@@ -46,6 +46,14 @@ import {
   COL_WIDTH_LG,
   COL_WIDTH_SM,
   COL_WIDTH_MD,
+  // Numeric constants for page calculations
+  PAGE_CONTENT_HEIGHT_PX,
+  BILL_TO_SECTION_HEIGHT_PX,
+  DETAILS_SUMMARY_SECTION_HEIGHT_PX,
+  TABLE_TITLE_HEIGHT_PX,
+  TABLE_HEADER_HEIGHT_PX,
+  TABLE_ROW_HEIGHT_PX,
+  TABLE_FOOTER_ROWS_HEIGHT_PX,
 } from "./h.0--consts";
 
 /**
@@ -89,6 +97,254 @@ export async function generateHtmlTemplate(
   };
 
   const fontFamily = fontFamilyMap[language];
+
+  // Calculate page capacities for table rows
+  const firstPageFixedHeight = BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
+  const activityTableOverhead = TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + TABLE_FOOTER_ROWS_HEIGHT_PX;
+  const paymentsTableOverhead = TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + TABLE_FOOTER_ROWS_HEIGHT_PX;
+
+  // Available height for table rows on first page (after fixed sections)
+  const firstPageAvailableForActivity = PAGE_CONTENT_HEIGHT_PX - firstPageFixedHeight - activityTableOverhead;
+  const firstPageActivityRows = Math.floor(firstPageAvailableForActivity / TABLE_ROW_HEIGHT_PX);
+
+  // Available height for table rows on continuation pages
+  const continuationPageAvailable = PAGE_CONTENT_HEIGHT_PX - TABLE_HEADER_HEIGHT_PX - TABLE_FOOTER_ROWS_HEIGHT_PX;
+  const continuationPageRows = Math.floor(continuationPageAvailable / TABLE_ROW_HEIGHT_PX);
+
+  // Full page for payments table
+  const paymentsPageAvailable = PAGE_CONTENT_HEIGHT_PX - paymentsTableOverhead;
+  const paymentsPageRows = Math.floor(paymentsPageAvailable / TABLE_ROW_HEIGHT_PX);
+
+  // Split activity campaigns into pages
+  const activityPages: typeof monthly_campaign_spends[] = [];
+  let remainingCampaigns = [...monthly_campaign_spends];
+
+  // First page gets fewer rows due to fixed sections
+  if (remainingCampaigns.length > 0) {
+    const firstChunk = remainingCampaigns.splice(0, firstPageActivityRows);
+    activityPages.push(firstChunk);
+  }
+
+  // Continuation pages get more rows
+  while (remainingCampaigns.length > 0) {
+    const chunk = remainingCampaigns.splice(0, continuationPageRows);
+    activityPages.push(chunk);
+  }
+
+  // Split payments into pages
+  const paymentPages: typeof payments[] = [];
+  let remainingPayments = [...payments];
+
+  while (remainingPayments.length > 0) {
+    const chunk = remainingPayments.splice(0, paymentsPageRows);
+    paymentPages.push(chunk);
+  }
+
+  // Helper to generate page header
+  const generatePageHeader = () => `
+    <div class="page-header">
+      <div class="header">
+        <h1>${translations.documentTitle}</h1>
+        <img src="${logoBase64}" alt="Ganjing World Logo" class="logo" />
+      </div>
+    </div>`;
+
+  // Helper to generate page footer
+  const generatePageFooter = () => `
+    <div class="page-footer">
+    </div>`;
+
+  // Helper to generate activity table header (without title for continuation)
+  const generateActivityTableHeader = (includeTitle: boolean) => `
+          <colgroup>
+            <col style="width: ${COL_WIDTH_LG};">
+            <col style="width: ${COL_WIDTH_SM};">
+            <col style="width: ${COL_WIDTH_SM};">
+          </colgroup>
+          <thead>
+            ${includeTitle ? `
+            <tr class="table-title">
+              <th colspan="3">
+                <h3>${translations.activityDetails}</h3>
+              </th>
+            </tr>` : ''}
+            <tr>
+              <th>${translations.description}</th>
+              <th>${translations.impressions}</th>
+              <th>${translations.amount}</th>
+            </tr>
+          </thead>`;
+
+  // Helper to generate payments table header (without title for continuation)
+  const generatePaymentsTableHeader = (includeTitle: boolean) => `
+          <colgroup>
+            <col style="width: ${COL_WIDTH_MD};">
+            <col style="width: ${COL_WIDTH_MD};">
+            <col style="width: ${COL_WIDTH_MD};">
+          </colgroup>
+          <thead>
+            ${includeTitle ? `
+            <tr class="table-title">
+              <th colspan="3">
+                <h3>${translations.paymentsReceived}</h3>
+              </th>
+            </tr>` : ''}
+            <tr>
+              <th>${translations.date}</th>
+              <th>${translations.description}</th>
+              <th>${translations.amount}</th>
+            </tr>
+          </thead>`;
+
+  // Generate all pages
+  let pagesHtml = '';
+  let pageNumber = 1;
+
+  // Generate activity detail pages
+  activityPages.forEach((campaigns, pageIndex) => {
+    const isFirstPage = pageIndex === 0;
+    const isLastActivityPage = pageIndex === activityPages.length - 1;
+
+    pagesHtml += `
+  <!-- Page ${pageNumber} -->
+  <div class="page">
+    ${generatePageHeader()}
+    <div class="page-content">`;
+
+    // First page includes bill-to and details-summary sections
+    if (isFirstPage) {
+      pagesHtml += `
+      <div class="bill-to section">
+        <h3>${translations.billTo}</h3>
+        <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
+        ${paymentProfile.type === "organization" ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>` : ""}
+        <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+      </div>
+
+      <div class="details-summary-container section">
+        <div class="details">
+          <h3>${translations.details}</h3>
+          <div class="detail-row">
+            <span class="detail-label">${translations.accountId}</span>
+            <span class="dot-fill"></span>
+            <span class="detail-value">${account.account_id}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">${translations.paymentsProfile}</span>
+            <span class="dot-fill"></span>
+            <span class="detail-value">${paymentProfile.pmt_prf_name}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">${translations.paymentsProfileId}</span>
+            <span class="dot-fill"></span>
+            <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
+          </div>
+          <div class="detail-row">
+            <span class="detail-label">${translations.statementIssueDate}</span>
+            <span class="dot-fill"></span>
+            <span class="detail-value">${monthly_account_balance.created_time}</span>
+          </div>
+        </div>
+
+        <div class="summary">
+          <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${monthly_account_balance.billing_period_end}</h3>
+          <div class="summary-row">
+            <span class="summary-label">${translations.openingBalance}</span>
+            <span class="dot-fill"></span>
+            <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">${translations.totalAdSpend}</span>
+            <span class="dot-fill"></span>
+            <span class="summary-value">${monthly_account_balance.total_ad_spend}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">${translations.totalPaymentsReceived}</span>
+            <span class="dot-fill"></span>
+            <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">${translations.closingBalance}</span>
+            <span class="dot-fill"></span>
+            <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+          </div>
+        </div>
+      </div>`;
+    }
+
+    // Activity details table
+    pagesHtml += `
+      <div class="activity-details section">
+        <table>
+          ${generateActivityTableHeader(isFirstPage)}
+          <tbody>
+            ${campaigns.map((campaign) => `
+            <tr>
+              <td>${campaign.cpgn_name}</td>
+              <td>${campaign.imp}</td>
+              <td>${campaign.cost}</td>
+            </tr>`).join('')}
+            ${isLastActivityPage ? `
+            <tr class="subtotal-row">
+              <td></td>
+              <td class="label" style="text-align: right;">${translations.subtotal}</td>
+              <td class="value">${monthly_account_balance.total_ad_spend_adjusted}</td>
+            </tr>
+            <tr class="total-row">
+              <td></td>
+              <td class="label" style="text-align: right;">${translations.total}</td>
+              <td class="value">${monthly_account_balance.total_ad_spend_adjusted}</td>
+            </tr>` : ''}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    ${generatePageFooter()}
+  </div>`;
+
+    pageNumber++;
+  });
+
+  // Generate payment pages
+  paymentPages.forEach((pagePayments, pageIndex) => {
+    const isFirstPaymentPage = pageIndex === 0;
+    const isLastPaymentPage = pageIndex === paymentPages.length - 1;
+
+    pagesHtml += `
+  <!-- Page ${pageNumber} -->
+  <div class="page">
+    ${generatePageHeader()}
+    <div class="page-content">
+      <div class="payments-received section">
+        <table>
+          ${generatePaymentsTableHeader(isFirstPaymentPage)}
+          <tbody>
+            ${pagePayments.map((payment) => `
+            <tr>
+              <td>${payment.paid_time}</td>
+              <td>${payment.description}</td>
+              <td>${payment.total_amount}</td>
+            </tr>`).join('')}
+            ${isLastPaymentPage ? `
+            <tr class="subtotal-row">
+              <td></td>
+              <td style="text-align: right;">${translations.tax}</td>
+              <td>${total_tax}</td>
+            </tr>
+            <tr class="total-row">
+              <td></td>
+              <td class="label" style="text-align: right;">${translations.totalPaymentsReceived}</td>
+              <td class="value">${monthly_account_balance.total_payments_received}</td>
+            </tr>` : ''}
+          </tbody>
+        </table>
+      </div>
+    </div>
+    ${generatePageFooter()}
+  </div>`;
+
+    pageNumber++;
+  });
 
   return `
 <!DOCTYPE html>
@@ -407,201 +663,7 @@ export async function generateHtmlTemplate(
   </style>
 </head>
 <body>
-  <!-- Page 1 -->
-  <div class="page">
-    <div class="page-header">
-      <div class="header">
-        <h1>${translations.documentTitle}</h1>
-        <img src="${logoBase64}" alt="Ganjing World Logo" class="logo" />
-      </div>
-    </div>
-    <div class="page-content">
-      <div class="bill-to section">
-        <h3>${translations.billTo}</h3>
-        <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
-        ${
-          paymentProfile.type === "organization"
-            ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
-            : ""
-        }
-        <p>${paymentProfile.address_country}, ${
-    paymentProfile.address_postal_code
-  }</p>
-      </div>
-
-      <div class="details-summary-container section">
-        <div class="details">
-          <h3>${translations.details}</h3>
-          <div class="detail-row">
-            <span class="detail-label">${translations.accountId}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${account.account_id}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.paymentsProfile}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${paymentProfile.pmt_prf_name}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.paymentsProfileId}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.statementIssueDate}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${
-              monthly_account_balance.created_time
-            }</span>
-          </div>
-        </div>
-
-        <div class="summary">
-          <h3>${translations.summaryFor} ${
-    monthly_account_balance.billing_period_start
-  } – ${monthly_account_balance.billing_period_end}</h3>
-          <div class="summary-row">
-            <span class="summary-label">${translations.openingBalance}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${
-              monthly_account_balance.opening_balance
-            }</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.totalAdSpend}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${
-              monthly_account_balance.total_ad_spend
-            }</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${
-              translations.totalPaymentsReceived
-            }</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${
-              monthly_account_balance.total_payments_received
-            }</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.closingBalance}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${
-              monthly_account_balance.closing_balance
-            }</span>
-          </div>
-        </div>
-      </div>
-
-      <div class="activity-details section">
-        <table>
-          <colgroup>
-            <col style="width: ${COL_WIDTH_LG};">
-            <col style="width: ${COL_WIDTH_SM};">
-            <col style="width: ${COL_WIDTH_SM};">
-          </colgroup>
-
-          <thead>
-            <tr class="table-title">
-              <th colspan="3">
-                <h3>${translations.activityDetails}</h3>
-              </th>
-            </tr>
-            <tr>
-              <th>${translations.description}</th>
-              <th>${translations.impressions}</th>
-              <th>${translations.amount}</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${monthly_campaign_spends
-              .map(
-                (campaign) => `
-              <tr>
-                <td>${campaign.cpgn_name}</td>
-                <td>${campaign.imp}</td>
-                <td>${campaign.cost}</td>
-              </tr>
-            `
-              )
-              .join("")}
-            <tr class="subtotal-row">
-              <td></td>
-              <td class="label" style="text-align: right;">${
-                translations.subtotal
-              }</td>
-              <td class="value">${
-                monthly_account_balance.total_ad_spend_adjusted
-              }</td>
-            </tr>
-            <tr class="total-row">
-              <td></td>
-              <td class="label" style="text-align: right;">${
-                translations.total
-              }</td>
-              <td class="value">${
-                monthly_account_balance.total_ad_spend_adjusted
-              }</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-
-      <!-- Page break for payments -->
-      <div class="page-break"></div>
-
-      <div class="payments-received section">
-        <table>
-          <colgroup>
-            <col style="width: ${COL_WIDTH_MD};">
-            <col style="width: ${COL_WIDTH_MD};">
-            <col style="width: ${COL_WIDTH_MD};">
-          </colgroup>
-          <thead>
-            <tr class="table-title">
-              <th colspan="3">
-                <h3>${translations.paymentsReceived}</h3>
-              </th>
-            </tr>
-            <tr>
-              <th>${translations.date}</th>
-              <th>${translations.description}</th>
-              <th>${translations.amount}</th>
-            </tr>
-          </thead>
-          <tbody>
-            ${payments
-              .map(
-                (payment) => `
-              <tr>
-                <td>${payment.paid_time}</td>
-                <td>${payment.description}</td>
-                <td>${payment.total_amount}</td>
-              </tr>
-            `
-              )
-              .join("")}
-            <tr class="subtotal-row">
-              <td></td>
-              <td style="text-align: right;">${translations.tax}</td>
-              <td>${total_tax}</td>
-            </tr>
-            <tr class="total-row">
-              <td></td>
-              <td class="label" style="text-align: right;">${
-                translations.totalPaymentsReceived
-              }</td>
-              <td class="value">${
-                monthly_account_balance.total_payments_received
-              }</td>
-            </tr>
-          </tbody>
-        </table>
-      </div>
-    </div>
-    <div class="page-footer">
-    </div>
-  </div>
+  ${pagesHtml}
 </body>
 </html>
 `;
