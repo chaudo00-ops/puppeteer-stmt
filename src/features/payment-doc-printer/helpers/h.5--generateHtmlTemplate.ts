@@ -135,7 +135,7 @@ export async function generateHtmlTemplate(
 
     .page {
       width: ${PAGE_WIDTH};
-      height: ${PAGE_HEIGHT};
+      min-height: ${PAGE_HEIGHT};
       margin: 0px ${LEFT_RIGHT_MARGIN};
       background: white;
       page-break-after: always;
@@ -154,8 +154,7 @@ export async function generateHtmlTemplate(
     }
 
     .page-content {
-      height: 920px;  /* 11in - 142px header - 28px footer */
-      overflow: hidden;  /* Prevent content from bleeding into next page */
+      min-height: 920px;  /* 11in - 142px header - 28px footer */
       margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
@@ -382,18 +381,10 @@ export async function generateHtmlTemplate(
       .page {
         margin: 0; /* Remove margins between pages */
         box-shadow: none; /* Remove visual separators */
-        page-break-after: always;
-        height: auto; /* Allow page to expand for content */
-        min-height: ${PAGE_HEIGHT};
       }
 
       .page:last-child {
         page-break-after: auto;
-      }
-
-      .page-content {
-        height: auto; /* Remove fixed height to allow content flow */
-        overflow: visible; /* Allow content to flow to next page */
       }
 
       /* Ensure sections don't break awkwardly */
