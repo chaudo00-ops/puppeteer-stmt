@@ -773,6 +773,12 @@ export async function generateHtmlTemplate(
         page-break-after: avoid;
         break-after: avoid;
       }
+
+      /* Keep subtotal and total rows together */
+      .subtotal-row {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
     }
   </style>
 </head>
