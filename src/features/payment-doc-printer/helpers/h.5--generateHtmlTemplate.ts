@@ -762,7 +762,6 @@ export async function generateHtmlTemplate(
       .payments-received {
         page-break-before: avoid;
         break-before: avoid;
-        margin-top: 0;
       }
 
       /* Allow tables to break across pages but keep rows together */
