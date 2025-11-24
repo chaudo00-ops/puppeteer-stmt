@@ -489,18 +489,18 @@ export async function generateHtmlTemplate(
       font-weight: ${FONT_WEIGHT_PARAGRAPH};
       color: ${TEXT_COLOR};
       line-height: 1.5;
-      padding: 0px ${LEFT_RIGHT_MARGIN};
       width: ${PAGE_WIDTH};
       min-height: ${PAGE_HEIGHT};
+      padding: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .page {
       width: ${PAGE_WIDTH};
       min-height: ${PAGE_HEIGHT};
-      margin: 0px ${LEFT_RIGHT_MARGIN};
       background: white;
       page-break-after: always;
       position: relative;
+      margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .page-header {
@@ -521,6 +521,7 @@ export async function generateHtmlTemplate(
 
     .page-footer {
       height: ${PAGE_FOOTER_HEIGHT_PX}px;
+      margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .header {
