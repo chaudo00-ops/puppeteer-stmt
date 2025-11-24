@@ -736,6 +736,8 @@ export async function generateHtmlTemplate(
       .page {
         margin: 0; /* Remove margins between pages */
         box-shadow: none; /* Remove visual separators */
+        page-break-inside: avoid; /* Prevent breaking inside a page when printing */
+        break-inside: avoid;
       }
 
       .page:last-child {
