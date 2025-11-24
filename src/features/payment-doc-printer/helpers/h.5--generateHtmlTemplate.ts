@@ -56,7 +56,46 @@ import {
   TABLE_SUBTOTAL_TOTAL_ROWS,
   PAGE_HEADER_HEIGHT_PX,
   PAGE_FOOTER_HEIGHT_PX,
+  // Constants for multiline row height estimation
+  DESCRIPTION_COL_WIDTH_PX,
+  TABLE_CELL_PADDING_HORIZONTAL_PX,
+  TABLE_CELL_PADDING_VERTICAL_PX,
+  AVG_CHAR_WIDTH_PX,
+  LINE_HEIGHT_PX,
 } from "./h.0--consts";
+
+/**
+ * Estimate the height of a table row based on description text length
+ * @param text - The description text
+ * @returns Estimated row height in pixels
+ */
+function estimateRowHeight(text: string): number {
+  // Calculate available text width (column width minus padding)
+  const availableWidth = DESCRIPTION_COL_WIDTH_PX - TABLE_CELL_PADDING_HORIZONTAL_PX;
+
+  // Calculate approximate characters per line
+  const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH_PX);
+
+  // Calculate number of lines needed
+  const numLines = Math.max(1, Math.ceil(text.length / charsPerLine));
+
+  // Calculate row height: vertical padding + (lines * line height)
+  const calculatedHeight = TABLE_CELL_PADDING_VERTICAL_PX + (numLines * LINE_HEIGHT_PX);
+
+  // Return the larger of calculated height or minimum row height
+  return Math.max(TABLE_ROW_HEIGHT_PX, calculatedHeight);
+}
+
+/**
+ * Calculate total height for an array of campaigns
+ * @param campaigns - Array of campaign objects with cpgn_name
+ * @returns Total height in pixels
+ */
+function calculateCampaignsHeight(campaigns: { cpgn_name: string }[]): number {
+  return campaigns.reduce((total, campaign) => {
+    return total + estimateRowHeight(campaign.cpgn_name);
+  }, 0);
+}
 
 /**
  * Generate HTML template for billing statement
@@ -142,36 +181,55 @@ export async function generateHtmlTemplate(
     paymentsPageAvailable / TABLE_ROW_HEIGHT_PX
   );
 
-  // Split activity campaigns into pages
+  // Split activity campaigns into pages using dynamic height calculation
   const activityPages: (typeof monthly_campaign_spends)[] = [];
   const remainingCampaigns = [...monthly_campaign_spends];
 
   if (remainingCampaigns.length > 0) {
+    // Calculate total height of all campaigns
+    const totalCampaignsHeight = calculateCampaignsHeight(remainingCampaigns);
+
     // Check if everything fits on first page (with footer)
-    if (remainingCampaigns.length <= firstPageActivityRowsWithFooter) {
+    if (totalCampaignsHeight <= firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS) {
       activityPages.push(remainingCampaigns.splice(0));
     } else {
-      // First page without footer (more rows can fit since no footer needed)
-      const firstChunk = remainingCampaigns.splice(
-        0,
-        firstPageActivityRowsWithoutFooter
-      );
-      activityPages.push(firstChunk);
+      // First page - fill until we run out of space
+      let currentPageCampaigns: typeof monthly_campaign_spends = [];
+      let currentPageHeight = 0;
+      let availableHeight = firstPageAvailableForActivity;
 
-      // Continue with remaining rows - use without footer until last page
-      while (remainingCampaigns.length > continuationPageRowsWithFooter) {
-        const chunk = remainingCampaigns.splice(
-          0,
-          continuationPageRowsWithoutFooter
-        );
-        activityPages.push(chunk);
+      while (remainingCampaigns.length > 0) {
+        const nextCampaign = remainingCampaigns[0];
+        const nextCampaignHeight = estimateRowHeight(nextCampaign.cpgn_name);
+        const remainingCampaignsHeight = calculateCampaignsHeight(remainingCampaigns);
+
+        // If remaining campaigns fit with footer, add them all to current page
+        if (currentPageHeight + remainingCampaignsHeight + TABLE_SUBTOTAL_TOTAL_ROWS <= availableHeight) {
+          currentPageCampaigns.push(...remainingCampaigns.splice(0));
+          activityPages.push(currentPageCampaigns);
+          break;
+        }
+
+        // Check if next campaign fits on current page (without footer for now)
+        if (currentPageHeight + nextCampaignHeight <= availableHeight) {
+          currentPageCampaigns.push(remainingCampaigns.shift()!);
+          currentPageHeight += nextCampaignHeight;
+        } else {
+          // Current page is full, start a new page
+          if (currentPageCampaigns.length > 0) {
+            activityPages.push(currentPageCampaigns);
+          }
+          currentPageCampaigns = [];
+          currentPageHeight = 0;
+          availableHeight = continuationPageAvailable;
+        }
       }
 
-      // Last chunk (will have footer, so we already ensured it fits)
-      if (remainingCampaigns.length > 0) {
-        activityPages.push(remainingCampaigns.splice(0));
-      } else {
-        // No remaining rows means the footer needs its own dedicated page
+      // Handle any remaining campaigns
+      if (currentPageCampaigns.length > 0 && !activityPages.includes(currentPageCampaigns)) {
+        activityPages.push(currentPageCampaigns);
+      } else if (remainingCampaigns.length === 0 && activityPages.length === 0) {
+        // Edge case: no pages created yet
         activityPages.push([]);
       }
     }
@@ -691,7 +749,7 @@ export async function generateHtmlTemplate(
     }
 
     tbody tr {
-      height: ${TBL_ROW_HEIGHT};
+      min-height: ${TBL_ROW_HEIGHT};
     }
 
     tbody tr:nth-child(odd) {
@@ -711,6 +769,10 @@ export async function generateHtmlTemplate(
       color: ${TABLE_TEXT_COLOR};
       font-size: ${TABLE_DATA_FONT_SIZE};
       font-weight: ${TABLE_DATA_FONT_WEIGHT};
+      vertical-align: top;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+      white-space: normal;
     }
 
     .subtotal-row {

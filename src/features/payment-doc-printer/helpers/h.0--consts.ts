@@ -113,3 +113,10 @@ export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
 export const TABLE_HEADER_HEIGHT_PX = 28;
 export const TABLE_ROW_HEIGHT_PX = 38;
 export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
+
+// Constants for multiline row height estimation
+export const DESCRIPTION_COL_WIDTH_PX = 393.33; // COL_WIDTH_LG in pixels
+export const TABLE_CELL_PADDING_HORIZONTAL_PX = 32; // 16px left + 16px right
+export const TABLE_CELL_PADDING_VERTICAL_PX = 24; // 12px top + 12px bottom
+export const AVG_CHAR_WIDTH_PX = 6.5; // Average character width for 12px font
+export const LINE_HEIGHT_PX = 18; // 12px font-size * 1.5 line-height
