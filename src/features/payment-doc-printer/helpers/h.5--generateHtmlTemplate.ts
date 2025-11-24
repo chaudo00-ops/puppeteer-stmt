@@ -540,6 +540,8 @@ export async function generateHtmlTemplate(
       margin-top: ${MARGIN_TOP_SECTION};
       padding-bottom: ${PADDING_BOTTOM_SECTION};
       border-bottom: 1px solid ${DIVIDER_LINE_COLOR};
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .bill-to h3 {
@@ -747,12 +749,6 @@ export async function generateHtmlTemplate(
 
       .page:last-child {
         page-break-after: auto;
-      }
-
-      /* Ensure sections don't break awkwardly */
-      .section {
-        page-break-inside: avoid;
-        break-inside: avoid;
       }
 
       /* Prevent breaks at margin-top of table sections */
