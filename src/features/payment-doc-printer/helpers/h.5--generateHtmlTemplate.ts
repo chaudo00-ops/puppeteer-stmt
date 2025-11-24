@@ -170,6 +170,9 @@ export async function generateHtmlTemplate(
       // Last chunk (will have footer, so we already ensured it fits)
       if (remainingCampaigns.length > 0) {
         activityPages.push(remainingCampaigns.splice(0));
+      } else {
+        // No remaining rows means the footer needs its own dedicated page
+        activityPages.push([]);
       }
     }
   }
@@ -202,6 +205,9 @@ export async function generateHtmlTemplate(
       // Last chunk (will have footer)
       if (remainingPayments.length > 0) {
         paymentPages.push(remainingPayments.splice(0));
+      } else {
+        // No remaining rows means the footer needs its own dedicated page
+        paymentPages.push([]);
       }
     }
   }
@@ -540,6 +546,8 @@ export async function generateHtmlTemplate(
       margin-top: ${MARGIN_TOP_SECTION};
       padding-bottom: ${PADDING_BOTTOM_SECTION};
       border-bottom: 1px solid ${DIVIDER_LINE_COLOR};
+      page-break-inside: avoid;
+      break-inside: avoid;
     }
 
     .bill-to h3 {
@@ -736,16 +744,25 @@ export async function generateHtmlTemplate(
       .page {
         margin: 0; /* Remove margins between pages */
         box-shadow: none; /* Remove visual separators */
+        page-break-inside: avoid; /* Prevent breaking inside a page when printing */
+        break-inside: avoid;
+        min-height: auto; /* Allow page to shrink to fit content */
+      }
+
+      .page-content {
+        min-height: auto; /* Remove fixed height constraint for print */
       }
 
       .page:last-child {
         page-break-after: auto;
       }
 
-      /* Ensure sections don't break awkwardly */
-      .section {
-        page-break-inside: avoid;
-        break-inside: avoid;
+      /* Prevent breaks at margin-top of table sections */
+      .activity-details,
+      .payments-received {
+        page-break-before: avoid;
+        break-before: avoid;
+        margin-top: 0;
       }
 
       /* Allow tables to break across pages but keep rows together */
@@ -755,6 +772,12 @@ export async function generateHtmlTemplate(
 
       /* Keep table title with its header */
       .table-title {
+        page-break-after: avoid;
+        break-after: avoid;
+      }
+
+      /* Keep subtotal and total rows together */
+      .subtotal-row {
         page-break-after: avoid;
         break-after: avoid;
       }
