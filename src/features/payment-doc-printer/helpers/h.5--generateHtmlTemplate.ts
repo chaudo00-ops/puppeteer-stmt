@@ -491,7 +491,7 @@ export async function generateHtmlTemplate(
       line-height: 1.5;
       width: ${PAGE_WIDTH};
       min-height: ${PAGE_HEIGHT};
-      padding: 0px ${LEFT_RIGHT_MARGIN};
+      padding: 0;
     }
 
     .page {
@@ -500,7 +500,8 @@ export async function generateHtmlTemplate(
       background: white;
       page-break-after: always;
       position: relative;
-      margin: 0px ${LEFT_RIGHT_MARGIN};
+      margin: 0;
+      padding: 0 ${LEFT_RIGHT_MARGIN};
     }
 
     .page-header {
@@ -511,17 +512,17 @@ export async function generateHtmlTemplate(
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
       font-family: ${fontFamily};
-      padding: 0 ${LEFT_RIGHT_MARGIN};
+      padding: 0;
     }
 
     .page-content {
       min-height: ${PAGE_CONTENT_HEIGHT_PX}px;  /* 11in - 142px header - 28px footer */
-      margin: 0px ${LEFT_RIGHT_MARGIN};
+      margin: 0;
     }
 
     .page-footer {
       height: ${PAGE_FOOTER_HEIGHT_PX}px;
-      margin: 0px ${LEFT_RIGHT_MARGIN};
+      margin: 0;
     }
 
     .header {
