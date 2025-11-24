@@ -744,15 +744,10 @@ export async function generateHtmlTemplate(
       }
 
       .page {
-        margin: 0; /* Remove margins between pages */
         box-shadow: none; /* Remove visual separators */
-        page-break-inside: avoid; /* Prevent breaking inside a page when printing */
-        break-inside: avoid;
-        min-height: auto; /* Allow page to shrink to fit content */
-      }
-
-      .page-content {
-        min-height: auto; /* Remove fixed height constraint for print */
+        height: ${PAGE_HEIGHT}; /* Fixed height for each printed page */
+        min-height: ${PAGE_HEIGHT};
+        overflow: hidden; /* Prevent content overflow */
       }
 
       .page:last-child {
