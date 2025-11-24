@@ -23,7 +23,6 @@ import {
   MARGIN_TOP_SECTION,
   PAGE_HEIGHT,
   PAGE_WIDTH,
-  PAGE_PADDING_BOTTOM,
   TEXT_COLOR_H1,
   TEXT_COLOR,
   COLUMN_GAP,
@@ -501,8 +500,7 @@ export async function generateHtmlTemplate(
       background: white;
       page-break-after: always;
       position: relative;
-      margin: 0;
-      padding: 0 ${LEFT_RIGHT_MARGIN} ${PAGE_PADDING_BOTTOM};
+      margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .page-header {
@@ -513,17 +511,17 @@ export async function generateHtmlTemplate(
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
       font-family: ${fontFamily};
-      padding: 0;
+      padding: 0 ${LEFT_RIGHT_MARGIN};
     }
 
     .page-content {
       min-height: ${PAGE_CONTENT_HEIGHT_PX}px;  /* 11in - 142px header - 28px footer */
-      margin: 0;
+      margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .page-footer {
       height: ${PAGE_FOOTER_HEIGHT_PX}px;
-      margin: 0;
+      margin: 0px ${LEFT_RIGHT_MARGIN};
     }
 
     .header {
