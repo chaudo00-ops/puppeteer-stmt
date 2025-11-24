@@ -738,6 +738,11 @@ export async function generateHtmlTemplate(
         box-shadow: none; /* Remove visual separators */
         page-break-inside: avoid; /* Prevent breaking inside a page when printing */
         break-inside: avoid;
+        min-height: auto; /* Allow page to shrink to fit content */
+      }
+
+      .page-content {
+        min-height: auto; /* Remove fixed height constraint for print */
       }
 
       .page:last-child {
@@ -748,6 +753,14 @@ export async function generateHtmlTemplate(
       .section {
         page-break-inside: avoid;
         break-inside: avoid;
+      }
+
+      /* Prevent breaks at margin-top of table sections */
+      .activity-details,
+      .payments-received {
+        page-break-before: avoid;
+        break-before: avoid;
+        margin-top: 0;
       }
 
       /* Allow tables to break across pages but keep rows together */
