@@ -170,6 +170,9 @@ export async function generateHtmlTemplate(
       // Last chunk (will have footer, so we already ensured it fits)
       if (remainingCampaigns.length > 0) {
         activityPages.push(remainingCampaigns.splice(0));
+      } else {
+        // No remaining rows means the footer needs its own dedicated page
+        activityPages.push([]);
       }
     }
   }
@@ -202,6 +205,9 @@ export async function generateHtmlTemplate(
       // Last chunk (will have footer)
       if (remainingPayments.length > 0) {
         paymentPages.push(remainingPayments.splice(0));
+      } else {
+        // No remaining rows means the footer needs its own dedicated page
+        paymentPages.push([]);
       }
     }
   }
