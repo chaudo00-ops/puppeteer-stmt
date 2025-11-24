@@ -23,6 +23,7 @@ import {
   MARGIN_TOP_SECTION,
   PAGE_HEIGHT,
   PAGE_WIDTH,
+  PAGE_PADDING_BOTTOM,
   TEXT_COLOR_H1,
   TEXT_COLOR,
   COLUMN_GAP,
@@ -501,7 +502,7 @@ export async function generateHtmlTemplate(
       page-break-after: always;
       position: relative;
       margin: 0;
-      padding: 0 ${LEFT_RIGHT_MARGIN};
+      padding: 0 ${LEFT_RIGHT_MARGIN} ${PAGE_PADDING_BOTTOM};
     }
 
     .page-header {
