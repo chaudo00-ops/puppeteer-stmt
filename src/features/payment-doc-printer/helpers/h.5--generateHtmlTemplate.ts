@@ -37,8 +37,8 @@ import {
   TABLE_EVEN_ROW_COLOR,
   TABLE_TEXT_COLOR,
   TBL_ROW_HEIGHT,
-  TABLE_DATA_PADDING_LR,
-  TABLE_DATA_PADDING_TB,
+  TABLE_CELL_PADDING_HORIZONTAL,
+  TABLE_CELL_PADDING_VERTICAL,
   TABLE_DATA_FONT_SIZE,
   TABLE_DATA_FONT_WEIGHT,
   FONT_SIZE_TOTAL,
@@ -57,9 +57,6 @@ import {
   PAGE_HEADER_HEIGHT_PX,
   PAGE_FOOTER_HEIGHT_PX,
   // Constants for multiline row height estimation
-  DESCRIPTION_COL_WIDTH_PX,
-  TABLE_CELL_PADDING_HORIZONTAL_PX,
-  TABLE_CELL_PADDING_VERTICAL_PX,
   AVG_CHAR_WIDTH_PX,
   LINE_HEIGHT_PX,
 } from "./h.0--consts";
@@ -71,7 +68,7 @@ import {
  */
 function estimateRowHeight(text: string): number {
   // Calculate available text width (column width minus padding)
-  const availableWidth = DESCRIPTION_COL_WIDTH_PX - TABLE_CELL_PADDING_HORIZONTAL_PX;
+  const availableWidth = COL_WIDTH_LG - TABLE_CELL_PADDING_HORIZONTAL * 2;
 
   // Calculate approximate characters per line
   const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH_PX);
@@ -80,7 +77,8 @@ function estimateRowHeight(text: string): number {
   const numLines = Math.max(1, Math.ceil(text.length / charsPerLine));
 
   // Calculate row height: vertical padding + (lines * line height)
-  const calculatedHeight = TABLE_CELL_PADDING_VERTICAL_PX + (numLines * LINE_HEIGHT_PX);
+  const calculatedHeight =
+    TABLE_CELL_PADDING_VERTICAL * 2 + numLines * LINE_HEIGHT_PX;
 
   // Return the larger of calculated height or minimum row height
   return Math.max(TABLE_ROW_HEIGHT_PX, calculatedHeight);
@@ -152,25 +150,9 @@ export async function generateHtmlTemplate(
   const firstPageAvailableForActivity =
     PAGE_CONTENT_HEIGHT_PX - firstPageFixedHeight - activityTableOverhead;
 
-  const firstPageActivityRowsWithFooter = Math.floor(
-    (firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS) /
-      TABLE_ROW_HEIGHT_PX
-  );
-  const firstPageActivityRowsWithoutFooter = Math.floor(
-    firstPageAvailableForActivity / TABLE_ROW_HEIGHT_PX
-  );
-
   // Available height for table rows on continuation pages
   const continuationPageAvailable =
     PAGE_CONTENT_HEIGHT_PX - activityTableOverhead;
-
-  const continuationPageRowsWithFooter = Math.floor(
-    (continuationPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) /
-      TABLE_ROW_HEIGHT_PX
-  );
-  const continuationPageRowsWithoutFooter = Math.floor(
-    continuationPageAvailable / TABLE_ROW_HEIGHT_PX
-  );
 
   // Full page for payments table
   const paymentsPageAvailable = PAGE_CONTENT_HEIGHT_PX - paymentsTableOverhead;
@@ -190,7 +172,10 @@ export async function generateHtmlTemplate(
     const totalCampaignsHeight = calculateCampaignsHeight(remainingCampaigns);
 
     // Check if everything fits on first page (with footer)
-    if (totalCampaignsHeight <= firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS) {
+    if (
+      totalCampaignsHeight <=
+      firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS
+    ) {
       activityPages.push(remainingCampaigns.splice(0));
     } else {
       // First page - fill until we run out of space
@@ -201,10 +186,16 @@ export async function generateHtmlTemplate(
       while (remainingCampaigns.length > 0) {
         const nextCampaign = remainingCampaigns[0];
         const nextCampaignHeight = estimateRowHeight(nextCampaign.cpgn_name);
-        const remainingCampaignsHeight = calculateCampaignsHeight(remainingCampaigns);
+        const remainingCampaignsHeight =
+          calculateCampaignsHeight(remainingCampaigns);
 
         // If remaining campaigns fit with footer, add them all to current page
-        if (currentPageHeight + remainingCampaignsHeight + TABLE_SUBTOTAL_TOTAL_ROWS <= availableHeight) {
+        if (
+          currentPageHeight +
+            remainingCampaignsHeight +
+            TABLE_SUBTOTAL_TOTAL_ROWS <=
+          availableHeight
+        ) {
           currentPageCampaigns.push(...remainingCampaigns.splice(0));
           activityPages.push(currentPageCampaigns);
           break;
@@ -226,9 +217,15 @@ export async function generateHtmlTemplate(
       }
 
       // Handle any remaining campaigns
-      if (currentPageCampaigns.length > 0 && !activityPages.includes(currentPageCampaigns)) {
+      if (
+        currentPageCampaigns.length > 0 &&
+        !activityPages.includes(currentPageCampaigns)
+      ) {
         activityPages.push(currentPageCampaigns);
-      } else if (remainingCampaigns.length === 0 && activityPages.length === 0) {
+      } else if (
+        remainingCampaigns.length === 0 &&
+        activityPages.length === 0
+      ) {
         // Edge case: no pages created yet
         activityPages.push([]);
       }
@@ -287,9 +284,9 @@ export async function generateHtmlTemplate(
   // Helper to generate activity table header (without title for continuation)
   const generateActivityTableHeader = () => `
           <colgroup>
-            <col style="width: ${COL_WIDTH_LG};">
-            <col style="width: ${COL_WIDTH_SM};">
-            <col style="width: ${COL_WIDTH_SM};">
+            <col style="width: ${COL_WIDTH_LG}px;">
+            <col style="width: ${COL_WIDTH_SM}px;">
+            <col style="width: ${COL_WIDTH_SM}px;">
           </colgroup>
           <thead>
             <tr class="table-title">
@@ -307,8 +304,8 @@ export async function generateHtmlTemplate(
   // Helper to generate payments table header (without title for continuation)
   const generatePaymentsTableHeader = () => `
           <colgroup>
-            <col style="width: ${COL_WIDTH_MD};">
-            <col style="width: ${COL_WIDTH_MD};">
+            <col style="width: ${COL_WIDTH_MD}px;">
+            <col style="width: ${COL_WIDTH_MD}px;">
             <col style="width: ${COL_WIDTH_MD};">
           </colgroup>
           <thead>
@@ -726,7 +723,7 @@ export async function generateHtmlTemplate(
       font-weight: ${TABLE_HEADER_FONT_WEIGHT};
       text-align: left;
       height: ${TBL_HEADER_HEIGHT};
-      padding: 7px ${TABLE_DATA_PADDING_LR};
+      padding: 7px ${TABLE_CELL_PADDING_HORIZONTAL};
     }
 
     .table-title tr {
@@ -765,7 +762,7 @@ export async function generateHtmlTemplate(
     }
 
     td {
-      padding: ${TABLE_DATA_PADDING_TB} ${TABLE_DATA_PADDING_LR};
+      padding: ${TABLE_CELL_PADDING_VERTICAL}px ${TABLE_CELL_PADDING_HORIZONTAL}px;
       color: ${TABLE_TEXT_COLOR};
       font-size: ${TABLE_DATA_FONT_SIZE};
       font-weight: ${TABLE_DATA_FONT_WEIGHT};

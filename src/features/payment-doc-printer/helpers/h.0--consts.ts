@@ -75,13 +75,13 @@ export const TBL_HEADER_HEIGHT = "28px";
 export const TBL_ROW_HEIGHT = "38px"; // ≈ 29 pt
 
 // Column widths
-export const COL_WIDTH_SM = "160px"; // Small column (Impression, Cost)
-export const COL_WIDTH_MD = "237.33px"; // Medium column (Payments table)
-export const COL_WIDTH_LG = "393.33px"; // Large column (Description)
+export const COL_WIDTH_SM = 160; // Small column (Impression, Cost)
+export const COL_WIDTH_MD = 237.33; // Medium column (Payments table)
+export const COL_WIDTH_LG = 393.33; // Large column (Description)
 
 // Padding for table cells
-export const TABLE_DATA_PADDING_LR = "16px"; // 12 pt
-export const TABLE_DATA_PADDING_TB = "12px"; // 12 pt
+export const TABLE_CELL_PADDING_HORIZONTAL = 16; // 12 pt
+export const TABLE_CELL_PADDING_VERTICAL = 12; // 12 pt
 
 // Table borders & colors
 export const TBL_BORDER_COLOR = rgb(220 / 255, 220 / 255, 220 / 255);
@@ -96,6 +96,17 @@ export const TABLE_HEADER_FONT_WEIGHT = 700;
 export const TABLE_DATA_FONT_SIZE = "12px";
 export const TABLE_DATA_FONT_WEIGHT = 400;
 
+// NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
+// Table component heights
+export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
+export const TABLE_HEADER_HEIGHT_PX = 28;
+export const TABLE_ROW_HEIGHT_PX = 38;
+export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
+
+// Constants for multiline row height estimation
+export const AVG_CHAR_WIDTH_PX = 6.5; // Average character width for 12px font
+export const LINE_HEIGHT_PX = 18; // 12px font-size * 1.5 line-height
+
 // -----------------------------------------------------------------------------
 // NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
 // -----------------------------------------------------------------------------
@@ -107,16 +118,3 @@ export const PAGE_CONTENT_HEIGHT_PX = 920; // PAGE_HEIGHT - header - footer
 // Section heights (approximate)
 export const BILL_TO_SECTION_HEIGHT_PX = 140;
 export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 190;
-
-// Table component heights
-export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
-export const TABLE_HEADER_HEIGHT_PX = 28;
-export const TABLE_ROW_HEIGHT_PX = 38;
-export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
-
-// Constants for multiline row height estimation
-export const DESCRIPTION_COL_WIDTH_PX = 393.33; // COL_WIDTH_LG in pixels
-export const TABLE_CELL_PADDING_HORIZONTAL_PX = 32; // 16px left + 16px right
-export const TABLE_CELL_PADDING_VERTICAL_PX = 24; // 12px top + 12px bottom
-export const AVG_CHAR_WIDTH_PX = 6.5; // Average character width for 12px font
-export const LINE_HEIGHT_PX = 18; // 12px font-size * 1.5 line-height
