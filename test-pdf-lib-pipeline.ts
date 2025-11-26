@@ -6,7 +6,7 @@ async function main() {
   // Test with English
   console.log("1. Generating English billing statement...");
   const resultEn = await puppeteerBillingStatementPdf({
-    sub_acc_id: "72|99|Shen Yun New York|true|organization",
+    sub_acc_id: "72|99|Shen Yun New York|false|organization",
     month: new Date("2025-11-01"),
     language: "en",
   });

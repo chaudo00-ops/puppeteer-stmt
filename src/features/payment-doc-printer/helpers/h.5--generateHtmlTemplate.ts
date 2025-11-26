@@ -47,18 +47,17 @@ import {
   COL_WIDTH_SM,
   COL_WIDTH_MD,
   // Numeric constants for page calculations
-  PAGE_CONTENT_HEIGHT_PX,
+  PAGE_CONTENT_HEIGHT,
   BILL_TO_SECTION_HEIGHT_PX,
   DETAILS_SUMMARY_SECTION_HEIGHT_PX,
   TABLE_TITLE_HEIGHT_PX,
   TABLE_HEADER_HEIGHT_PX,
   TABLE_ROW_HEIGHT_PX,
   TABLE_SUBTOTAL_TOTAL_ROWS,
-  PAGE_HEADER_HEIGHT_PX,
-  PAGE_FOOTER_HEIGHT_PX,
+  PAGE_HEADER_HEIGHT,
+  PAGE_FOOTER_HEIGHT,
   // Constants for multiline row height estimation
-  AVG_CHAR_WIDTH_PX,
-  LINE_HEIGHT_PX,
+  AVG_CHAR_WIDTH,
 } from "./h.0--consts";
 
 /**
@@ -71,14 +70,14 @@ function estimateRowHeight(text: string): number {
   const availableWidth = COL_WIDTH_LG - TABLE_CELL_PADDING_HORIZONTAL * 2;
 
   // Calculate approximate characters per line
-  const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH_PX);
+  const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH);
 
   // Calculate number of lines needed
   const numLines = Math.max(1, Math.ceil(text.length / charsPerLine));
 
   // Calculate row height: vertical padding + (lines * line height)
   const calculatedHeight =
-    TABLE_CELL_PADDING_VERTICAL * 2 + numLines * LINE_HEIGHT_PX;
+    TABLE_CELL_PADDING_VERTICAL * 2 + numLines * TABLE_DATA_FONT_SIZE; // 12px font-size = line height
 
   // Return the larger of calculated height or minimum row height
   return Math.max(TABLE_ROW_HEIGHT_PX, calculatedHeight);
@@ -141,25 +140,24 @@ export async function generateHtmlTemplate(
   const firstPageFixedHeight =
     BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
   const activityTableOverhead =
-    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT_PX;
+    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT;
   const paymentsTableOverhead =
-    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT_PX;
+    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT;
 
   // Available height for table rows on first page (after fixed sections)
   // Calculate both with and without footer rows
   const firstPageAvailableForActivity =
-    PAGE_CONTENT_HEIGHT_PX - firstPageFixedHeight - activityTableOverhead;
+    PAGE_CONTENT_HEIGHT - firstPageFixedHeight - activityTableOverhead;
 
   // Available height for table rows on continuation pages
-  const continuationPageAvailable =
-    PAGE_CONTENT_HEIGHT_PX - activityTableOverhead;
+  const continuationPageAvailable = PAGE_CONTENT_HEIGHT - activityTableOverhead;
 
   // Full page for payments table
-  const paymentsPageAvailable = PAGE_CONTENT_HEIGHT_PX - paymentsTableOverhead;
-  const paymentsPageRowsWithFooter = Math.floor(
+  const paymentsPageAvailable = PAGE_CONTENT_HEIGHT - paymentsTableOverhead;
+  const paymentsPageRowsWithTotal = Math.floor(
     (paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT_PX
   );
-  const paymentsPageRowsWithoutFooter = Math.floor(
+  const paymentsPageRowsWithoutTotal = Math.floor(
     paymentsPageAvailable / TABLE_ROW_HEIGHT_PX
   );
 
@@ -238,22 +236,19 @@ export async function generateHtmlTemplate(
 
   if (remainingPayments.length > 0) {
     // Check if everything fits on first payment page (with footer)
-    if (remainingPayments.length <= paymentsPageRowsWithFooter) {
+    if (remainingPayments.length <= paymentsPageRowsWithTotal) {
       paymentPages.push(remainingPayments.splice(0));
     } else {
       // First payment page without footer
       const firstChunk = remainingPayments.splice(
         0,
-        paymentsPageRowsWithoutFooter
+        paymentsPageRowsWithoutTotal
       );
       paymentPages.push(firstChunk);
 
       // Continue with remaining rows - use without footer until last page
-      while (remainingPayments.length > paymentsPageRowsWithFooter) {
-        const chunk = remainingPayments.splice(
-          0,
-          paymentsPageRowsWithoutFooter
-        );
+      while (remainingPayments.length > paymentsPageRowsWithTotal) {
+        const chunk = remainingPayments.splice(0, paymentsPageRowsWithoutTotal);
         paymentPages.push(chunk);
       }
 
@@ -516,7 +511,7 @@ export async function generateHtmlTemplate(
     /* @page is part of the CSS paged media / print layout specification */
     /* Keep @page for PDF generation, but simplify it */
     @page {
-      size: ${PAGE_WIDTH} ${PAGE_HEIGHT}; /* Letter: 8.5in 11in */
+      size: ${PAGE_WIDTH}in ${PAGE_HEIGHT}in; /* Letter: 8.5in 11in */
       margin: 0; /* No margins - we control spacing in .page divs */
     }
 
@@ -540,40 +535,40 @@ export async function generateHtmlTemplate(
 
     body {
       font-family: ${fontFamily};
-      font-size: ${FONT_SIZE_PARAGRAPH};
+      font-size: ${FONT_SIZE_PARAGRAPH}px;
       font-weight: ${FONT_WEIGHT_PARAGRAPH};
       color: ${TEXT_COLOR};
       line-height: 1.5;
-      width: ${PAGE_WIDTH};
-      min-height: ${PAGE_HEIGHT};
+      width: ${PAGE_WIDTH}in;
+      min-height: ${PAGE_HEIGHT}in;
       padding: 0;
     }
 
     .page {
-      width: ${PAGE_WIDTH};
-      min-height: ${PAGE_HEIGHT};
+      width: ${PAGE_WIDTH}in;
+      min-height: ${PAGE_HEIGHT}in;
       background: white;
       page-break-after: always;
       position: relative;
-      padding: 0 ${LEFT_RIGHT_MARGIN};
+      padding: 0 ${LEFT_RIGHT_MARGIN}px;
     }
 
     .page-header {
       background: white;
       width: 100%;
-      height: ${PAGE_HEADER_HEIGHT_PX}px;
-      font-size: ${FONT_SIZE_H1}; /* CRITICAL: Base font size must be set */
+      height: ${PAGE_HEADER_HEIGHT}px;
+      font-size: ${FONT_SIZE_H1}px; /* CRITICAL: Base font size must be set */
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
       font-family: ${fontFamily};
     }
 
     .page-content {
-      min-height: ${PAGE_CONTENT_HEIGHT_PX}px;  /* 11in - 142px header - 28px footer */
+      min-height: ${PAGE_CONTENT_HEIGHT}px;  /* 11in - 142px header - 28px footer */
     }
 
     .page-footer {
-      height: ${PAGE_FOOTER_HEIGHT_PX}px;
+      height: ${PAGE_FOOTER_HEIGHT}px;
     }
 
     .header {
@@ -583,21 +578,21 @@ export async function generateHtmlTemplate(
     }
 
     .header h1 {
-      font-size: ${FONT_SIZE_H1};
+      font-size: ${FONT_SIZE_H1}px;
       font-weight: ${FONT_WEIGHT_H1};
       color: ${TEXT_COLOR_H1};
-      margin-top: ${MARGIN_TOP_HEADER};
+      margin-top: ${MARGIN_TOP_HEADER}px;
     }
 
     .logo {
-      width: ${LOGO_WIDTH};
-      height: ${LOGO_HEIGHT};
-      margin-top: ${MARGIN_TOP_LOGO};
+      width: ${LOGO_WIDTH}px;
+      height: ${LOGO_HEIGHT}px;
+      margin-top: ${MARGIN_TOP_LOGO}px;
     }
 
     .section {
-      margin-top: ${MARGIN_TOP_SECTION};
-      padding-bottom: ${PADDING_BOTTOM_SECTION};
+      margin-top: ${MARGIN_TOP_SECTION}px;
+      padding-bottom: ${PADDING_BOTTOM_SECTION}px;
       border-bottom: 1px solid ${DIVIDER_LINE_COLOR};
       page-break-inside: avoid;
       break-inside: avoid;
@@ -618,7 +613,7 @@ export async function generateHtmlTemplate(
     }
 
     .bill-to p {
-      font-size: ${FONT_SIZE_PARAGRAPH};
+      font-size: ${FONT_SIZE_PARAGRAPH}px;
       color: ${TEXT_COLOR};
       line-height: 17px;
     }
@@ -626,7 +621,7 @@ export async function generateHtmlTemplate(
     .details-summary-container {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      column-gap: ${COLUMN_GAP}; /* space between two columns */
+      column-gap: ${COLUMN_GAP}px; /* space between two columns */
       letter-spacing: 0px;
     }
 
@@ -641,7 +636,7 @@ export async function generateHtmlTemplate(
     }
 
     .detail-row, .summary-row {
-      font-size: ${FONT_SIZE_PARAGRAPH};
+      font-size: ${FONT_SIZE_PARAGRAPH}px;
       color: ${TEXT_COLOR};
       display: flex;
       justify-content: space-between;
@@ -683,7 +678,7 @@ export async function generateHtmlTemplate(
     }
 
     .payments-received h2 {
-      font-size: ${FONT_SIZE_H2};
+      font-size: ${FONT_SIZE_H2}px;
       font-weight: ${FONT_WEIGHT_H2};
       color: ${TEXT_COLOR};
     }
@@ -719,11 +714,11 @@ export async function generateHtmlTemplate(
     thead tr:not(.table-title) th {
       color: ${TABLE_HEADER_TEXT_COLOR};
       background-color: ${TABLE_HEADER_BG_COLOR};
-      font-size: ${TABLE_HEADER_FONT_SIZE};
+      font-size: ${TABLE_HEADER_FONT_SIZE}px;
       font-weight: ${TABLE_HEADER_FONT_WEIGHT};
       text-align: left;
-      height: ${TBL_HEADER_HEIGHT};
-      padding: 7px ${TABLE_CELL_PADDING_HORIZONTAL};
+      height: ${TBL_HEADER_HEIGHT}px;
+      padding: 7px ${TABLE_CELL_PADDING_HORIZONTAL}px;
     }
 
     .table-title tr {
@@ -734,11 +729,11 @@ export async function generateHtmlTemplate(
     .table-title th {
       text-align: left;        /* optional: align text */
       padding: 0;              /* remove padding */
-      padding-bottom: ${MARGIN_TOP_TABLE};
+      padding-bottom: ${MARGIN_TOP_TABLE}px;
     }
 
     .table-title h3 {
-      font-size: ${FONT_SIZE_H3};
+      font-size: ${FONT_SIZE_H3}px;
       font-weight: ${FONT_WEIGHT_H3};
       color: ${TEXT_COLOR};
       margin: 0;           /* remove default margin of h2 */
@@ -746,7 +741,7 @@ export async function generateHtmlTemplate(
     }
 
     tbody tr {
-      min-height: ${TBL_ROW_HEIGHT};
+      min-height: ${TBL_ROW_HEIGHT}px;
     }
 
     tbody tr:nth-child(odd) {
@@ -764,7 +759,7 @@ export async function generateHtmlTemplate(
     td {
       padding: ${TABLE_CELL_PADDING_VERTICAL}px ${TABLE_CELL_PADDING_HORIZONTAL}px;
       color: ${TABLE_TEXT_COLOR};
-      font-size: ${TABLE_DATA_FONT_SIZE};
+      font-size: ${TABLE_DATA_FONT_SIZE}px;
       font-weight: ${TABLE_DATA_FONT_WEIGHT};
       vertical-align: top;
       word-wrap: break-word;
@@ -789,7 +784,7 @@ export async function generateHtmlTemplate(
 
     .total-row td.value {
     font-weight: ${FONT_WEIGHT_TOTAL} !important;
-      font-size: ${FONT_SIZE_TOTAL};
+      font-size: ${FONT_SIZE_TOTAL}px;
     }
 
     /* Print-specific adjustments */
@@ -800,8 +795,8 @@ export async function generateHtmlTemplate(
 
       .page {
         box-shadow: none; /* Remove visual separators */
-        height: ${PAGE_HEIGHT}; /* Fixed height for each printed page */
-        min-height: ${PAGE_HEIGHT};
+        height: ${PAGE_HEIGHT}in; /* Fixed height for each printed page */
+        min-height: ${PAGE_HEIGHT}in;
         overflow: hidden; /* Prevent content overflow */
       }
 

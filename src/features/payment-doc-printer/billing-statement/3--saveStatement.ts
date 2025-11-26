@@ -18,8 +18,8 @@ export async function saveStatement(
   /** month formatted as YYYY-mm */
   const month = month_date.toISOString().substring(0, 7);
   const languageSuffix = language;
-  const fileName = `${STATEMENT_PREFIX}-${month}-${languageSuffix}.pdf`;
-  const htmlFileName = `${STATEMENT_PREFIX}-${month}-${languageSuffix}.html`;
+  const fileName = `${languageSuffix}-${month}-${STATEMENT_PREFIX}.pdf`;
+  const htmlFileName = `${languageSuffix}-${month}-${STATEMENT_PREFIX}.html`;
 
   // Save to output-pdfs directory
   const outputDir = join(__dirname, "..", "..", "..", "output-pdfs");

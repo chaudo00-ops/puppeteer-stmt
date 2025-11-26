@@ -1,19 +1,6 @@
 import puppeteer from "puppeteer";
-import { promises as fs } from "fs";
-import { join, dirname } from "path";
 import { PDFContext } from "./h.1--pdfContext";
-import { getTranslations, type TSupportedLanguage } from "./h.0--translations";
-import {
-  FONT_SIZE_H1,
-  FONT_WEIGHT_H1,
-  TEXT_COLOR_H1,
-  MARGIN_TOP_HEADER,
-  LOGO_WIDTH,
-  LOGO_HEIGHT,
-  MARGIN_TOP_LOGO,
-  LEFT_RIGHT_MARGIN,
-} from "./h.0--consts";
-import { fileURLToPath } from "url";
+import { type TSupportedLanguage } from "./h.0--translations";
 
 /**
  * Base Puppeteer PDF renderer class
@@ -56,7 +43,6 @@ export class PuppeteerRenderer<ContextType extends PDFContext> {
       const pdfBuffer = await page.pdf({
         format: "Letter",
         printBackground: true,
-        footerTemplate: "<div></div>",
         margin: {
           top: "0px",
           right: "0px",

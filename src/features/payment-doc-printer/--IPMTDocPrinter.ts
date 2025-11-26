@@ -3,7 +3,7 @@ import type { TSupportedLanguage } from "./helpers/h.0--translations";
 /** File name prefix of invoices */
 export const INVOICE_PREFIX = "invoice-";
 /** File name prefix of billing statements */
-export const STATEMENT_PREFIX = "billing-stmt-";
+export const STATEMENT_PREFIX = "billing-stmt";
 
 export type TCreateInvoicePdfParams = Pick<
   TFields_v2_payments,
