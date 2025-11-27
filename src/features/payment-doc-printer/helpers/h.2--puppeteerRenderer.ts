@@ -1,12 +1,11 @@
 import puppeteer from "puppeteer";
-import { PDFContext } from "./h.1--pdfContext";
 import { type TSupportedLanguage } from "./h.0--translations";
 
 /**
  * Base Puppeteer PDF renderer class
  */
-export class PuppeteerRenderer<ContextType extends PDFContext> {
-  protected context: ContextType;
+export class PuppeteerRenderer {
+  // protected context: ContextType;
   protected html: string = "";
   protected language: TSupportedLanguage;
 
@@ -22,14 +21,7 @@ export class PuppeteerRenderer<ContextType extends PDFContext> {
   }
 
   /**
-   * Get the context
-   */
-  getContext(): ContextType {
-    return this.context;
-  }
-
-  /**
-   * Render HTML to PDF
+   * Render HTML to PDF and save PDF as Uint8Array
    */
   async renderToPdf(): Promise<Uint8Array> {
     const browser = await puppeteer.launch({
@@ -59,12 +51,5 @@ export class PuppeteerRenderer<ContextType extends PDFContext> {
     } finally {
       await browser.close();
     }
-  }
-
-  /**
-   * Save PDF as Uint8Array
-   */
-  async save(): Promise<Uint8Array> {
-    return await this.renderToPdf();
   }
 }

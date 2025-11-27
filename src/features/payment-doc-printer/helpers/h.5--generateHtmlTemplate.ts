@@ -58,7 +58,7 @@ import {
   // Constants for multiline row height estimation
   AVG_CHAR_WIDTH_LATIN,
   AVG_CHAR_WIDTH_CJK,
-} from "./h.0--consts";
+} from "./h.0--puppeteer-consts";
 
 /**
  * Estimate the height of a table row based on description text length
