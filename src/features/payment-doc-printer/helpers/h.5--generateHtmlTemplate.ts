@@ -172,7 +172,6 @@ export async function generateHtmlTemplate(
   // Split activity campaigns into pages using dynamic height calculation
   const activityPages: (typeof monthly_campaign_spends)[] = [];
   const remainingCampaigns = [...monthly_campaign_spends];
-
   if (remainingCampaigns.length > 0) {
     // Calculate total height of all campaigns
     const totalCampaignsHeight = calculateCampaignsHeight(
@@ -230,19 +229,33 @@ export async function generateHtmlTemplate(
         }
       }
 
+      console.log(
+        `🍊🍊🍊 remainingCampaigns = ${JSON.stringify(remainingCampaigns)}`
+      );
       // Handle any remaining campaigns
       if (
         currentPageCampaigns.length > 0 &&
         !activityPages.includes(currentPageCampaigns)
       ) {
+        console.log(`🫐🫐🫐 pushing currentPageCampaigns to activityPages`);
+
         activityPages.push(currentPageCampaigns);
+
+        // Edge case: Subtotal + Total row on a new page
+        const height = calculateCampaignsHeight(currentPageCampaigns, language);
+        if (height + TABLE_SUBTOTAL_TOTAL_ROWS > continuationPageAvailable) {
+          activityPages.push([]);
+        }
       } else if (
         remainingCampaigns.length === 0 &&
         activityPages.length === 0
       ) {
         // Edge case: no pages created yet
         activityPages.push([]);
+        console.log(`🫐🫐🫐 pushing [] to activityPages`);
       }
+
+      console.log(`🍊🍊🍊 activityPages = ${JSON.stringify(activityPages)}`);
     }
   }
 

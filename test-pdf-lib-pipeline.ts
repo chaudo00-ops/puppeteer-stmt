@@ -6,7 +6,7 @@ async function main() {
   // Test with English
   console.log("1. Generating English billing statement...");
   const resultEn = await puppeteerBillingStatementPdf({
-    sub_acc_id: "68|99|Shen Yun New York|false|organization",
+    sub_acc_id: "68|95|Shen Yun New York|false|organization",
     month: new Date("2025-11-01"),
     language: "en",
   });
@@ -17,7 +17,7 @@ async function main() {
   // Test with Traditional Chinese
   console.log("\n2. Generating Traditional Chinese billing statement...");
   const resultZhTW = await puppeteerBillingStatementPdf({
-    sub_acc_id: "91|99|神韻紐約|false|organization",
+    sub_acc_id: "87|99|神韻紐約|false|organization",
     month: new Date("2025-11-01"),
     language: "zh-TW",
   });
@@ -65,7 +65,7 @@ async function main() {
   // Test with Japanese
   console.log("\n6. Generating Japanese billing statement...");
   const resultJa = await puppeteerBillingStatementPdf({
-    sub_acc_id: "91|99|神韻ニューヨーク|false|organization",
+    sub_acc_id: "87|99|神韻ニューヨーク|false|organization",
     month: new Date("2025-11-01"),
     language: "ja",
   });
