@@ -229,16 +229,11 @@ export async function generateHtmlTemplate(
         }
       }
 
-      console.log(
-        `🍊🍊🍊 remainingCampaigns = ${JSON.stringify(remainingCampaigns)}`
-      );
       // Handle any remaining campaigns
       if (
         currentPageCampaigns.length > 0 &&
         !activityPages.includes(currentPageCampaigns)
       ) {
-        console.log(`🫐🫐🫐 pushing currentPageCampaigns to activityPages`);
-
         activityPages.push(currentPageCampaigns);
 
         // Edge case: Subtotal + Total row on a new page
@@ -254,8 +249,6 @@ export async function generateHtmlTemplate(
         activityPages.push([]);
         console.log(`🫐🫐🫐 pushing [] to activityPages`);
       }
-
-      console.log(`🍊🍊🍊 activityPages = ${JSON.stringify(activityPages)}`);
     }
   }
 
@@ -463,10 +456,7 @@ export async function generateHtmlTemplate(
               .map(
                 (campaign) => `
             <tr>
-              <td>${campaign.cpgn_name} ${estimateRowHeight(
-                  campaign.cpgn_name,
-                  language
-                )}</td>
+              <td>${campaign.cpgn_name}</td>
               <td>${campaign.imp}</td>
               <td>${campaign.cost}</td>
             </tr>`
