@@ -146,9 +146,9 @@ export async function generateHtmlTemplate(
   const firstPageFixedHeight =
     BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
   const activityTableOverhead =
-    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
+    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT;
   const paymentsTableOverhead =
-    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
+    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT;
 
   // Available height for table rows on first page (after fixed sections)
   // Calculate both with and without footer rows
@@ -157,11 +157,11 @@ export async function generateHtmlTemplate(
 
   // Available height for table rows on continuation pages
   const continuationPageAvailable =
-    PAGE_CONTENT_HEIGHT - activityTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
+    PAGE_CONTENT_HEIGHT - activityTableOverhead - TABLE_SUBTOTAL_TOTAL_ROWS; // Reserve space for subtotal + total rows
 
   // Full page for payments table
   const paymentsPageAvailable =
-    PAGE_CONTENT_HEIGHT - paymentsTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
+    PAGE_CONTENT_HEIGHT - paymentsTableOverhead - TABLE_SUBTOTAL_TOTAL_ROWS; // Reserve space for subtotal + total rows
   const paymentsPageRowsWithTotal = Math.floor(
     (paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT
   );
@@ -450,10 +450,7 @@ export async function generateHtmlTemplate(
               .map(
                 (campaign) => `
             <tr>
-              <td>${campaign.cpgn_name} ${estimateRowHeight(
-                  campaign.cpgn_name,
-                  language
-                )}</td>
+              <td>${campaign.cpgn_name}</td>
               <td>${campaign.imp}</td>
               <td>${campaign.cost}</td>
             </tr>`
