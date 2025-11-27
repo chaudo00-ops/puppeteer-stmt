@@ -1,13 +1,12 @@
 import type { TBillingStatementDetails_Display } from "./h.0--types";
 import { getTranslations, type TSupportedLanguage } from "./h.0--translations";
-import { BillingPDFContext } from "./h.1.1--billingPdfContext";
 import { PuppeteerRenderer } from "./h.2--puppeteerRenderer";
 import { generateHtmlTemplate } from "./h.5--generateHtmlTemplate";
 
 /**
  * Billing-specific Puppeteer renderer
  */
-export class BillingPuppeteerRenderer extends PuppeteerRenderer<BillingPDFContext> {
+export class PuppeteerBillingRenderer extends PuppeteerRenderer {
   protected statement_details: TBillingStatementDetails_Display;
 
   constructor(
@@ -16,7 +15,6 @@ export class BillingPuppeteerRenderer extends PuppeteerRenderer<BillingPDFContex
   ) {
     super(language);
     this.statement_details = statement_details;
-    this.context = new BillingPDFContext();
   }
 
   /**
@@ -37,7 +35,7 @@ export class BillingPuppeteerRenderer extends PuppeteerRenderer<BillingPDFContex
    */
   async generate(): Promise<Uint8Array> {
     await this.init();
-    return await this.save();
+    return await this.renderToPdf();
   }
 
   /**

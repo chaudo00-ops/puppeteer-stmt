@@ -1,4 +1,4 @@
-import { puppeteerBillingStatementPdf } from "./src/features/payment-doc-printer/billing-statement/--generateBillingStatementPdf";
+import { puppeteerBillingStatementPdf } from "./src/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf";
 
 async function main() {
   console.log("Testing PDF-LIB billing statement pipeline...\n");
@@ -11,9 +11,6 @@ async function main() {
     language: "en",
   });
   console.log(`✓ English PDF generated: ${resultEn.statement_uri}`);
-  console.log(`  Pages: ${resultEn.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultEn.context.Y}`);
-
   // Test with Traditional Chinese
   console.log("\n2. Generating Traditional Chinese billing statement...");
   const resultZhTW = await puppeteerBillingStatementPdf({
@@ -24,8 +21,6 @@ async function main() {
   console.log(
     `✓ Traditional Chinese PDF generated: ${resultZhTW.statement_uri}`
   );
-  console.log(`  Pages: ${resultZhTW.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultZhTW.context.Y}`);
 
   // Test with Simplified Chinese
   console.log("\n3. Generating Simplified Chinese billing statement...");
@@ -37,9 +32,6 @@ async function main() {
   console.log(
     `✓ Simplified Chinese PDF generated: ${resultZhCN.statement_uri}`
   );
-  console.log(`  Pages: ${resultZhCN.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultZhCN.context.Y}`);
-
   // Test with Vietnamese
   console.log("\n4. Generating Vietnamese billing statement...");
   const resultVi = await puppeteerBillingStatementPdf({
@@ -48,8 +40,6 @@ async function main() {
     language: "vi",
   });
   console.log(`✓ Vietnamese PDF generated: ${resultVi.statement_uri}`);
-  console.log(`  Pages: ${resultVi.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultVi.context.Y}`);
 
   // Test with Korean
   console.log("\n5. Generating Korean billing statement...");
@@ -59,8 +49,6 @@ async function main() {
     language: "ko",
   });
   console.log(`✓ Korean PDF generated: ${resultKo.statement_uri}`);
-  console.log(`  Pages: ${resultKo.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultKo.context.Y}`);
 
   // Test with Japanese
   console.log("\n6. Generating Japanese billing statement...");
@@ -70,8 +58,6 @@ async function main() {
     language: "ja",
   });
   console.log(`✓ Japanese PDF generated: ${resultJa.statement_uri}`);
-  console.log(`  Pages: ${resultJa.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultJa.context.Y}`);
 
   // Test with Spanish
   console.log("\n7. Generating Spanish billing statement...");
@@ -81,8 +67,6 @@ async function main() {
     language: "es",
   });
   console.log(`✓ Spanish PDF generated: ${resultEs.statement_uri}`);
-  console.log(`  Pages: ${resultEs.context.getPageNo()}`);
-  console.log(`  Final Y position: ${resultEs.context.Y}`);
 
   console.log("\n✅ All 7 language tests completed successfully!");
 }
