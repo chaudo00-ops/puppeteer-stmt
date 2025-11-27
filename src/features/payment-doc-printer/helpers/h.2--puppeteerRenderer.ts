@@ -6,7 +6,7 @@ import { type TSupportedLanguage } from "./h.0--translations";
  * Base Puppeteer PDF renderer class
  */
 export class PuppeteerRenderer<ContextType extends PDFContext> {
-  protected context: ContextType;
+  protected context!: ContextType;
   protected html: string = "";
   protected language: TSupportedLanguage;
 
