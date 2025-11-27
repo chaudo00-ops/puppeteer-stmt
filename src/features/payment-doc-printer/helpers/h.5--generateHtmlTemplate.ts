@@ -56,7 +56,8 @@ import {
   PAGE_HEADER_HEIGHT,
   PAGE_FOOTER_HEIGHT,
   // Constants for multiline row height estimation
-  AVG_CHAR_WIDTH,
+  AVG_CHAR_WIDTH_LATIN,
+  AVG_CHAR_WIDTH_CJK,
 } from "./h.0--consts";
 
 /**
@@ -64,10 +65,13 @@ import {
  * @param text - The description text
  * @returns Estimated row height in pixels
  */
-function estimateRowHeight(text: string): number {
+function estimateRowHeight(text: string, language: TSupportedLanguage): number {
   // Calculate available text width (column width minus padding)
   const availableWidth = COL_WIDTH_LG - TABLE_CELL_PADDING_HORIZONTAL * 2;
 
+  const AVG_CHAR_WIDTH = ["en", "vi", "es"].includes(language)
+    ? AVG_CHAR_WIDTH_LATIN
+    : AVG_CHAR_WIDTH_CJK;
   // Calculate approximate characters per line
   const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH);
 
@@ -87,9 +91,12 @@ function estimateRowHeight(text: string): number {
  * @param campaigns - Array of campaign objects with cpgn_name
  * @returns Total height in pixels
  */
-function calculateCampaignsHeight(campaigns: { cpgn_name: string }[]): number {
+function calculateCampaignsHeight(
+  campaigns: { cpgn_name: string }[],
+  language: TSupportedLanguage
+): number {
   return campaigns.reduce((total, campaign) => {
-    return total + estimateRowHeight(campaign.cpgn_name);
+    return total + estimateRowHeight(campaign.cpgn_name, language);
   }, 0);
 }
 
@@ -168,7 +175,10 @@ export async function generateHtmlTemplate(
 
   if (remainingCampaigns.length > 0) {
     // Calculate total height of all campaigns
-    const totalCampaignsHeight = calculateCampaignsHeight(remainingCampaigns);
+    const totalCampaignsHeight = calculateCampaignsHeight(
+      remainingCampaigns,
+      language
+    );
 
     // Check if everything fits on first page (with footer)
     if (
@@ -184,9 +194,14 @@ export async function generateHtmlTemplate(
 
       while (remainingCampaigns.length > 0) {
         const nextCampaign = remainingCampaigns[0];
-        const nextCampaignHeight = estimateRowHeight(nextCampaign.cpgn_name);
-        const remainingCampaignsHeight =
-          calculateCampaignsHeight(remainingCampaigns);
+        const nextCampaignHeight = estimateRowHeight(
+          nextCampaign.cpgn_name,
+          language
+        );
+        const remainingCampaignsHeight = calculateCampaignsHeight(
+          remainingCampaigns,
+          language
+        );
 
         // If remaining campaigns fit with footer, add them all to current page
         if (
@@ -326,7 +341,10 @@ export async function generateHtmlTemplate(
     const isFirstPage = pageIndex === 0;
     const isLastActivityPage = pageIndex === activityPages.length - 1;
 
-    const firstPageCampaignsHeight = calculateCampaignsHeight(campaigns);
+    const firstPageCampaignsHeight = calculateCampaignsHeight(
+      campaigns,
+      language
+    );
     // Subtotal + Total rows not on first page
     const customMarginTop =
       isFirstPage && activityPages.length !== 1
@@ -432,7 +450,10 @@ export async function generateHtmlTemplate(
               .map(
                 (campaign) => `
             <tr>
-              <td>${campaign.cpgn_name}</td>
+              <td>${campaign.cpgn_name} ${estimateRowHeight(
+                  campaign.cpgn_name,
+                  language
+                )}</td>
               <td>${campaign.imp}</td>
               <td>${campaign.cost}</td>
             </tr>`

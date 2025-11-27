@@ -100,8 +100,8 @@ export const TABLE_ROW_HEIGHT = 38;
 export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
 
 // Constants for multiline row height estimation
-export const AVG_CHAR_WIDTH = 6.5; // Average character width for 12px font
-
+export const AVG_CHAR_WIDTH_LATIN = 8; // Average character width for 12px font
+export const AVG_CHAR_WIDTH_CJK = 14; // Average character width for CJK 12px font
 // -----------------------------------------------------------------------------
 // NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
 // -----------------------------------------------------------------------------
