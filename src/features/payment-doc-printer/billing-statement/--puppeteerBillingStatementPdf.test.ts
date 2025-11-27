@@ -1,4 +1,4 @@
-import { puppeteerBillingStatementPdf } from "./--generateBillingStatementPdf";
+import { puppeteerBillingStatementPdf } from "./--puppeteerBillingStatementPdf";
 import puppeteer from "puppeteer";
 import { writeFile, readFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
