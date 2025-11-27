@@ -22,11 +22,8 @@ export const LEFT_COLUMN_X = 440; // 330 pt
 // -----------------------------------------------------------------------------
 // PAGE PADDING & SPACING
 // -----------------------------------------------------------------------------
-export const PAGE_PADDING_TOP = "142px";
-export const PAGE_PADDING_BOTTOM = "28px";
-
 export const MARGIN_TOP_HEADER = 60;
-export const MARGIN_TOP_SECTION = 30; // Space between sections
+export const MARGIN_TOP_SECTION = 24; // Space between sections
 export const MARGIN_TOP_TABLE = 12; // Space above tables
 export const PADDING_BOTTOM_SECTION = 16; // Space below a section header
 
@@ -71,7 +68,7 @@ export const COLUMN_GAP = 80;
 // TABLE CONFIGURATION
 // -----------------------------------------------------------------------------
 // Table dimensions
-export const TBL_HEADER_HEIGHT = 28;
+export const TABLE_HEADER_HEIGHT = 28;
 export const TBL_ROW_HEIGHT = 38; // ≈ 29 pt
 
 // Column widths
@@ -98,9 +95,8 @@ export const TABLE_DATA_FONT_WEIGHT = 400;
 
 // NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
 // Table component heights
-export const TABLE_TITLE_HEIGHT_PX = 70; // h3 title + margin
-export const TABLE_HEADER_HEIGHT_PX = 28;
-export const TABLE_ROW_HEIGHT_PX = 38;
+export const TABLE_TITLE_HEIGHT = 52; // h3 title (16px) + margin-top (24px) + padding bottom (12 px)
+export const TABLE_ROW_HEIGHT = 38;
 export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
 
 // Constants for multiline row height estimation
@@ -110,8 +106,8 @@ export const AVG_CHAR_WIDTH = 6.5; // Average character width for 12px font
 // NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
 // -----------------------------------------------------------------------------
 export const PAGE_HEADER_HEIGHT = 108;
-export const PAGE_FOOTER_HEIGHT = 28;
-export const PAGE_CONTENT_HEIGHT = 920; // PAGE_HEIGHT (1056) - HEADER - FOOTER
+export const PAGE_FOOTER_HEIGHT = 48;
+export const PAGE_CONTENT_HEIGHT = 900; // PAGE_HEIGHT (1056) - HEADER - FOOTER
 
 // Section heights (approximate)
 export const BILL_TO_SECTION_HEIGHT_PX = 140;

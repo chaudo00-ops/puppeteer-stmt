@@ -31,7 +31,7 @@ import {
   MARGIN_TOP_TABLE,
   TABLE_HEADER_BG_COLOR,
   TABLE_HEADER_TEXT_COLOR,
-  TBL_HEADER_HEIGHT,
+  TABLE_HEADER_HEIGHT,
   TABLE_HEADER_FONT_SIZE,
   TABLE_HEADER_FONT_WEIGHT,
   TABLE_EVEN_ROW_COLOR,
@@ -50,9 +50,8 @@ import {
   PAGE_CONTENT_HEIGHT,
   BILL_TO_SECTION_HEIGHT_PX,
   DETAILS_SUMMARY_SECTION_HEIGHT_PX,
-  TABLE_TITLE_HEIGHT_PX,
-  TABLE_HEADER_HEIGHT_PX,
-  TABLE_ROW_HEIGHT_PX,
+  TABLE_TITLE_HEIGHT,
+  TABLE_ROW_HEIGHT,
   TABLE_SUBTOTAL_TOTAL_ROWS,
   PAGE_HEADER_HEIGHT,
   PAGE_FOOTER_HEIGHT,
@@ -80,7 +79,7 @@ function estimateRowHeight(text: string): number {
     TABLE_CELL_PADDING_VERTICAL * 2 + numLines * TABLE_DATA_FONT_SIZE; // 12px font-size = line height
 
   // Return the larger of calculated height or minimum row height
-  return Math.max(TABLE_ROW_HEIGHT_PX, calculatedHeight);
+  return Math.max(TABLE_ROW_HEIGHT, calculatedHeight);
 }
 
 /**
@@ -140,9 +139,9 @@ export async function generateHtmlTemplate(
   const firstPageFixedHeight =
     BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
   const activityTableOverhead =
-    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT;
+    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
   const paymentsTableOverhead =
-    TABLE_TITLE_HEIGHT_PX + TABLE_HEADER_HEIGHT_PX + PAGE_FOOTER_HEIGHT;
+    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
 
   // Available height for table rows on first page (after fixed sections)
   // Calculate both with and without footer rows
@@ -150,15 +149,17 @@ export async function generateHtmlTemplate(
     PAGE_CONTENT_HEIGHT - firstPageFixedHeight - activityTableOverhead;
 
   // Available height for table rows on continuation pages
-  const continuationPageAvailable = PAGE_CONTENT_HEIGHT - activityTableOverhead;
+  const continuationPageAvailable =
+    PAGE_CONTENT_HEIGHT - activityTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
 
   // Full page for payments table
-  const paymentsPageAvailable = PAGE_CONTENT_HEIGHT - paymentsTableOverhead;
+  const paymentsPageAvailable =
+    PAGE_CONTENT_HEIGHT - paymentsTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
   const paymentsPageRowsWithTotal = Math.floor(
-    (paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT_PX
+    (paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT
   );
   const paymentsPageRowsWithoutTotal = Math.floor(
-    paymentsPageAvailable / TABLE_ROW_HEIGHT_PX
+    paymentsPageAvailable / TABLE_ROW_HEIGHT
   );
 
   // Split activity campaigns into pages using dynamic height calculation
@@ -325,6 +326,15 @@ export async function generateHtmlTemplate(
     const isFirstPage = pageIndex === 0;
     const isLastActivityPage = pageIndex === activityPages.length - 1;
 
+    const firstPageCampaignsHeight = calculateCampaignsHeight(campaigns);
+    // Subtotal + Total rows not on first page
+    const customMarginTop =
+      isFirstPage && activityPages.length !== 1
+        ? MARGIN_TOP_SECTION +
+          firstPageAvailableForActivity -
+          firstPageCampaignsHeight
+        : MARGIN_TOP_SECTION;
+
     pagesHtml += `
   <!-- Page ${pageNumber} -->
   <div class="page ${isLastActivityPage ? "last-page" : ""}">
@@ -414,7 +424,7 @@ export async function generateHtmlTemplate(
 
     // Activity details table
     pagesHtml += `
-      <div class="activity-details section">
+      <div class="activity-details" style="margin-top: ${customMarginTop}px;">
         <table>
           ${generateActivityTableHeader()}
           <tbody>
@@ -717,7 +727,7 @@ export async function generateHtmlTemplate(
       font-size: ${TABLE_HEADER_FONT_SIZE}px;
       font-weight: ${TABLE_HEADER_FONT_WEIGHT};
       text-align: left;
-      height: ${TBL_HEADER_HEIGHT}px;
+      height: ${TABLE_HEADER_HEIGHT}px;
       padding: 7px ${TABLE_CELL_PADDING_HORIZONTAL}px;
     }
 
@@ -750,6 +760,10 @@ export async function generateHtmlTemplate(
 
     tbody tr:nth-child(even) {
       background-color: ${TABLE_EVEN_ROW_COLOR};
+    }
+
+    tbody tr:last-child:not(.total-row) {
+      border-bottom: 1px solid ${TABLE_EVEN_ROW_COLOR} !important;
     }
 
     .last-page tbody tr:nth-last-child(3) {
