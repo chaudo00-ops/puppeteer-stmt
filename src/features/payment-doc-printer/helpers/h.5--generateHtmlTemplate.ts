@@ -432,7 +432,7 @@ export async function generateHtmlTemplate(
               .map(
                 (campaign) => `
             <tr>
-              <td>${campaign.cpgn_name}</td>
+              <td class="description">${campaign.cpgn_name}</td>
               <td>${campaign.imp}</td>
               <td>${campaign.cost}</td>
             </tr>`
@@ -481,7 +481,7 @@ export async function generateHtmlTemplate(
                 (payment) => `
             <tr>
               <td>${payment.paid_time}</td>
-              <td>${payment.description}</td>
+              <td class="description">${payment.description}</td>
               <td>${payment.total_amount}</td>
             </tr>`
               )
@@ -779,6 +779,16 @@ export async function generateHtmlTemplate(
       word-wrap: break-word;
       overflow-wrap: break-word;
       white-space: normal;
+    }
+
+    /* Constrain description column to prevent overflow */
+    td.description {
+      max-height: ${TBL_ROW_HEIGHT}px;
+      overflow: hidden;
+      display: -webkit-box;
+      -webkit-line-clamp: 2;
+      -webkit-box-orient: vertical;
+      line-height: 1.2;
     }
 
     .subtotal-row {
