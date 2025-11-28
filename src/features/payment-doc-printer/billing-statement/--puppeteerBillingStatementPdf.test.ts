@@ -2,16 +2,12 @@ import { puppeteerBillingStatementPdf } from "./--puppeteerBillingStatementPdf";
 import puppeteer from "puppeteer";
 import { writeFile, readFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "path";
 import sharp from "sharp";
 import type { TSupportedLanguage } from "../helpers/h.0--translations";
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
-
 describe("puppeteerBillingStatementPdf", () => {
-  const SCREENSHOTS_DIR = join(
+  const SCREENSHOTS_DIR = path.join(
     __dirname,
     "__screenshots__",
     "billing-statement"
@@ -118,7 +114,7 @@ describe("puppeteerBillingStatementPdf", () => {
       await page.setContent(html, { waitUntil: "networkidle0" });
 
       // Ensure the directory exists
-      const screenshotDir = dirname(screenshotPath);
+      const screenshotDir = path.dirname(screenshotPath);
       if (!existsSync(screenshotDir)) {
         await mkdir(screenshotDir, { recursive: true });
       }
@@ -205,15 +201,15 @@ describe("puppeteerBillingStatementPdf", () => {
       expect(result.html.length).toBeGreaterThan(0);
 
       // Define screenshot paths
-      const baselineScreenshotPath = join(
+      const baselineScreenshotPath = path.join(
         SCREENSHOTS_DIR,
         `baseline-${name}.png`
       );
-      const currentScreenshotPath = join(
+      const currentScreenshotPath = path.join(
         SCREENSHOTS_DIR,
         `current-${name}.png`
       );
-      const diffScreenshotPath = join(SCREENSHOTS_DIR, `diff-${name}.png`);
+      const diffScreenshotPath = path.join(SCREENSHOTS_DIR, `diff-${name}.png`);
 
       // Capture current screenshot
       await captureHtmlScreenshot(result.html, currentScreenshotPath);
