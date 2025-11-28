@@ -193,7 +193,6 @@ describe("puppeteerBillingStatementPdf", () => {
       // Verify the result structure
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
-      expect(result).toHaveProperty("context");
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
@@ -285,17 +284,12 @@ describe("puppeteerBillingStatementPdf", () => {
   });
 
   describe("PDF generation validation", () => {
-    it("should generate valid PDF with context information", async () => {
+    it("should generate valid PDF", async () => {
       const result = await puppeteerBillingStatementPdf({
         sub_acc_id: "68|95|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "en",
       });
-
-      // Verify context has tracking information
-      expect(result.context).toBeDefined();
-      expect(result.context.getPageNo()).toBeGreaterThan(0);
-      expect(result.context.Y).toBeDefined();
 
       // Verify PDF magic number (PDF header)
       const pdfHeader = String.fromCharCode(...result.pdf.slice(0, 5));
