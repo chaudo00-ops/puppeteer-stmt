@@ -1,10 +1,12 @@
 /** @type {import('ts-jest').JestConfigWithTsJest} */
 export default {
   preset: 'ts-jest/presets/default-esm',
-  testEnvironment: 'node',
+  testEnvironment: './jest-environment.cjs',
   extensionsToTreatAsEsm: ['.ts'],
   moduleNameMapper: {
     '^(\\.{1,2}/.*)\\.js$': '$1',
+    '^puppeteer-core/internal/(.*)$': 'puppeteer-core/lib/esm/puppeteer/$1',
+    '^puppeteer-core$': 'puppeteer-core/lib/esm/puppeteer/puppeteer-core.js',
   },
   transform: {
     '^.+\\.tsx?$': [

@@ -21,12 +21,27 @@ export class PuppeteerRenderer {
   }
 
   /**
+   * Get Chromium executable path
+   */
+  private async getExecutablePath(): Promise<string | undefined> {
+    try {
+      const chromium = await import("@sparticuz/chromium");
+      return await chromium.default.executablePath();
+    } catch {
+      // If @sparticuz/chromium is not available, let puppeteer use its default
+      return undefined;
+    }
+  }
+
+  /**
    * Render HTML to PDF and save PDF as Uint8Array
    */
   async renderToPdf(): Promise<Uint8Array> {
+    const executablePath = await this.getExecutablePath();
     const browser = await puppeteer.launch({
       headless: true,
       args: ["--no-sandbox", "--disable-setuid-sandbox"],
+      executablePath,
     });
     try {
       const page = await browser.newPage();
