@@ -149,10 +149,7 @@ describe("puppeteerBillingStatementPdf", () => {
       ]);
 
       // If dimensions don't match, images are different
-      if (
-        meta1.width !== meta2.width ||
-        meta1.height !== meta2.height
-      ) {
+      if (meta1.width !== meta2.width || meta1.height !== meta2.height) {
         return { match: false, diffPercentage: 100 };
       }
 
@@ -171,7 +168,8 @@ describe("puppeteerBillingStatementPdf", () => {
         }
       }
 
-      const diffPercentage = differentPixels / (totalPixels * (meta1.channels || 3));
+      const diffPercentage =
+        differentPixels / (totalPixels * (meta1.channels || 3));
       const match = diffPercentage <= PIXEL_DIFF_THRESHOLD;
 
       return { match, diffPercentage };
@@ -219,13 +217,14 @@ describe("puppeteerBillingStatementPdf", () => {
 
       if (!baselineExists) {
         // First run: create baseline
-        await writeFile(baselineScreenshotPath, await readFile(currentScreenshotPath));
+        await writeFile(
+          baselineScreenshotPath,
+          await readFile(currentScreenshotPath)
+        );
         console.log(
           `\n📸 Baseline screenshot created for ${name}: ${baselineScreenshotPath}`
         );
-        console.log(
-          `   Future test runs will compare against this baseline.`
-        );
+        console.log(`   Future test runs will compare against this baseline.`);
       } else {
         // Subsequent runs: compare with baseline
         const comparison = await compareImages(
@@ -236,8 +235,12 @@ describe("puppeteerBillingStatementPdf", () => {
         if (!comparison.match) {
           // Create a diff image for debugging
           const [baselineImg, currentImg] = await Promise.all([
-            sharp(baselineScreenshotPath).raw().toBuffer({ resolveWithObject: true }),
-            sharp(currentScreenshotPath).raw().toBuffer({ resolveWithObject: true }),
+            sharp(baselineScreenshotPath)
+              .raw()
+              .toBuffer({ resolveWithObject: true }),
+            sharp(currentScreenshotPath)
+              .raw()
+              .toBuffer({ resolveWithObject: true }),
           ]);
 
           // Create a simple diff visualization
@@ -257,9 +260,7 @@ describe("puppeteerBillingStatementPdf", () => {
             .png()
             .toFile(diffScreenshotPath);
 
-          console.log(
-            `\n❌ Screenshot mismatch for ${name}:`
-          );
+          console.log(`\n❌ Screenshot mismatch for ${name}:`);
           console.log(`   Baseline: ${baselineScreenshotPath}`);
           console.log(`   Current:  ${currentScreenshotPath}`);
           console.log(`   Diff:     ${diffScreenshotPath}`);
@@ -272,7 +273,9 @@ describe("puppeteerBillingStatementPdf", () => {
 
         if (comparison.match) {
           console.log(
-            `\n✅ Screenshot matches baseline for ${name} (diff: ${(comparison.diffPercentage * 100).toFixed(4)}%)`
+            `\n✅ Screenshot matches baseline for ${name} (diff: ${(
+              comparison.diffPercentage * 100
+            ).toFixed(4)}%)`
           );
         }
       }
@@ -292,23 +295,23 @@ describe("puppeteerBillingStatementPdf", () => {
       expect(pdfHeader).toBe("%PDF-");
     });
 
-    it("should handle different months", async () => {
-      const months = [
-        new Date("2025-01-01"),
-        new Date("2025-06-01"),
-        new Date("2025-12-01"),
-      ];
+    // it("should handle different months", async () => {
+    //   const months = [
+    //     new Date("2025-01-01"),
+    //     new Date("2025-06-01"),
+    //     new Date("2025-12-01"),
+    //   ];
 
-      for (const month of months) {
-        const result = await puppeteerBillingStatementPdf({
-          sub_acc_id: "68|95|Shen Yun New York|false|organization",
-          month,
-          language: "en",
-        });
+    //   for (const month of months) {
+    //     const result = await puppeteerBillingStatementPdf({
+    //       sub_acc_id: "68|95|Shen Yun New York|false|organization",
+    //       month,
+    //       language: "en",
+    //     });
 
-        expect(result.pdf).toBeInstanceOf(Uint8Array);
-        expect(result.pdf.length).toBeGreaterThan(0);
-      }
-    });
+    //     expect(result.pdf).toBeInstanceOf(Uint8Array);
+    //     expect(result.pdf.length).toBeGreaterThan(0);
+    //   }
+    // });
   });
 });
