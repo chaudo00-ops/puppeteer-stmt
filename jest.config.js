@@ -25,6 +25,9 @@ export default {
       },
     ],
   },
+  transformIgnorePatterns: [
+    'node_modules/(?!(puppeteer|puppeteer-core)/)',
+  ],
   testMatch: ['**/*.test.ts'],
   moduleFileExtensions: ['ts', 'tsx', 'js', 'jsx', 'json', 'node'],
   // Automatically clear mock calls, instances, contexts and results before every test

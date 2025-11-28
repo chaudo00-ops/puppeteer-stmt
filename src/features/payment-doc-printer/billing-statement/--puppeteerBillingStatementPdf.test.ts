@@ -3,8 +3,13 @@ import puppeteer from "puppeteer";
 import { writeFile, readFile, mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
+import { fileURLToPath } from "url";
+import { dirname } from "path";
 import sharp from "sharp";
 import type { TSupportedLanguage } from "../helpers/h.0--translations";
+
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 describe("puppeteerBillingStatementPdf", () => {
   const SCREENSHOTS_DIR = path.join(
