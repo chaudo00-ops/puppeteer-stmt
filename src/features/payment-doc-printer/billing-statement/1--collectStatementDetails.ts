@@ -55,7 +55,7 @@ export async function collectStatementDetails(
   const payments_received: TBillingStatementDetails["payments"] = Array.from(
     { length: numRows_payments },
     () => ({
-      paid_time: "2024-01-15T10:30:00.000Z",
+      paid_time: new Date().toISOString(),
       description: " Mastercard ***8888",
       total_amount: "30000",
       tax: "150",

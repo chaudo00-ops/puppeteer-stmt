@@ -15,6 +15,7 @@ cp "$SOURCE/src/features/payment-doc-printer/helpers/h.0--translations.ts" "$DES
 cp "$SOURCE/src/features/payment-doc-printer/helpers/h.2--puppeteerRenderer.ts" "$DESTINATION/helpers/"
 cp "$SOURCE/src/features/payment-doc-printer/helpers/h.2.1--puppeteerBillingRenderer.ts" "$DESTINATION/helpers/"
 cp "$SOURCE/src/features/payment-doc-printer/helpers/h.5--generateHtmlTemplate.ts" "$DESTINATION/helpers/"
+cp "$SOURCEsrc/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf.test.ts" "$DESTINATION/billing-statement/--puppeteerBillingStatementPdf.test.ts"
 
 # Copy src files
 cp "$SOURCE/test-pdf-lib-pipeline.ts" "$DESTINATION/billing-statement/--puppeteerBillingStatementPdf-test.ts"
