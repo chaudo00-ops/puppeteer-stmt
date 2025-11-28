@@ -1,6 +1,5 @@
 import { promises as fs } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "path";
 import type { TBillingStatementDetails_Display } from "./h.0--types";
 import {
   type TBillingStatementTranslations,
@@ -117,9 +116,7 @@ export async function generateHtmlTemplate(
     total_tax,
   } = displayed_details;
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
-  const logoPath = join(
+  const logoPath = path.join(
     __dirname,
     "..",
     "assets",

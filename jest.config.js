@@ -20,6 +20,7 @@ export default {
           strict: true,
           skipLibCheck: true,
           noEmit: true,
+          verbatimModuleSyntax: false,
         },
       },
     ],

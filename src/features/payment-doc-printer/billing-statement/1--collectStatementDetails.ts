@@ -51,7 +51,7 @@ export async function collectStatementDetails(
 	// TODO: use numRows_payments to generate
 	const payments_received: TBillingStatementDetails["payments"] = Array.from(
 		{ length: numRows_payments },
-		(_, index) => ({
+		() => ({
 			paid_time: new Date().toISOString(),
 			description: " Mastercard ***8888",
 			total_amount: "30000",

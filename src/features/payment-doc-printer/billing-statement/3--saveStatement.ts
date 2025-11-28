@@ -1,13 +1,9 @@
 import { promises as fs } from "fs";
-import { join, dirname } from "path";
-import { fileURLToPath } from "url";
+import path from "path";
 import {
   STATEMENT_PREFIX,
   type TCreateBillingStatementPdfParams,
 } from "../--IPMTDocPrinter";
-
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
 
 export async function saveStatement(
   params: TCreateBillingStatementPdfParams,
@@ -22,9 +18,9 @@ export async function saveStatement(
   const htmlFileName = `${languageSuffix}-${month}-${STATEMENT_PREFIX}.html`;
 
   // Save to output-pdfs directory
-  const outputDir = join(__dirname, "..", "..", "..", "output-pdfs");
-  const outputPath = join(outputDir, fileName);
-  const htmlOutputPath = join(outputDir, htmlFileName);
+  const outputDir = path.join(__dirname, "..", "..", "..", "output-pdfs");
+  const outputPath = path.join(outputDir, fileName);
+  const htmlOutputPath = path.join(outputDir, htmlFileName);
 
   // Ensure the output directory exists
   await fs.mkdir(outputDir, { recursive: true });
