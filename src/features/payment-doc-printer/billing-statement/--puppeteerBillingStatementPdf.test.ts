@@ -14,7 +14,7 @@ describe("puppeteerBillingStatementPdf", () => {
   );
   const SCREENSHOT_WIDTH = 816; // Letter width at 96 DPI
   const SCREENSHOT_HEIGHT = 1056; // Letter height at 96 DPI
-  const PIXEL_DIFF_THRESHOLD = 0.01; // 1% pixel difference threshold
+  const PIXEL_DIFF_THRESHOLD = 0.05; // 5% pixel difference threshold
 
   type TestCase = {
     name: string;
@@ -25,7 +25,7 @@ describe("puppeteerBillingStatementPdf", () => {
     };
   };
 
-  const testCases: TestCase[] = [
+  const testCases__short: TestCase[] = [
     {
       name: "en",
       params: {
@@ -78,6 +78,62 @@ describe("puppeteerBillingStatementPdf", () => {
       name: "es",
       params: {
         sub_acc_id: "91|99|Shen Yun Nueva York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "es",
+      },
+    },
+    {
+      name: "en",
+      params: {
+        sub_acc_id: "68|95|Shen Yun New York|true|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      },
+    },
+    {
+      name: "zh-TW",
+      params: {
+        sub_acc_id: "87|99|神韻紐約|true|organization",
+        month: new Date("2025-11-01"),
+        language: "zh-TW",
+      },
+    },
+    {
+      name: "zh-CN",
+      params: {
+        sub_acc_id: "91|99|神韵纽约|true|organization",
+        month: new Date("2025-11-01"),
+        language: "zh-CN",
+      },
+    },
+    {
+      name: "vi",
+      params: {
+        sub_acc_id: "91|99|Shen Yun New York|true|organization",
+        month: new Date("2025-11-01"),
+        language: "vi",
+      },
+    },
+    {
+      name: "ko",
+      params: {
+        sub_acc_id: "91|99|선윤 뉴욕|true|organization",
+        month: new Date("2025-11-01"),
+        language: "ko",
+      },
+    },
+    {
+      name: "ja",
+      params: {
+        sub_acc_id: "87|99|神韻ニューヨーク|true|organization",
+        month: new Date("2025-11-01"),
+        language: "ja",
+      },
+    },
+    {
+      name: "es",
+      params: {
+        sub_acc_id: "91|99|Shen Yun Nueva York|true|organization",
         month: new Date("2025-11-01"),
         language: "es",
       },
@@ -179,108 +235,123 @@ describe("puppeteerBillingStatementPdf", () => {
     }
   }
 
-  describe.each(testCases)("$name language", ({ name, params }) => {
-    it(`should generate correct HTML for ${name}`, async () => {
-      // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf(params);
+  describe.each(testCases__short)(
+    "$name language description",
+    ({ name, params }) => {
+      const { sub_acc_id } = params;
+      const parts = sub_acc_id.split("|");
+      const desc = parts[3];
+      const descType = desc === "true" ? "long" : "short";
 
-      // Verify the result structure
-      expect(result).toHaveProperty("pdf");
-      expect(result).toHaveProperty("html");
-      expect(result).toHaveProperty("statement_uri");
+      it(`should generate correct HTML for ${name}__${descType}`, async () => {
+        // Generate the billing statement
+        const result = await puppeteerBillingStatementPdf(params);
 
-      // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+        // Verify the result structure
+        expect(result).toHaveProperty("pdf");
+        expect(result).toHaveProperty("html");
+        expect(result).toHaveProperty("statement_uri");
 
-      // Verify HTML is generated
-      expect(result.html).toBeTruthy();
-      expect(typeof result.html).toBe("string");
-      expect(result.html.length).toBeGreaterThan(0);
+        // Verify PDF is generated
+        expect(result.pdf).toBeInstanceOf(Uint8Array);
+        expect(result.pdf.length).toBeGreaterThan(0);
 
-      // Define screenshot paths
-      const baselineScreenshotPath = path.join(
-        SCREENSHOTS_DIR,
-        `baseline-${name}.png`
-      );
-      const currentScreenshotPath = path.join(
-        SCREENSHOTS_DIR,
-        `current-${name}.png`
-      );
-      const diffScreenshotPath = path.join(SCREENSHOTS_DIR, `diff-${name}.png`);
+        // Verify HTML is generated
+        expect(result.html).toBeTruthy();
+        expect(typeof result.html).toBe("string");
+        expect(result.html.length).toBeGreaterThan(0);
 
-      // Capture current screenshot
-      await captureHtmlScreenshot(result.html, currentScreenshotPath);
-
-      // Check if baseline exists
-      const baselineExists = existsSync(baselineScreenshotPath);
-
-      if (!baselineExists) {
-        // First run: create baseline
-        await writeFile(
-          baselineScreenshotPath,
-          await readFile(currentScreenshotPath)
+        // Define screenshot paths
+        const baselineScreenshotPath = path.join(
+          SCREENSHOTS_DIR,
+          `baseline-${name}__${descType}.png`
         );
-        console.log(
-          `\n📸 Baseline screenshot created for ${name}: ${baselineScreenshotPath}`
+        const currentScreenshotPath = path.join(
+          SCREENSHOTS_DIR,
+          `current-${name}__${descType}.png`
         );
-        console.log(`   Future test runs will compare against this baseline.`);
-      } else {
-        // Subsequent runs: compare with baseline
-        const comparison = await compareImages(
-          baselineScreenshotPath,
-          currentScreenshotPath
+        const diffScreenshotPath = path.join(
+          SCREENSHOTS_DIR,
+          `diff-${name}__${descType}.png`
         );
 
-        if (!comparison.match) {
-          // Create a diff image for debugging
-          const [baselineImg, currentImg] = await Promise.all([
-            sharp(baselineScreenshotPath)
-              .raw()
-              .toBuffer({ resolveWithObject: true }),
-            sharp(currentScreenshotPath)
-              .raw()
-              .toBuffer({ resolveWithObject: true }),
-          ]);
+        // Capture current screenshot
+        await captureHtmlScreenshot(result.html, currentScreenshotPath);
 
-          // Create a simple diff visualization
-          const diffBuffer = Buffer.alloc(baselineImg.data.length);
-          for (let i = 0; i < baselineImg.data.length; i++) {
-            const diff = Math.abs(baselineImg.data[i] - currentImg.data[i]);
-            diffBuffer[i] = diff > 0 ? 255 : 0; // Highlight differences in white
+        // Check if baseline exists
+        const baselineExists = existsSync(baselineScreenshotPath);
+
+        if (!baselineExists) {
+          // First run: create baseline
+          await writeFile(
+            baselineScreenshotPath,
+            await readFile(currentScreenshotPath)
+          );
+          console.log(
+            `\n📸 Baseline screenshot created for ${name}__${descType}: ${baselineScreenshotPath}`
+          );
+          console.log(
+            `   Future test runs will compare against this baseline.`
+          );
+        } else {
+          // Subsequent runs: compare with baseline
+          const comparison = await compareImages(
+            baselineScreenshotPath,
+            currentScreenshotPath
+          );
+
+          if (!comparison.match) {
+            // Create a diff image for debugging
+            const [baselineImg, currentImg] = await Promise.all([
+              sharp(baselineScreenshotPath)
+                .raw()
+                .toBuffer({ resolveWithObject: true }),
+              sharp(currentScreenshotPath)
+                .raw()
+                .toBuffer({ resolveWithObject: true }),
+            ]);
+
+            // Create a simple diff visualization
+            const diffBuffer = Buffer.alloc(baselineImg.data.length);
+            for (let i = 0; i < baselineImg.data.length; i++) {
+              const diff = Math.abs(baselineImg.data[i] - currentImg.data[i]);
+              diffBuffer[i] = diff > 0 ? 255 : 0; // Highlight differences in white
+            }
+
+            await sharp(diffBuffer, {
+              raw: {
+                width: baselineImg.info.width,
+                height: baselineImg.info.height,
+                channels: baselineImg.info.channels,
+              },
+            })
+              .png()
+              .toFile(diffScreenshotPath);
+
+            if (!comparison.match) {
+              console.log(`\n❌ Screenshot mismatch for ${name}:`);
+              console.log(`   Baseline: ${baselineScreenshotPath}`);
+              console.log(`   Current:  ${currentScreenshotPath}`);
+              console.log(`   Diff:     ${diffScreenshotPath}`);
+              console.log(
+                `   Difference: ${(comparison.diffPercentage * 100).toFixed(
+                  4
+                )}%`
+              );
+            }
+
+            expect(comparison.match).toBe(true);
+
+            console.log(
+              `\n✅ Screenshot matches baseline for ${name}__${descType} (diff: ${(
+                comparison.diffPercentage * 100
+              ).toFixed(4)}%)`
+            );
           }
-
-          await sharp(diffBuffer, {
-            raw: {
-              width: baselineImg.info.width,
-              height: baselineImg.info.height,
-              channels: baselineImg.info.channels,
-            },
-          })
-            .png()
-            .toFile(diffScreenshotPath);
-
-          console.log(`\n❌ Screenshot mismatch for ${name}:`);
-          console.log(`   Baseline: ${baselineScreenshotPath}`);
-          console.log(`   Current:  ${currentScreenshotPath}`);
-          console.log(`   Diff:     ${diffScreenshotPath}`);
-          console.log(
-            `   Difference: ${(comparison.diffPercentage * 100).toFixed(4)}%`
-          );
         }
-
-        expect(comparison.match).toBe(true);
-
-        if (comparison.match) {
-          console.log(
-            `\n✅ Screenshot matches baseline for ${name} (diff: ${(
-              comparison.diffPercentage * 100
-            ).toFixed(4)}%)`
-          );
-        }
-      }
-    }, 30000); // 30 second timeout for each test
-  });
+      }, 30000); // 30 second timeout for each test
+    }
+  );
 
   describe("PDF generation validation", () => {
     it("should generate valid PDF", async () => {

@@ -24,3 +24,5 @@ dist-ssr
 *.sw?
 src/output-pdfs/*
 src/output-pdfs/billing-stmt-91|99|Shen Yun New York|false|organization-2025-11.pdf
+src/features/payment-doc-printer/billing-statement/__screenshots__/billing-statement/current-*.png
+src/features/payment-doc-printer/billing-statement/__screenshots__/billing-statement/diff-*.png
