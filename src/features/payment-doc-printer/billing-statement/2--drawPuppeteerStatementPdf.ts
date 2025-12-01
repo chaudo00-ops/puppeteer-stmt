@@ -14,5 +14,6 @@ export async function drawPuppeteerStatementPdf(
   return {
     pdf: pdfBytes,
     html: renderer.getHtml(),
+    context: renderer.getContext(),
   };
 }

@@ -100,13 +100,23 @@ function calculateCampaignsHeight(
 }
 
 /**
+ * Position tracking information for PDF context
+ */
+export type TPositionContext = {
+  billingPage: number;
+  billingY: number;
+  paymentPage: number;
+  paymentY: number;
+};
+
+/**
  * Generate HTML template for billing statement
  */
 export async function generateHtmlTemplate(
   displayed_details: TBillingStatementDetails_Display,
   translations: TBillingStatementTranslations,
   language: TSupportedLanguage
-): Promise<string> {
+): Promise<{ html: string; context: TPositionContext }> {
   const {
     account,
     paymentProfile,
@@ -532,7 +542,46 @@ export async function generateHtmlTemplate(
     pageNumber++;
   });
 
-  return `
+  // Calculate position context
+  // Activity Details ending position
+  const billingPage = activityPages.length;
+  const lastActivityPageCampaigns = activityPages[activityPages.length - 1] || [];
+  const lastActivityPageHeight = calculateCampaignsHeight(
+    lastActivityPageCampaigns,
+    language
+  );
+
+  // Calculate Y position: PAGE_CONTENT_HEIGHT minus (table overhead + rows + footer)
+  // For the last page, we have the subtotal and total rows
+  const activityTableFooterHeight = TABLE_SUBTOTAL_TOTAL_ROWS;
+  const billingY =
+    PAGE_CONTENT_HEIGHT -
+    activityTableOverhead -
+    lastActivityPageHeight -
+    activityTableFooterHeight;
+
+  // Payment Page ending position
+  const paymentPage = activityPages.length + paymentPages.length;
+  const lastPaymentPagePayments = paymentPages[paymentPages.length - 1] || [];
+  const lastPaymentPageHeight =
+    lastPaymentPagePayments.length * TABLE_ROW_HEIGHT;
+
+  // Calculate Y position for payment page
+  const paymentTableFooterHeight = TABLE_SUBTOTAL_TOTAL_ROWS;
+  const paymentY =
+    PAGE_CONTENT_HEIGHT -
+    paymentsTableOverhead -
+    lastPaymentPageHeight -
+    paymentTableFooterHeight;
+
+  const context: TPositionContext = {
+    billingPage,
+    billingY,
+    paymentPage,
+    paymentY,
+  };
+
+  const html = `
 <!DOCTYPE html>
 <html>
 <head>
@@ -870,4 +919,6 @@ export async function generateHtmlTemplate(
 </body>
 </html>
 `;
+
+  return { html, context };
 }
