@@ -484,7 +484,27 @@ export async function generateHtmlTemplate(
   </div>`;
 
     pageNumber++;
-    context.setBillingPage(pageNumber);
+
+    // Calculate position context
+    // Activity Details ending position
+    const lastActivityPageCampaigns =
+      activityPages[activityPages.length - 1] || [];
+    const lastActivityPageHeight = calculateCampaignsHeight(
+      lastActivityPageCampaigns,
+      language
+    );
+
+    // Calculate Y position: PAGE_CONTENT_HEIGHT minus (table overhead + rows + footer)
+    // For the last page, we have the subtotal and total rows
+    const activityTableFooterHeight = TABLE_SUBTOTAL_TOTAL_ROWS;
+    const billingY =
+      PAGE_CONTENT_HEIGHT -
+      activityTableOverhead -
+      lastActivityPageHeight -
+      activityTableFooterHeight;
+
+    context.setBillingY(billingY);
+    context.setBillingPage(pageNumber - 1);
   });
 
   // Generate payment pages
@@ -533,7 +553,23 @@ export async function generateHtmlTemplate(
   </div>`;
 
     pageNumber++;
-    context.setPaymentPage(pageNumber);
+
+    // Calculate position context
+    // Payment Page ending position
+    const lastPaymentPagePayments = paymentPages[paymentPages.length - 1] || [];
+    const lastPaymentPageHeight =
+      lastPaymentPagePayments.length * TABLE_ROW_HEIGHT;
+
+    // Calculate Y position for payment page
+    const paymentTableFooterHeight = TABLE_SUBTOTAL_TOTAL_ROWS;
+    const paymentY =
+      PAGE_CONTENT_HEIGHT -
+      paymentsTableOverhead -
+      lastPaymentPageHeight -
+      paymentTableFooterHeight;
+
+    context.setPaymentY(paymentY);
+    context.setPaymentPage(pageNumber - 1);
   });
 
   return `

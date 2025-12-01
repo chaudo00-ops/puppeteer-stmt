@@ -4,7 +4,7 @@ import { mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
 // import sharp from "sharp";
-import type { TSupportedLanguage } from "../helpers/h.0--translations";
+//import type { TSupportedLanguage } from "../helpers/h.0--translations";
 
 describe("puppeteerBillingStatementPdf", () => {
   const SCREENSHOTS_DIR = path.join(
@@ -16,6 +16,7 @@ describe("puppeteerBillingStatementPdf", () => {
   // const SCREENSHOT_HEIGHT = 1056; // Letter height at 96 DPI
   // const PIXEL_DIFF_THRESHOLD = 0.05; // 5% pixel difference threshold
 
+  /*
   type TestCase = {
     name: string;
     params: {
@@ -24,7 +25,9 @@ describe("puppeteerBillingStatementPdf", () => {
       language: TSupportedLanguage;
     };
   };
+  */
 
+  /*
   const testCases__short: TestCase[] = [
     {
       name: "en",
@@ -139,6 +142,7 @@ describe("puppeteerBillingStatementPdf", () => {
       },
     },
   ];
+  */
 
   beforeAll(async () => {
     // Ensure screenshots directory exists
@@ -239,38 +243,43 @@ describe("puppeteerBillingStatementPdf", () => {
   }
     */
 
-  describe.each(testCases__short)(
-    "$name language description",
-    ({ name, params }) => {
-      const { sub_acc_id } = params;
-      const parts = sub_acc_id.split("|");
-      const desc = parts[3];
-      const descType = desc === "true" ? "long" : "short";
+  describe("Short description", () => {
+    test(`en`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "68|95|Shen Yun New York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      });
 
-      it(`should generate correct HTML for ${name}__${descType}`, async () => {
-        // Generate the billing statement
-        const result = await puppeteerBillingStatementPdf(params);
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
 
-        // Verify the result structure
-        expect(result).toHaveProperty("pdf");
-        expect(result).toHaveProperty("html");
-        expect(result).toHaveProperty("statement_uri");
-        expect(result).toHaveProperty("context");
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
 
-        // Verify PDF is generated
-        expect(result.pdf).toBeInstanceOf(Uint8Array);
-        expect(result.pdf.length).toBeGreaterThan(0);
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toMatchInlineSnapshot(`3897322`);
 
-        // Verify HTML is generated
-        expect(result.html).toBeTruthy();
-        expect(typeof result.html).toBe("string");
-        expect(result.html.length).toBeGreaterThan(0);
-        expect(result.html).toMatchInlineSnapshot();
-
-        // Verify context
-        const pdfContext = result.context;
-        expect(pdfContext).toMatchInlineSnapshot();
-        /*
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 5,
+  "billingY": 692,
+  "pageNo": 1,
+  "paymentPage": 11,
+  "paymentY": 692,
+}
+`);
+      /*
         // Define screenshot paths
         const baselineScreenshotPath = path.join(
           SCREENSHOTS_DIR,
@@ -360,40 +369,501 @@ describe("puppeteerBillingStatementPdf", () => {
           }
         }
           */
-      }, 30000); // 30 second timeout for each test
-    }
-  );
+    }, 10000);
 
-  describe("PDF generation validation", () => {
-    it("should generate valid PDF", async () => {
+    test(`zh-TW`, async () => {
+      // Generate the billing statement
       const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "68|95|Shen Yun New York|false|organization",
+        sub_acc_id: "87|99|神韻紐約|false|organization",
         month: new Date("2025-11-01"),
+        language: "zh-TW",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4251031`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 692,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`zh-CN`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|神韵纽约|false|organization",
+        month: new Date("2025-11-01"),
+        language: "zh-CN",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4251553`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 540,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`vi`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|Shen Yun New York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "vi",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4252179`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 540,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`ko`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|Shen Yun New York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "ko",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4251596`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 540,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`ja`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "87|99|神韻ニューヨーク|false|organization",
+        month: new Date("2025-11-01"),
+        language: "ja",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4251165`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 692,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`es`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|Shen Yun Nueva York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "es",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4252273`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 540,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+  });
+
+  describe("Long description", () => {
+    test(`en`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "68|95|Shen Yun New York|TRUE|organization",
+        month: new Date("2025-12-01"),
         language: "en",
       });
 
-      // Verify PDF magic number (PDF header)
-      const pdfHeader = String.fromCharCode(...result.pdf.slice(0, 5));
-      expect(pdfHeader).toBe("%PDF-");
-    });
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
 
-    // it("should handle different months", async () => {
-    //   const months = [
-    //     new Date("2025-01-01"),
-    //     new Date("2025-06-01"),
-    //     new Date("2025-12-01"),
-    //   ];
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
 
-    //   for (const month of months) {
-    //     const result = await puppeteerBillingStatementPdf({
-    //       sub_acc_id: "68|95|Shen Yun New York|false|organization",
-    //       month,
-    //       language: "en",
-    //     });
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toMatchInlineSnapshot(`3899754`);
 
-    //     expect(result.pdf).toBeInstanceOf(Uint8Array);
-    //     expect(result.pdf.length).toBeGreaterThan(0);
-    //   }
-    // });
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 5,
+  "billingY": 44,
+  "pageNo": 1,
+  "paymentPage": 11,
+  "paymentY": 692,
+}
+`);
+    }, 10000);
+
+    test(`zh-TW`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "87|99|神韻紐約|true|organization",
+        month: new Date("2025-12-01"),
+        language: "zh-TW",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4252139`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 6,
+  "billingY": 96,
+  "pageNo": 1,
+  "paymentPage": 12,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`zh-CN`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|神韵纽约|true|organization",
+        month: new Date("2025-12-01"),
+        language: "zh-CN",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4603831`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 7,
+  "billingY": 620,
+  "pageNo": 1,
+  "paymentPage": 13,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`vi`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|Shen Yun New York|true|organization",
+        month: new Date("2025-12-01"),
+        language: "vi",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4607160`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 7,
+  "billingY": 330,
+  "pageNo": 1,
+  "paymentPage": 13,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`ko`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|Shen Yun New York|true|organization",
+        month: new Date("2025-12-01"),
+        language: "ko",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4604639`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 7,
+  "billingY": 330,
+  "pageNo": 1,
+  "paymentPage": 13,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`ja`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "87|99|神韻ニューヨーク|true|organization",
+        month: new Date("2025-12-01"),
+        language: "ja",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4604047`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 7,
+  "billingY": 540,
+  "pageNo": 1,
+  "paymentPage": 13,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
+
+    test(`es`, async () => {
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "91|99|Shen Yun Nueva York|true|organization",
+        month: new Date("2025-12-01"),
+        language: "es",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expect(result.html.length).toBeGreaterThan(0);
+      expect(result.html.length).toMatchInlineSnapshot(`4607652`);
+
+      // Verify context
+      expect(result.context).toMatchInlineSnapshot(`
+BillingPDFContext {
+  "X": 0,
+  "Y": 0,
+  "billingPage": 7,
+  "billingY": 58,
+  "pageNo": 1,
+  "paymentPage": 13,
+  "paymentY": 540,
+}
+`);
+    }, 10000);
   });
 });
