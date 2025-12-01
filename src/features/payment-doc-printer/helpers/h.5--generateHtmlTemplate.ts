@@ -58,6 +58,7 @@ import {
   AVG_CHAR_WIDTH_LATIN,
   AVG_CHAR_WIDTH_CJK,
 } from "./h.0--puppeteer-consts";
+import type { BillingPDFContext } from "./h.1.1--billingPdfContext";
 
 /**
  * Estimate the height of a table row based on description text length
@@ -105,7 +106,8 @@ function calculateCampaignsHeight(
 export async function generateHtmlTemplate(
   displayed_details: TBillingStatementDetails_Display,
   translations: TBillingStatementTranslations,
-  language: TSupportedLanguage
+  language: TSupportedLanguage,
+  context: BillingPDFContext
 ): Promise<string> {
   const {
     account,
@@ -482,6 +484,7 @@ export async function generateHtmlTemplate(
   </div>`;
 
     pageNumber++;
+    context.setBillingPage(pageNumber);
   });
 
   // Generate payment pages
@@ -530,6 +533,7 @@ export async function generateHtmlTemplate(
   </div>`;
 
     pageNumber++;
+    context.setPaymentPage(pageNumber);
   });
 
   return `

@@ -1,9 +1,9 @@
 import { puppeteerBillingStatementPdf } from "./--puppeteerBillingStatementPdf";
-import puppeteer from "puppeteer";
-import { writeFile, readFile, mkdir } from "fs/promises";
+// import puppeteer from "puppeteer";
+import { mkdir } from "fs/promises";
 import { existsSync } from "fs";
 import path from "path";
-import sharp from "sharp";
+// import sharp from "sharp";
 import type { TSupportedLanguage } from "../helpers/h.0--translations";
 
 describe("puppeteerBillingStatementPdf", () => {
@@ -12,9 +12,9 @@ describe("puppeteerBillingStatementPdf", () => {
     "__screenshots__",
     "billing-statement"
   );
-  const SCREENSHOT_WIDTH = 816; // Letter width at 96 DPI
-  const SCREENSHOT_HEIGHT = 1056; // Letter height at 96 DPI
-  const PIXEL_DIFF_THRESHOLD = 0.05; // 5% pixel difference threshold
+  // const SCREENSHOT_WIDTH = 816; // Letter width at 96 DPI
+  // const SCREENSHOT_HEIGHT = 1056; // Letter height at 96 DPI
+  // const PIXEL_DIFF_THRESHOLD = 0.05; // 5% pixel difference threshold
 
   type TestCase = {
     name: string;
@@ -150,6 +150,7 @@ describe("puppeteerBillingStatementPdf", () => {
   /**
    * Capture screenshot of HTML content
    */
+  /*
   async function captureHtmlScreenshot(
     html: string,
     screenshotPath: string
@@ -184,10 +185,12 @@ describe("puppeteerBillingStatementPdf", () => {
       await browser.close();
     }
   }
+    */
 
   /**
    * Compare two images and return the difference percentage
    */
+  /*
   async function compareImages(
     image1Path: string,
     image2Path: string
@@ -234,6 +237,7 @@ describe("puppeteerBillingStatementPdf", () => {
       return { match: false, diffPercentage: 100 };
     }
   }
+    */
 
   describe.each(testCases__short)(
     "$name language description",
@@ -251,6 +255,7 @@ describe("puppeteerBillingStatementPdf", () => {
         expect(result).toHaveProperty("pdf");
         expect(result).toHaveProperty("html");
         expect(result).toHaveProperty("statement_uri");
+        expect(result).toHaveProperty("context");
 
         // Verify PDF is generated
         expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -260,7 +265,12 @@ describe("puppeteerBillingStatementPdf", () => {
         expect(result.html).toBeTruthy();
         expect(typeof result.html).toBe("string");
         expect(result.html.length).toBeGreaterThan(0);
+        expect(result.html).toMatchInlineSnapshot();
 
+        // Verify context
+        const pdfContext = result.context;
+        expect(pdfContext).toMatchInlineSnapshot();
+        /*
         // Define screenshot paths
         const baselineScreenshotPath = path.join(
           SCREENSHOTS_DIR,
@@ -349,6 +359,7 @@ describe("puppeteerBillingStatementPdf", () => {
             );
           }
         }
+          */
       }, 30000); // 30 second timeout for each test
     }
   );

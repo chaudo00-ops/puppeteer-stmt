@@ -1,5 +1,3 @@
-import { PAGE_HEIGHT } from "./h.0--puppeteer-consts";
-
 export class PDFContext {
   public Y: number;
   public X: number;
@@ -7,7 +5,7 @@ export class PDFContext {
 
   constructor(
     /** Starts at the top of the page */
-    Y: number = PAGE_HEIGHT,
+    Y: number = 0,
     X: number = 0,
     pageNo: number = 1
   ) {
@@ -32,7 +30,7 @@ export class PDFContext {
     this.pageNo = this.pageNo + 1;
   }
 
-  resetPdfState(): void {
+  resetContextState(): void {
     this.X = 0;
     this.Y = 0;
     this.pageNo = 1;

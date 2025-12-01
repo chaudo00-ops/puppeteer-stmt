@@ -1,4 +1,4 @@
-import { PAGE_HEIGHT } from "./h.0--puppeteer-consts";
+// import { PAGE_HEIGHT } from "./h.0--puppeteer-consts";
 import { PDFContext } from "./h.1--pdfContext";
 
 export class BillingPDFContext extends PDFContext {
@@ -9,14 +9,14 @@ export class BillingPDFContext extends PDFContext {
 
   constructor(
     /** Starts at the top of the page */
-    pointerY: number = PAGE_HEIGHT,
+    pointerY: number = 0,
     pointerX: number = 0,
     pageNo: number = 1,
     /** End of Billing Activity table: y position and page number */
-    billingY: number = PAGE_HEIGHT,
+    billingY: number = 0,
     billingPage: number = 1,
     /** End of Payment table: y position and page number */
-    paymentY: number = PAGE_HEIGHT,
+    paymentY: number = 0,
     paymentPage: number = 1
   ) {
     super(pointerY, pointerX, pageNo);

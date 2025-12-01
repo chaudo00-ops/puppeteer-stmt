@@ -14,7 +14,7 @@ export async function puppeteerBillingStatementPdf(
   const displayed_details = formatStatementDisplay(statement_details);
 
   // Step 2: Generate PDF and HTML using Puppeteer
-  const { pdf, html } = await drawPuppeteerStatementPdf(
+  const { pdf, html, context } = await drawPuppeteerStatementPdf(
     displayed_details,
     language
   );
@@ -22,5 +22,5 @@ export async function puppeteerBillingStatementPdf(
   // Step 3: Save PDF and HTML versions
   const statement_uri = await saveStatement(params, pdf, html);
 
-  return { pdf, html, statement_uri };
+  return { pdf, html, statement_uri, context };
 }
