@@ -239,15 +239,16 @@ describe("puppeteerBillingStatementPdf", () => {
   }
     */
 
-  describe.each(testCases__short)(
-    "$name language description",
-    ({ name, params }) => {
-      const { sub_acc_id } = params;
-      const parts = sub_acc_id.split("|");
-      const desc = parts[3];
-      const descType = desc === "true" ? "long" : "short";
+  // Generate individual test cases to avoid Jest inline snapshot conflicts
+  testCases__short.forEach(({ name, params }) => {
+    const { sub_acc_id } = params;
+    const parts = sub_acc_id.split("|");
+    const desc = parts[3];
+    const descType = desc === "true" ? "long" : "short";
+    const testName = `${name}__${descType}`;
 
-      it(`should generate correct HTML for ${name}__${descType}`, async () => {
+    describe(`${name} language with ${descType} description`, () => {
+      it(`should generate correct HTML for ${testName}`, async () => {
         // Generate the billing statement
         const result = await puppeteerBillingStatementPdf(params);
 
@@ -361,8 +362,8 @@ describe("puppeteerBillingStatementPdf", () => {
         }
           */
       }, 30000); // 30 second timeout for each test
-    }
-  );
+    });
+  });
 
   describe("PDF generation validation", () => {
     it("should generate valid PDF", async () => {
