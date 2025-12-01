@@ -1,13 +1,15 @@
 import type { TBillingStatementDetails_Display } from "./h.0--types";
 import { getTranslations, type TSupportedLanguage } from "./h.0--translations";
 import { PuppeteerRenderer } from "./h.2--puppeteerRenderer";
-import { generateHtmlTemplate } from "./h.5--generateHtmlTemplate";
+import { generateHtmlTemplate, type TPositionContext } from "./h.5--generateHtmlTemplate";
+import { BillingPDFContext } from "./h.1.1--billingPdfContext";
 
 /**
  * Billing-specific Puppeteer renderer
  */
 export class PuppeteerBillingRenderer extends PuppeteerRenderer {
   protected statement_details: TBillingStatementDetails_Display;
+  protected context: BillingPDFContext;
 
   constructor(
     statement_details: TBillingStatementDetails_Display,
@@ -15,6 +17,7 @@ export class PuppeteerBillingRenderer extends PuppeteerRenderer {
   ) {
     super(language);
     this.statement_details = statement_details;
+    this.context = new BillingPDFContext();
   }
 
   /**
@@ -22,12 +25,18 @@ export class PuppeteerBillingRenderer extends PuppeteerRenderer {
    */
   async init(): Promise<void> {
     const translations = getTranslations(this.language);
-    const html = await generateHtmlTemplate(
+    const { html, context } = await generateHtmlTemplate(
       this.statement_details,
       translations,
       this.language
     );
     this.setHtml(html);
+
+    // Store position context
+    this.context.setBillingPage(context.billingPage);
+    this.context.setBillingY(context.billingY);
+    this.context.setPaymentPage(context.paymentPage);
+    this.context.setPaymentY(context.paymentY);
   }
 
   /**
@@ -43,5 +52,12 @@ export class PuppeteerBillingRenderer extends PuppeteerRenderer {
    */
   getHtml(): string {
     return this.html;
+  }
+
+  /**
+   * Get the position context
+   */
+  getContext(): BillingPDFContext {
+    return this.context;
   }
 }
