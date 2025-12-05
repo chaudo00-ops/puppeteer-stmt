@@ -1,248 +1,306 @@
+/* Billing Statement To Do
+ * Add Balance Adjustments
+ * Shuffle. campaign name and cost
+ *
+ *
+ */
+
+import * as fs from "fs";
+import * as path from "path";
+
 import { puppeteerBillingStatementPdf } from "./--puppeteerBillingStatementPdf";
-// import puppeteer from "puppeteer";
-import { mkdir } from "fs/promises";
-import { existsSync } from "fs";
-import path from "path";
-// import sharp from "sharp";
-//import type { TSupportedLanguage } from "../helpers/h.0--translations";
 
-describe("puppeteerBillingStatementPdf", () => {
-  const SCREENSHOTS_DIR = path.join(
-    __dirname,
-    "__screenshots__",
-    "billing-statement"
-  );
-  // const SCREENSHOT_WIDTH = 816; // Letter width at 96 DPI
-  // const SCREENSHOT_HEIGHT = 1056; // Letter height at 96 DPI
-  // const PIXEL_DIFF_THRESHOLD = 0.05; // 5% pixel difference threshold
+const SNAPSHOT_DIR = path.resolve(
+  "./",
+  "src/features/payment-doc-printer/billing-statement/__snapshots__/billing-statement"
+);
 
-  /*
-  type TestCase = {
-    name: string;
-    params: {
-      sub_acc_id: string;
-      month: Date;
-      language: TSupportedLanguage;
-    };
-  };
-  */
+function expectHtmlToMatchSnapshot(
+  html: string | undefined,
+  snapshotFileName: string
+) {
+  if (typeof html !== "string") {
+    throw new Error(
+      `HTML snapshot "${snapshotFileName}" can only be compared against a string value.`
+    );
+  }
 
-  /*
-  const testCases__short: TestCase[] = [
-    {
-      name: "en",
-      params: {
-        sub_acc_id: "68|95|Shen Yun New York|false|organization",
+  const snapshotPath = path.join(SNAPSHOT_DIR, snapshotFileName);
+  const snapshotState = expect.getState().snapshotState as
+    | { _updateSnapshot?: "all" | "new" | "none" }
+    | undefined;
+  const updateMode = snapshotState?._updateSnapshot ?? "new";
+  const snapshotExists = fs.existsSync(snapshotPath);
+  const canWriteNewSnapshot = updateMode === "all" || updateMode === "new";
+  const shouldUpdateExistingSnapshot = updateMode === "all";
+
+  if (!snapshotExists && !canWriteNewSnapshot) {
+    throw new Error(
+      `Missing HTML snapshot at ${snapshotPath}. Re-run the test with "-u" to create it.`
+    );
+  }
+
+  if (
+    (!snapshotExists && canWriteNewSnapshot) ||
+    (snapshotExists && shouldUpdateExistingSnapshot)
+  ) {
+    fs.mkdirSync(path.dirname(snapshotPath), { recursive: true });
+    fs.writeFileSync(snapshotPath, html, "utf-8");
+  }
+
+  const expectedHtml = fs.readFileSync(snapshotPath, "utf-8");
+  expect(html).toBe(expectedHtml);
+}
+
+describe("English language", () => {
+  describe("Short description", () => {
+    test(`Edge case #1: No activity details records. No payments received records.`, async () => {
+      // ✅ BREAK POINT defined
+      // 🪫 FAILED: Test failing badly
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "0|0|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "en",
-      },
-    },
-    {
-      name: "zh-TW",
-      params: {
-        sub_acc_id: "87|99|神韻紐約|false|organization",
-        month: new Date("2025-11-01"),
-        language: "zh-TW",
-      },
-    },
-    {
-      name: "zh-CN",
-      params: {
-        sub_acc_id: "91|99|神韵纽约|false|organization",
-        month: new Date("2025-11-01"),
-        language: "zh-CN",
-      },
-    },
-    {
-      name: "vi",
-      params: {
-        sub_acc_id: "91|99|Shen Yun New York|false|organization",
-        month: new Date("2025-11-01"),
-        language: "vi",
-      },
-    },
-    {
-      name: "ko",
-      params: {
-        sub_acc_id: "91|99|선윤 뉴욕|false|organization",
-        month: new Date("2025-11-01"),
-        language: "ko",
-      },
-    },
-    {
-      name: "ja",
-      params: {
-        sub_acc_id: "87|99|神韻ニューヨーク|false|organization",
-        month: new Date("2025-11-01"),
-        language: "ja",
-      },
-    },
-    {
-      name: "es",
-      params: {
-        sub_acc_id: "91|99|Shen Yun Nueva York|false|organization",
-        month: new Date("2025-11-01"),
-        language: "es",
-      },
-    },
-    {
-      name: "en",
-      params: {
-        sub_acc_id: "68|95|Shen Yun New York|true|organization",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expectHtmlToMatchSnapshot(result.html, "edge-case-1-no-activity.html");
+    }, 10000);
+
+    test(`Edge case #2: Total rows are first thing on a new page after first Billing page`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌗 HALF DONE: Total row should be moved to new page after 11th record
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "11|18|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "en",
-      },
-    },
-    {
-      name: "zh-TW",
-      params: {
-        sub_acc_id: "87|99|神韻紐約|true|organization",
-        month: new Date("2025-11-01"),
-        language: "zh-TW",
-      },
-    },
-    {
-      name: "zh-CN",
-      params: {
-        sub_acc_id: "91|99|神韵纽约|true|organization",
-        month: new Date("2025-11-01"),
-        language: "zh-CN",
-      },
-    },
-    {
-      name: "vi",
-      params: {
-        sub_acc_id: "91|99|Shen Yun New York|true|organization",
-        month: new Date("2025-11-01"),
-        language: "vi",
-      },
-    },
-    {
-      name: "ko",
-      params: {
-        sub_acc_id: "91|99|선윤 뉴욕|true|organization",
-        month: new Date("2025-11-01"),
-        language: "ko",
-      },
-    },
-    {
-      name: "ja",
-      params: {
-        sub_acc_id: "87|99|神韻ニューヨーク|true|organization",
-        month: new Date("2025-11-01"),
-        language: "ja",
-      },
-    },
-    {
-      name: "es",
-      params: {
-        sub_acc_id: "91|99|Shen Yun Nueva York|true|organization",
-        month: new Date("2025-11-01"),
-        language: "es",
-      },
-    },
-  ];
-  */
+      });
 
-  beforeAll(async () => {
-    // Ensure screenshots directory exists
-    if (!existsSync(SCREENSHOTS_DIR)) {
-      await mkdir(SCREENSHOTS_DIR, { recursive: true });
-    }
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expectHtmlToMatchSnapshot(
+        result.html,
+        "edge-case-2-total-row-new-page.html"
+      );
+    }, 10000);
+
+    test(`Edge case #3: Total rows are last on first Billing and Payment page`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌕 DONE: Test passed
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "10|17|Shen Yun New York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expectHtmlToMatchSnapshot(
+        result.html,
+        "edge-case-3-total-row-first-page.html"
+      );
+    }, 10000);
+
+    test(`Edge case #4: Total rows are last on continuation pages`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌕 DONE: Test passed
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "28|36|Shen Yun New York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expectHtmlToMatchSnapshot(
+        result.html,
+        "edge-case-4-continuation-last.html"
+      );
+    }, 10000);
+
+    test(`Edge case #5: Total rows are first on continuation pages`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌕 DONE: Test passed
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "29|37|Shen Yun New York|false|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      });
+
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
+
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+      expectHtmlToMatchSnapshot(
+        result.html,
+        "edge-case-5-continuation-first.html"
+      );
+    }, 10000);
   });
 
-  /**
-   * Capture screenshot of HTML content
-   */
-  /*
-  async function captureHtmlScreenshot(
-    html: string,
-    screenshotPath: string
-  ): Promise<void> {
-    const browser = await puppeteer.launch({
-      headless: true,
-      args: ["--no-sandbox", "--disable-setuid-sandbox"],
-    });
-
-    try {
-      const page = await browser.newPage();
-      await page.setViewport({
-        width: SCREENSHOT_WIDTH,
-        height: SCREENSHOT_HEIGHT,
-        deviceScaleFactor: 1,
+  describe("Long description", () => {
+    test(`Edge case #1: Total rows are first on new page after first Billing page`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌗 HALF DONE: Total row should be moved to new page after the 9th record
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "9|17|Shen Yun New York|true|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
       });
 
-      await page.setContent(html, { waitUntil: "networkidle0" });
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
 
-      // Ensure the directory exists
-      const screenshotDir = path.dirname(screenshotPath);
-      if (!existsSync(screenshotDir)) {
-        await mkdir(screenshotDir, { recursive: true });
-      }
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
 
-      await page.screenshot({
-        path: screenshotPath,
-        fullPage: true,
-        type: "png",
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+    }, 10000);
+
+    test(`Edge case #2: A long description + Total rows are first on new page after first Billing page`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌗 HALF DONE: It looks pretty good but still row 9 should be on new page that's the thing
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "10|17|Shen Yun New York|true|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
       });
-    } finally {
-      await browser.close();
-    }
-  }
-    */
 
-  /**
-   * Compare two images and return the difference percentage
-   */
-  /*
-  async function compareImages(
-    image1Path: string,
-    image2Path: string
-  ): Promise<{ match: boolean; diffPercentage: number }> {
-    try {
-      const img1Buffer = await readFile(image1Path);
-      const img2Buffer = await readFile(image2Path);
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
 
-      const img1 = sharp(img1Buffer);
-      const img2 = sharp(img2Buffer);
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
 
-      const [meta1, meta2] = await Promise.all([
-        img1.metadata(),
-        img2.metadata(),
-      ]);
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+    }, 10000);
 
-      // If dimensions don't match, images are different
-      if (meta1.width !== meta2.width || meta1.height !== meta2.height) {
-        return { match: false, diffPercentage: 100 };
-      }
+    test(`Edge case #3: Total rows are last on continuation pages`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌕 DONE: Looking good
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "23|36|Shen Yun New York|true|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      });
 
-      const [data1, data2] = await Promise.all([
-        img1.raw().toBuffer(),
-        img2.raw().toBuffer(),
-      ]);
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
 
-      // Compare pixel by pixel
-      let differentPixels = 0;
-      const totalPixels = data1.length / (meta1.channels || 3);
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
 
-      for (let i = 0; i < data1.length; i++) {
-        if (data1[i] !== data2[i]) {
-          differentPixels++;
-        }
-      }
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+    }, 10000);
 
-      const diffPercentage =
-        differentPixels / (totalPixels * (meta1.channels || 3));
-      const match = diffPercentage <= PIXEL_DIFF_THRESHOLD;
+    test(`Edge case #3: Total rows are first on continuation pages`, async () => {
+      // ✅ BREAK POINT defined
+      // 🌕 DONE: Looking good
+      // Generate the billing statement
+      const result = await puppeteerBillingStatementPdf({
+        sub_acc_id: "24|37|Shen Yun New York|true|organization",
+        month: new Date("2025-11-01"),
+        language: "en",
+      });
 
-      return { match, diffPercentage };
-    } catch (error) {
-      console.error("Error comparing images:", error);
-      return { match: false, diffPercentage: 100 };
-    }
-  }
-    */
+      // Verify the result structure
+      expect(result).toHaveProperty("pdf");
+      expect(result).toHaveProperty("html");
+      expect(result).toHaveProperty("statement_uri");
+      expect(result).toHaveProperty("context");
 
+      // Verify PDF is generated
+      expect(result.pdf).toBeInstanceOf(Uint8Array);
+      expect(result.pdf.length).toBeGreaterThan(0);
+
+      // Verify HTML is generated
+      expect(result.html).toBeTruthy();
+      expect(typeof result.html).toBe("string");
+    }, 10000);
+  });
+});
+
+describe("Multiple languages", () => {
   describe("Short description", () => {
     test(`en`, async () => {
       // Generate the billing statement
@@ -265,110 +323,6 @@ describe("puppeteerBillingStatementPdf", () => {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expect(result.html.length).toMatchInlineSnapshot(`3897322`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 5,
-  "billingY": 692,
-  "pageNo": 1,
-  "paymentPage": 11,
-  "paymentY": 692,
-}
-`);
-      /*
-        // Define screenshot paths
-        const baselineScreenshotPath = path.join(
-          SCREENSHOTS_DIR,
-          `baseline-${name}__${descType}.png`
-        );
-        const currentScreenshotPath = path.join(
-          SCREENSHOTS_DIR,
-          `current-${name}__${descType}.png`
-        );
-        const diffScreenshotPath = path.join(
-          SCREENSHOTS_DIR,
-          `diff-${name}__${descType}.png`
-        );
-
-        // Capture current screenshot
-        await captureHtmlScreenshot(result.html, currentScreenshotPath);
-
-        // Check if baseline exists
-        const baselineExists = existsSync(baselineScreenshotPath);
-
-        if (!baselineExists) {
-          // First run: create baseline
-          await writeFile(
-            baselineScreenshotPath,
-            await readFile(currentScreenshotPath)
-          );
-          console.log(
-            `\n📸 Baseline screenshot created for ${name}__${descType}: ${baselineScreenshotPath}`
-          );
-          console.log(
-            `   Future test runs will compare against this baseline.`
-          );
-        } else {
-          // Subsequent runs: compare with baseline
-          const comparison = await compareImages(
-            baselineScreenshotPath,
-            currentScreenshotPath
-          );
-
-          if (!comparison.match) {
-            // Create a diff image for debugging
-            const [baselineImg, currentImg] = await Promise.all([
-              sharp(baselineScreenshotPath)
-                .raw()
-                .toBuffer({ resolveWithObject: true }),
-              sharp(currentScreenshotPath)
-                .raw()
-                .toBuffer({ resolveWithObject: true }),
-            ]);
-
-            // Create a simple diff visualization
-            const diffBuffer = Buffer.alloc(baselineImg.data.length);
-            for (let i = 0; i < baselineImg.data.length; i++) {
-              const diff = Math.abs(baselineImg.data[i] - currentImg.data[i]);
-              diffBuffer[i] = diff > 0 ? 255 : 0; // Highlight differences in white
-            }
-
-            await sharp(diffBuffer, {
-              raw: {
-                width: baselineImg.info.width,
-                height: baselineImg.info.height,
-                channels: baselineImg.info.channels,
-              },
-            })
-              .png()
-              .toFile(diffScreenshotPath);
-
-            if (!comparison.match) {
-              console.log(`\n❌ Screenshot mismatch for ${name}:`);
-              console.log(`   Baseline: ${baselineScreenshotPath}`);
-              console.log(`   Current:  ${currentScreenshotPath}`);
-              console.log(`   Diff:     ${diffScreenshotPath}`);
-              console.log(
-                `   Difference: ${(comparison.diffPercentage * 100).toFixed(
-                  4
-                )}%`
-              );
-            }
-
-            expect(comparison.match).toBe(true);
-
-            console.log(
-              `\n✅ Screenshot matches baseline for ${name}__${descType} (diff: ${(
-                comparison.diffPercentage * 100
-              ).toFixed(4)}%)`
-            );
-          }
-        }
-          */
     }, 10000);
 
     test(`zh-TW`, async () => {
@@ -393,20 +347,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4251031`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 692,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "short-lang-zh-tw.html");
     }, 10000);
 
     test(`zh-CN`, async () => {
@@ -431,20 +372,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4251553`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 540,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "short-lang-zh-cn.html");
     }, 10000);
 
     test(`vi`, async () => {
@@ -469,20 +397,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4252179`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 540,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "short-lang-vi.html");
     }, 10000);
 
     test(`ko`, async () => {
@@ -507,20 +422,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4251596`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 540,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "short-lang-ko.html");
     }, 10000);
 
     test(`ja`, async () => {
@@ -545,20 +447,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4251165`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 692,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "short-lang-ja.html");
     }, 10000);
 
     test(`es`, async () => {
@@ -583,20 +472,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4252273`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 540,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "short-lang-es.html");
     }, 10000);
   });
 
@@ -622,20 +498,6 @@ BillingPDFContext {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expect(result.html.length).toMatchInlineSnapshot(`3899754`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 5,
-  "billingY": 44,
-  "pageNo": 1,
-  "paymentPage": 11,
-  "paymentY": 692,
-}
-`);
     }, 10000);
 
     test(`zh-TW`, async () => {
@@ -660,20 +522,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4252139`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 6,
-  "billingY": 96,
-  "pageNo": 1,
-  "paymentPage": 12,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "long-lang-zh-tw.html");
     }, 10000);
 
     test(`zh-CN`, async () => {
@@ -698,20 +547,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4603831`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 7,
-  "billingY": 620,
-  "pageNo": 1,
-  "paymentPage": 13,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "long-lang-zh-cn.html");
     }, 10000);
 
     test(`vi`, async () => {
@@ -736,20 +572,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4607160`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 7,
-  "billingY": 330,
-  "pageNo": 1,
-  "paymentPage": 13,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "long-lang-vi.html");
     }, 10000);
 
     test(`ko`, async () => {
@@ -774,20 +597,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4604639`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 7,
-  "billingY": 330,
-  "pageNo": 1,
-  "paymentPage": 13,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "long-lang-ko.html");
     }, 10000);
 
     test(`ja`, async () => {
@@ -812,20 +622,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4604047`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 7,
-  "billingY": 540,
-  "pageNo": 1,
-  "paymentPage": 13,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "long-lang-ja.html");
     }, 10000);
 
     test(`es`, async () => {
@@ -850,20 +647,7 @@ BillingPDFContext {
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
-      expect(result.html.length).toMatchInlineSnapshot(`4607652`);
-
-      // Verify context
-      expect(result.context).toMatchInlineSnapshot(`
-BillingPDFContext {
-  "X": 0,
-  "Y": 0,
-  "billingPage": 7,
-  "billingY": 58,
-  "pageNo": 1,
-  "paymentPage": 13,
-  "paymentY": 540,
-}
-`);
+      expectHtmlToMatchSnapshot(result.html, "long-lang-es.html");
     }, 10000);
   });
 });

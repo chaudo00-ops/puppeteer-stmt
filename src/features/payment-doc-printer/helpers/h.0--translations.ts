@@ -5,6 +5,7 @@ export type TBillingStatementTranslations = {
 	billTo: string;
 	details: string;
 	accountId: string;
+	accountName: string;
 	paymentsProfile: string;
 	paymentsProfileId: string;
 	statementIssueDate: string;
@@ -34,6 +35,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "Bill To",
 		details: "Details",
 		accountId: "Account ID",
+		accountName: "Account Name",
 		paymentsProfile: "Payments profile",
 		paymentsProfileId: "Payments profile ID",
 		statementIssueDate: "Statement issue date",
@@ -58,6 +60,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "账单收件人",
 		details: "详细信息",
 		accountId: "账户 ID",
+		accountName: "账户名称",
 		paymentsProfile: "付款资料",
 		paymentsProfileId: "付款资料 ID",
 		statementIssueDate: "对账单发出日期",
@@ -82,6 +85,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "帳單收件人",
 		details: "詳細資訊",
 		accountId: "帳戶 ID",
+		accountName: "帳戶名稱",
 		paymentsProfile: "付款資料",
 		paymentsProfileId: "付款資料 ID",
 		statementIssueDate: "對帳單發出日期",
@@ -106,6 +110,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "Hóa Đơn Cho",
 		details: "Chi Tiết",
 		accountId: "ID Tài Khoản",
+		accountName: "Tên tài khoản",
 		paymentsProfile: "Hồ sơ thanh toán",
 		paymentsProfileId: "ID hồ sơ thanh toán",
 		statementIssueDate: "Ngày phát hành bảng sao kê",
@@ -130,6 +135,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "청구 대상",
 		details: "세부정보",
 		accountId: "계정 ID",
+		accountName: "계정 이름",
 		paymentsProfile: "결제 프로필",
 		paymentsProfileId: "결제 프로필 ID",
 		statementIssueDate: "명세서 발행일",
@@ -154,6 +160,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "請求先",
 		details: "詳細",
 		accountId: "アカウント ID",
+		accountName: "アカウント名",
 		paymentsProfile: "お支払いプロファイル",
 		paymentsProfileId: "お支払いプロファイル ID",
 		statementIssueDate: "明細書発行日",
@@ -178,6 +185,7 @@ export const BILLING_STATEMENT_TRANSLATIONS: Record<
 		billTo: "Facturar a",
 		details: "Detalles",
 		accountId: "ID de Cuenta",
+		accountName: "Nombre de la cuenta",
 		paymentsProfile: "Perfil de pagos",
 		paymentsProfileId: "ID del perfil de pagos",
 		statementIssueDate: "Fecha de emisión del estado de cuenta",

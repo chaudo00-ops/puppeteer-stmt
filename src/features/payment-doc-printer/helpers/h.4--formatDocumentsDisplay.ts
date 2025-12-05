@@ -1,10 +1,11 @@
 import { getUTCOffsetDisplay } from "../../../shared/helpers/datetime-utils";
 import type {
-  TBillingStatementDetails,
-  TBillingStatementDetails_Display,
   TInvoiceDetails,
   TInvoiceDetails_Display,
+  TBillingStatementDetails,
+  TBillingStatementDetails_Display,
 } from "./h.0--types";
+
 import {
   formatCurrencyDisplay,
   formatNumberDisplay,
@@ -13,7 +14,6 @@ import {
   formatDateDisplay,
   replaceUnderscoreWithSpace,
 } from "./h.3.1--formatDateDisplay";
-
 /** Transform invoice_details to display-ready format */
 export function formatInvoiceDisplay(
   invoice_details: TInvoiceDetails
@@ -70,10 +70,28 @@ export function formatStatementDisplay(
   const [billing_period_start, billing_period_end] = period.split(" -- ");
   const timeZoneName = statement_details.account.advertiser_time_zone_name!;
 
+  // Sort ad campaigns by cost in descending order
+  const sorted_spend = statement_details.monthly_campaign_spends.sort(
+    (a, b) => Number(b.cost) - Number(a.cost)
+  );
+
+  // Sort payments by date
+  const sorted_payments = statement_details.payments.sort((a, b) =>
+    a.paid_time.localeCompare(b.paid_time)
+  );
+
   const statement_details_display: TBillingStatementDetails_Display = {
     ...statement_details,
     monthly_account_balance: {
       ...rest_monthly_acount_balance,
+
+      created_time: `${formatDateDisplay({
+        dateVal: statement_details.monthly_account_balance.created_time,
+        timeZone: timeZoneName,
+        format: "human_friendly",
+        monthAbbr: true,
+        showHour: false,
+      })}`,
 
       billing_period_start: formatDateDisplay({
         dateVal: billing_period_start,
@@ -90,9 +108,6 @@ export function formatStatementDisplay(
       closing_balance: formatCurrencyDisplay(
         statement_details.monthly_account_balance.closing_balance
       ),
-      total_ad_spend: formatCurrencyDisplay(
-        -Number(statement_details.monthly_account_balance.total_ad_spend)
-      ),
       total_ad_spend_adjusted: formatCurrencyDisplay(
         -Number(
           statement_details.monthly_account_balance.total_ad_spend_adjusted
@@ -103,15 +118,22 @@ export function formatStatementDisplay(
       ),
     },
 
-    monthly_campaign_spends: statement_details.monthly_campaign_spends.map(
-      (spend) => ({
-        ...spend,
-        cost: formatCurrencyDisplay(-Number(spend.cost)),
-        imp: formatNumberDisplay(Number(spend.imp)),
+    monthly_campaign_spends: sorted_spend.map((spend) => ({
+      ...spend,
+      cost: formatCurrencyDisplay(-Number(spend.cost)),
+      imp: formatNumberDisplay(Number(spend.imp)),
+    })),
+
+    balance_adjustments: statement_details.balance_adjustments.map(
+      (bal_adj) => ({
+        ...bal_adj,
+        bal_adj_id: `Balance Correction Adjustment`,
+        applied_amount: formatCurrencyDisplay(Number(bal_adj.applied_amount)),
+        notes: "",
       })
     ),
 
-    payments: statement_details.payments.map((payment) => ({
+    payments: sorted_payments.map((payment) => ({
       ...payment,
       paid_time: `${formatDateDisplay({
         dateVal: payment.paid_time,
@@ -124,9 +146,9 @@ export function formatStatementDisplay(
 
     // Loops through the payments array accumulate the total of all tax values
     total_tax: formatCurrencyDisplay(
-      -Number(
+      Number(
         statement_details.payments.reduce(
-          (sum, payment) => sum + Number(payment.tax),
+          (sum, payment) => sum - Number(payment.tax),
           0
         )
       )

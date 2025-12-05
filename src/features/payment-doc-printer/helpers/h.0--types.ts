@@ -15,7 +15,11 @@ export interface BillingPdfResult {
 export type TBillingStatementDetails = {
 	account: Pick<
 		TFields_v2_sub_account,
-		"account_id" | "advertiser_time_zone_name" | "linked_pmt_prf_id" | "linked_pmt_sub_acc_id"
+		| "account_id"
+		| "ads_sub_acc_name"
+		| "advertiser_time_zone_name"
+		| "linked_pmt_prf_id"
+		| "linked_pmt_sub_acc_id"
 	>;
 	paymentProfile: Pick<
 		TFields_v2_payment_profiles,
@@ -36,7 +40,6 @@ export type TBillingStatementDetails = {
 		| "opening_balance"
 		| "closing_balance"
 		| "total_payments_received"
-		| "total_ad_spend"
 	>;
 	balance_adjustments: TFields_v2_balance_adjustments[];
 	monthly_campaign_spends: Pick<
