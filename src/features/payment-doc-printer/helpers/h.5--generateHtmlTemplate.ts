@@ -1,61 +1,63 @@
 import { promises as fs } from "fs";
 import path from "path";
 import {
-	AVG_CHAR_WIDTH_CJK,
-	// Constants for multiline row height estimation
-	AVG_CHAR_WIDTH_LATIN,
-	BILL_TO_SECTION_HEIGHT_PX,
-	COL_WIDTH_LG,
-	COL_WIDTH_MD,
-	COL_WIDTH_SM,
-	COLUMN_GAP,
-	DETAILS_SUMMARY_SECTION_HEIGHT_PX,
-	DIVIDER_LINE_COLOR,
-	FONT_SIZE_H1,
-	FONT_SIZE_H2,
-	FONT_SIZE_H3,
-	FONT_SIZE_PARAGRAPH,
-	FONT_SIZE_TOTAL,
-	FONT_WEIGHT_H1,
-	FONT_WEIGHT_H2,
-	FONT_WEIGHT_H3,
-	FONT_WEIGHT_PARAGRAPH,
-	FONT_WEIGHT_TOTAL,
-	LEFT_RIGHT_MARGIN,
-	LOGO_HEIGHT,
-	LOGO_WIDTH,
-	MARGIN_TOP_HEADER,
-	MARGIN_TOP_LOGO,
-	MARGIN_TOP_SECTION,
-	MARGIN_TOP_TABLE,
-	PADDING_BOTTOM_SECTION,
-	// Numeric constants for page calculations
-	PAGE_CONTENT_HEIGHT,
-	PAGE_FOOTER_HEIGHT,
-	PAGE_HEADER_HEIGHT,
-	PAGE_HEIGHT,
-	PAGE_WIDTH,
-	TABLE_CELL_PADDING_HORIZONTAL,
-	TABLE_CELL_PADDING_VERTICAL,
-	TABLE_DATA_FONT_SIZE,
-	TABLE_DATA_FONT_WEIGHT,
-	TABLE_EVEN_ROW_COLOR,
-	TABLE_HEADER_BG_COLOR,
-	TABLE_HEADER_FONT_SIZE,
-	TABLE_HEADER_FONT_WEIGHT,
-	TABLE_HEADER_HEIGHT,
-	TABLE_HEADER_TEXT_COLOR,
-	TABLE_ROW_HEIGHT,
-	TABLE_SUBTOTAL_TOTAL_ROWS,
-	TABLE_TEXT_COLOR,
-	TABLE_TITLE_HEIGHT,
-	TBL_ROW_HEIGHT,
-	TEXT_COLOR,
-	TEXT_COLOR_H1,
+  AVG_CHAR_WIDTH_CJK,
+  // Constants for multiline row height estimation
+  AVG_CHAR_WIDTH_LATIN,
+  BILL_TO_SECTION_HEIGHT_PX,
+  COL_WIDTH_LG,
+  COL_WIDTH_MD,
+  COL_WIDTH_SM,
+  COLUMN_GAP,
+  DETAILS_SUMMARY_SECTION_HEIGHT_PX,
+  DIVIDER_LINE_COLOR,
+  FONT_SIZE_H1,
+  FONT_SIZE_H2,
+  FONT_SIZE_H3,
+  FONT_SIZE_PARAGRAPH,
+  FONT_SIZE_TOTAL,
+  FONT_WEIGHT_H1,
+  FONT_WEIGHT_H2,
+  FONT_WEIGHT_H3,
+  FONT_WEIGHT_PARAGRAPH,
+  FONT_WEIGHT_TOTAL,
+  LEFT_RIGHT_MARGIN,
+  LOGO_HEIGHT,
+  LOGO_WIDTH,
+  MARGIN_TOP_HEADER,
+  MARGIN_TOP_LOGO,
+  MARGIN_TOP_SECTION,
+  MARGIN_TOP_TABLE,
+  PADDING_BOTTOM_SECTION,
+  // Numeric constants for page calculations
+  PAGE_CONTENT_HEIGHT,
+  PAGE_FOOTER_HEIGHT,
+  PAGE_HEADER_HEIGHT,
+  PAGE_HEIGHT,
+  PAGE_WIDTH,
+  TABLE_CELL_PADDING_HORIZONTAL,
+  TABLE_CELL_PADDING_VERTICAL,
+  TABLE_DATA_FONT_SIZE,
+  TABLE_DATA_FONT_WEIGHT,
+  TABLE_EVEN_ROW_COLOR,
+  TABLE_HEADER_BG_COLOR,
+  TABLE_HEADER_FONT_SIZE,
+  TABLE_HEADER_FONT_WEIGHT,
+  TABLE_HEADER_HEIGHT,
+  TABLE_HEADER_TEXT_COLOR,
+  TABLE_ROW_HEIGHT,
+  TABLE_SUBTOTAL_TOTAL_ROWS,
+  TABLE_TEXT_COLOR,
+  TABLE_TITLE_HEIGHT,
+  TBL_ROW_HEIGHT,
+  TEXT_COLOR,
+  TEXT_COLOR_H1,
 } from "./h.0--puppeteer-consts";
-import { type TBillingStatementTranslations, type TSupportedLanguage } from "./h.0--translations";
+import {
+  type TBillingStatementTranslations,
+  type TSupportedLanguage,
+} from "./h.0--translations";
 import type { TBillingStatementDetails_Display } from "./h.0--types";
-import type { BillingPDFContext } from "./h.1.1--billingPdfContext";
 
 /**
  * Estimate the height of a table row based on description text length
@@ -63,23 +65,24 @@ import type { BillingPDFContext } from "./h.1.1--billingPdfContext";
  * @returns Estimated row height in pixels
  */
 function estimateRowHeight(text: string, language: TSupportedLanguage): number {
-	// Calculate available text width (column width minus padding)
-	const availableWidth = COL_WIDTH_LG - TABLE_CELL_PADDING_HORIZONTAL * 2;
+  // Calculate available text width (column width minus padding)
+  const availableWidth = COL_WIDTH_LG - TABLE_CELL_PADDING_HORIZONTAL * 2;
 
-	const AVG_CHAR_WIDTH = ["en", "vi", "es"].includes(language)
-		? AVG_CHAR_WIDTH_LATIN
-		: AVG_CHAR_WIDTH_CJK;
-	// Calculate approximate characters per line
-	const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH);
+  const AVG_CHAR_WIDTH = ["en", "vi", "es"].includes(language)
+    ? AVG_CHAR_WIDTH_LATIN
+    : AVG_CHAR_WIDTH_CJK;
+  // Calculate approximate characters per line
+  const charsPerLine = Math.floor(availableWidth / AVG_CHAR_WIDTH);
 
-	// Calculate number of lines needed
-	const numLines = Math.max(1, Math.ceil(text.length / charsPerLine));
+  // Calculate number of lines needed
+  const numLines = Math.max(1, Math.ceil(text.length / charsPerLine));
 
-	// Calculate row height: vertical padding + (lines * line height)
-	const calculatedHeight = TABLE_CELL_PADDING_VERTICAL * 2 + numLines * TABLE_DATA_FONT_SIZE; // 12px font-size = line height
+  // Calculate row height: vertical padding + (lines * line height)
+  const calculatedHeight =
+    TABLE_CELL_PADDING_VERTICAL * 2 + numLines * TABLE_DATA_FONT_SIZE; // 12px font-size = line height
 
-	// Return the larger of calculated height or minimum row height
-	return Math.max(TABLE_ROW_HEIGHT, calculatedHeight);
+  // Return the larger of calculated height or minimum row height
+  return Math.max(TABLE_ROW_HEIGHT, calculatedHeight);
 }
 
 /**
@@ -88,167 +91,213 @@ function estimateRowHeight(text: string, language: TSupportedLanguage): number {
  * @returns Total height in pixels
  */
 function calculateCampaignsHeight(
-	campaigns: { cpgn_name: string }[],
-	language: TSupportedLanguage,
+  campaigns: { cpgn_name: string }[],
+  language: TSupportedLanguage
 ): number {
-	return campaigns.reduce((total, campaign) => {
-		return total + estimateRowHeight(campaign.cpgn_name, language);
-	}, 0);
+  return campaigns.reduce((total, campaign) => {
+    return total + estimateRowHeight(campaign.cpgn_name, language);
+  }, 0);
 }
 
 /**
  * Generate HTML template for billing statement
  */
 export async function generateHtmlTemplate(
-	displayed_details: TBillingStatementDetails_Display,
-	translations: TBillingStatementTranslations,
-	language: TSupportedLanguage,
-	context: BillingPDFContext,
+  displayed_details: TBillingStatementDetails_Display,
+  translations: TBillingStatementTranslations,
+  language: TSupportedLanguage
 ): Promise<string> {
-	const {
-		account,
-		paymentProfile,
-		monthly_account_balance,
-		monthly_campaign_spends,
-		payments,
-		total_tax,
-	} = displayed_details;
+  const {
+    account,
+    paymentProfile,
+    monthly_account_balance,
+    monthly_campaign_spends,
+    payments,
+    total_tax,
+  } = displayed_details;
 
-	const logoPath = path.join(__dirname, "..", "assets", "images", "gjw-logo-transparent.png");
-	const logoBuffer = await fs.readFile(logoPath);
-	const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
+  const logoPath = path.join(
+    __dirname,
+    "..",
+    "assets",
+    "images",
+    "gjw-logo-transparent.png"
+  );
+  const logoBuffer = await fs.readFile(logoPath);
+  const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
-	// Determine font family based on language
-	const fontFamilyMap: Record<TSupportedLanguage, string> = {
-		en: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`,
-		"zh-CN": `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif`,
-		"zh-TW": `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif`,
-		vi: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`,
-		ko: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif`,
-		ja: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif`,
-		es: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`,
-	};
+  // Determine font family based on language
+  const fontFamilyMap: Record<TSupportedLanguage, string> = {
+    en: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`,
+    "zh-CN": `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans SC', 'Microsoft YaHei', 'PingFang SC', sans-serif`,
+    "zh-TW": `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans TC', 'Microsoft JhengHei', 'PingFang TC', sans-serif`,
+    vi: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`,
+    ko: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans KR', 'Malgun Gothic', 'Apple SD Gothic Neo', sans-serif`,
+    ja: `-apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', 'Noto Sans JP', 'Hiragino Kaku Gothic Pro', 'Yu Gothic', 'Meiryo', sans-serif`,
+    es: `'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Helvetica', 'Arial', sans-serif`,
+  };
 
-	const fontFamily = fontFamilyMap[language];
+  const fontFamily = fontFamilyMap[language];
 
-	// Calculate page capacities for table rows
-	const firstPageFixedHeight = BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
-	const activityTableOverhead = TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
-	const paymentsTableOverhead = TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
+  // Calculate page capacities for table rows
+  const firstPageFixedHeight =
+    BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
+  const activityTableOverhead =
+    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
+  const paymentsTableOverhead =
+    TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
 
-	// Available height for table rows on first page (after fixed sections)
-	// Calculate both with and without footer rows
-	const firstPageAvailableForActivity =
-		PAGE_CONTENT_HEIGHT - firstPageFixedHeight - activityTableOverhead;
+  // Available height for table rows on first page (after fixed sections)
+  // Calculate both with and without footer rows
+  const firstPageAvailableForActivity =
+    PAGE_CONTENT_HEIGHT - firstPageFixedHeight - activityTableOverhead;
 
-	// Available height for table rows on continuation pages
-	const continuationPageAvailable =
-		PAGE_CONTENT_HEIGHT - activityTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
+  // Available height for table rows on continuation pages
+  const continuationPageAvailable =
+    PAGE_CONTENT_HEIGHT - activityTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
 
-	// Full page for payments table
-	const paymentsPageAvailable = PAGE_CONTENT_HEIGHT - paymentsTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
-	const paymentsPageRowsWithTotal = Math.floor(
-		(paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT,
-	);
-	const paymentsPageRowsWithoutTotal = Math.floor(paymentsPageAvailable / TABLE_ROW_HEIGHT);
+  // Full page for payments table
+  const paymentsPageAvailable =
+    PAGE_CONTENT_HEIGHT - paymentsTableOverhead - TABLE_ROW_HEIGHT; // Subtract 1 table row height to maintain breathable footer space
+  const paymentsPageRowsWithTotal = Math.floor(
+    (paymentsPageAvailable - TABLE_SUBTOTAL_TOTAL_ROWS) / TABLE_ROW_HEIGHT
+  );
+  const paymentsPageRowsWithoutTotal = Math.floor(
+    paymentsPageAvailable / TABLE_ROW_HEIGHT
+  );
 
-	// Split activity campaigns into pages using dynamic height calculation
-	const activityPages: (typeof monthly_campaign_spends)[] = [];
-	const remainingCampaigns = [...monthly_campaign_spends];
-	if (remainingCampaigns.length > 0) {
-		// Calculate total height of all campaigns
-		const totalCampaignsHeight = calculateCampaignsHeight(remainingCampaigns, language);
+  // Split activity campaigns into pages using dynamic height calculation
+  const activityPages: (typeof monthly_campaign_spends)[] = [];
+  const remainingCampaigns = [...monthly_campaign_spends];
+  if (remainingCampaigns.length > 0) {
+    // Calculate total height of all campaigns
+    const totalCampaignsHeight = calculateCampaignsHeight(
+      remainingCampaigns,
+      language
+    );
 
-		// Check if everything fits on first page (with footer)
-		if (totalCampaignsHeight <= firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS) {
-			activityPages.push(remainingCampaigns.splice(0));
-		} else {
-			// First page - fill until we run out of space
-			let currentPageCampaigns: typeof monthly_campaign_spends = [];
-			let currentPageHeight = 0;
-			let availableHeight = firstPageAvailableForActivity;
+    // Check if everything fits on first page (with footer)
+    console.log(
+      `👛👛👛 totalCampaignsHeight = ${totalCampaignsHeight}. <= ${
+        firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS
+      }`
+    );
+    if (
+      totalCampaignsHeight <=
+      firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS
+    ) {
+      console.log(`👛👛👛`);
+      activityPages.push(remainingCampaigns.splice(0));
+    } else {
+      // First page - fill until we run out of space
+      let currentPageCampaigns: typeof monthly_campaign_spends = [];
+      let currentPageHeight = 0;
+      let availableHeight = firstPageAvailableForActivity;
 
-			while (remainingCampaigns.length > 0) {
-				const nextCampaign = remainingCampaigns[0];
-				const nextCampaignHeight = estimateRowHeight(nextCampaign.cpgn_name, language);
-				const remainingCampaignsHeight = calculateCampaignsHeight(
-					remainingCampaigns,
-					language,
-				);
+      while (remainingCampaigns.length > 0) {
+        const nextCampaign = remainingCampaigns[0];
+        const nextCampaignHeight = estimateRowHeight(
+          nextCampaign.cpgn_name,
+          language
+        );
+        const remainingCampaignsHeight = calculateCampaignsHeight(
+          remainingCampaigns,
+          language
+        );
 
-				// If remaining campaigns fit with footer, add them all to current page
-				if (
-					currentPageHeight + remainingCampaignsHeight + TABLE_SUBTOTAL_TOTAL_ROWS <=
-					availableHeight
-				) {
-					currentPageCampaigns.push(...remainingCampaigns.splice(0));
-					activityPages.push(currentPageCampaigns);
-					break;
-				}
+        // If remaining campaigns fit with footer, add them all to current page
+        if (
+          currentPageHeight +
+            remainingCampaignsHeight +
+            TABLE_SUBTOTAL_TOTAL_ROWS <=
+          availableHeight
+        ) {
+          currentPageCampaigns.push(...remainingCampaigns.splice(0));
+          activityPages.push(currentPageCampaigns);
+          break;
+        }
 
-				// Check if next campaign fits on current page (without footer for now)
-				if (currentPageHeight + nextCampaignHeight <= availableHeight) {
-					currentPageCampaigns.push(remainingCampaigns.shift()!);
-					currentPageHeight += nextCampaignHeight;
-				} else {
-					// Current page is full, start a new page
-					if (currentPageCampaigns.length > 0) {
-						activityPages.push(currentPageCampaigns);
-					}
-					currentPageCampaigns = [];
-					currentPageHeight = 0;
-					availableHeight = continuationPageAvailable;
-				}
-			}
+        // Check if next campaign fits on current page (without footer for now)
+        if (currentPageHeight + nextCampaignHeight <= availableHeight) {
+          currentPageCampaigns.push(remainingCampaigns.shift()!);
+          currentPageHeight += nextCampaignHeight;
+        } else {
+          // Current page is full, start a new page
+          if (currentPageCampaigns.length > 0) {
+            activityPages.push(currentPageCampaigns);
+          }
+          currentPageCampaigns = [];
+          currentPageHeight = 0;
+          availableHeight = continuationPageAvailable;
+        }
+      }
 
-			// Handle any remaining campaigns
-			if (currentPageCampaigns.length > 0 && !activityPages.includes(currentPageCampaigns)) {
-				activityPages.push(currentPageCampaigns);
+      // Handle any remaining campaigns
+      if (
+        currentPageCampaigns.length > 0 &&
+        !activityPages.includes(currentPageCampaigns)
+      ) {
+        activityPages.push(currentPageCampaigns);
 
-				// Edge case: Subtotal + Total row on a new page
-				const height = calculateCampaignsHeight(currentPageCampaigns, language);
-				if (height + TABLE_SUBTOTAL_TOTAL_ROWS > continuationPageAvailable) {
-					activityPages.push([]);
-				}
-			} else if (remainingCampaigns.length === 0 && activityPages.length === 0) {
-				// Edge case: no pages created yet
-				activityPages.push([]);
-				console.log(`🫐🫐🫐 pushing [] to activityPages`);
-			}
-		}
-	}
+        // Edge case: Subtotal + Total row on a new page
+        const height = calculateCampaignsHeight(currentPageCampaigns, language);
+        const pageAvailable =
+          activityPages.length > 1
+            ? continuationPageAvailable
+            : firstPageAvailableForActivity;
+        console.log(
+          `1. 👛 . activityPages.length = ${activityPages.length} currentPageCampaigns height = ${height} > pageAvailable = ${pageAvailable}. continuationPageAvailable = ${continuationPageAvailable}. firstPageAvailableForActivity = ${firstPageAvailableForActivity}`
+        );
 
-	// Split payments into pages
-	const paymentPages: (typeof payments)[] = [];
-	const remainingPayments = [...payments];
+        if (height + TABLE_SUBTOTAL_TOTAL_ROWS > pageAvailable) {
+          activityPages.push([]);
+          console.log(`1. a 👛👛`);
+        }
+      } else if (
+        remainingCampaigns.length === 0 &&
+        activityPages.length === 0
+      ) {
+        // Edge case: no pages created yet
+        activityPages.push([]);
+        console.log(`2. 👛👛👛`);
+      }
+    }
+  }
 
-	if (remainingPayments.length > 0) {
-		// Check if everything fits on first payment page (with footer)
-		if (remainingPayments.length <= paymentsPageRowsWithTotal) {
-			paymentPages.push(remainingPayments.splice(0));
-		} else {
-			// First payment page without footer
-			const firstChunk = remainingPayments.splice(0, paymentsPageRowsWithoutTotal);
-			paymentPages.push(firstChunk);
+  // Split payments into pages
+  const paymentPages: (typeof payments)[] = [];
+  const remainingPayments = [...payments];
 
-			// Continue with remaining rows - use without footer until last page
-			while (remainingPayments.length > paymentsPageRowsWithTotal) {
-				const chunk = remainingPayments.splice(0, paymentsPageRowsWithoutTotal);
-				paymentPages.push(chunk);
-			}
+  if (remainingPayments.length > 0) {
+    // Check if everything fits on first payment page (with footer)
+    if (remainingPayments.length <= paymentsPageRowsWithTotal) {
+      paymentPages.push(remainingPayments.splice(0));
+    } else {
+      // First payment page without footer
+      const firstChunk = remainingPayments.splice(
+        0,
+        paymentsPageRowsWithoutTotal
+      );
+      paymentPages.push(firstChunk);
 
-			// Last chunk (will have footer)
-			if (remainingPayments.length > 0) {
-				paymentPages.push(remainingPayments.splice(0));
-			} else {
-				// No remaining rows means the footer needs its own dedicated page
-				paymentPages.push([]);
-			}
-		}
-	}
+      // Continue with remaining rows - use without footer until last page
+      while (remainingPayments.length > paymentsPageRowsWithTotal) {
+        const chunk = remainingPayments.splice(0, paymentsPageRowsWithoutTotal);
+        paymentPages.push(chunk);
+      }
 
-	// Helper to generate page header
-	const generatePageHeader = () => `
+      // Last chunk (will have footer)
+      if (remainingPayments.length > 0) {
+        paymentPages.push(remainingPayments.splice(0));
+      } else {
+        // No remaining rows means the footer needs its own dedicated page
+        paymentPages.push([]);
+      }
+    }
+  }
+
+  // Helper to generate page header
+  const generatePageHeader = () => `
     <div class="page-header">
       <div class="header">
         <h1>${translations.documentTitle}</h1>
@@ -256,13 +305,13 @@ export async function generateHtmlTemplate(
       </div>
     </div>`;
 
-	// Helper to generate page footer
-	const generatePageFooter = () => `
+  // Helper to generate page footer
+  const generatePageFooter = () => `
     <div class="page-footer">
     </div>`;
 
-	// Helper to generate activity table header (without title for continuation)
-	const generateActivityTableHeader = () => `
+  // Helper to generate activity table header (without title for continuation)
+  const generateActivityTableHeader = () => `
           <colgroup>
             <col style="width: ${COL_WIDTH_LG}px;">
             <col style="width: ${COL_WIDTH_SM}px;">
@@ -281,8 +330,8 @@ export async function generateHtmlTemplate(
             </tr>
           </thead>`;
 
-	// Helper to generate payments table header (without title for continuation)
-	const generatePaymentsTableHeader = () => `
+  // Helper to generate payments table header (without title for continuation)
+  const generatePaymentsTableHeader = () => `
           <colgroup>
             <col style="width: ${COL_WIDTH_MD}px;">
             <col style="width: ${COL_WIDTH_MD}px;">
@@ -301,14 +350,14 @@ export async function generateHtmlTemplate(
             </tr>
           </thead>`;
 
-	// Generate all pages
-	let pagesHtml = "";
-	let pageNumber = 1;
+  // Generate all pages
+  let pagesHtml = "";
+  let pageNumber = 1;
 
-	if (activityPages.length === 0) {
-		//  First page includes bill-to and details-summary sections
+  if (activityPages.length === 0) {
+    //  First page includes bill-to and details-summary sections
 
-		pagesHtml += `
+    pagesHtml += `
   <!-- Page ${pageNumber} -->
   <div class="page">
     ${generatePageHeader()}
@@ -318,11 +367,13 @@ export async function generateHtmlTemplate(
         <h3>${translations.billTo}</h3>
         <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
         ${
-			paymentProfile.type === "organization"
-				? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
-				: ""
-		}
-        <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+          paymentProfile.type === "organization"
+            ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
+            : ""
+        }
+        <p>${paymentProfile.address_country}, ${
+      paymentProfile.address_postal_code
+    }</p>
       </div>
 
       <div class="details-summary-container section">
@@ -346,70 +397,89 @@ export async function generateHtmlTemplate(
           <div class="detail-row">
             <span class="detail-label">${translations.statementIssueDate}</span>
             <span class="dot-fill"></span>
-            <span class="detail-value">${monthly_account_balance.created_time}</span>
+            <span class="detail-value">${
+              monthly_account_balance.created_time
+            }</span>
           </div>
         </div>
 
         <div class="summary">
-          <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${
-			monthly_account_balance.billing_period_end
-		}</h3>
+          <h3>${translations.summaryFor} ${
+      monthly_account_balance.billing_period_start
+    } – ${monthly_account_balance.billing_period_end}</h3>
           <div class="summary-row">
             <span class="summary-label">${translations.openingBalance}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+            <span class="summary-value">${
+              monthly_account_balance.opening_balance
+            }</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">${translations.totalAdSpend}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_ad_spend_adjusted}</span>
+            <span class="summary-value">${
+              monthly_account_balance.total_ad_spend_adjusted
+            }</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">${translations.totalPaymentsReceived}</span>
+            <span class="summary-label">${
+              translations.totalPaymentsReceived
+            }</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+            <span class="summary-value">${
+              monthly_account_balance.total_payments_received
+            }</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">${translations.closingBalance}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+            <span class="summary-value">${
+              monthly_account_balance.closing_balance
+            }</span>
           </div>
         </div>
       </div>
     </div>
   </div>`;
-		pageNumber++;
-	} else {
-		// Generate activity detail pages
-		activityPages.forEach((campaigns, pageIndex) => {
-			const isFirstPage = pageIndex === 0;
-			const isLastActivityPage = pageIndex === activityPages.length - 1;
+    pageNumber++;
+  } else {
+    // Generate activity detail pages
+    activityPages.forEach((campaigns, pageIndex) => {
+      const isFirstPage = pageIndex === 0;
+      const isLastActivityPage = pageIndex === activityPages.length - 1;
 
-			const firstPageCampaignsHeight = calculateCampaignsHeight(campaigns, language);
-			// Subtotal + Total rows not on first page
-			const customMarginTop =
-				isFirstPage && activityPages.length !== 1
-					? MARGIN_TOP_SECTION + firstPageAvailableForActivity - firstPageCampaignsHeight
-					: MARGIN_TOP_SECTION;
-			// Activity details table
-			pagesHtml += `
+      const firstPageCampaignsHeight = calculateCampaignsHeight(
+        campaigns,
+        language
+      );
+      // Subtotal + Total rows not on first page
+      const customMarginTop =
+        isFirstPage && activityPages.length !== 1
+          ? MARGIN_TOP_SECTION +
+            firstPageAvailableForActivity -
+            firstPageCampaignsHeight
+          : MARGIN_TOP_SECTION;
+      // Activity details table
+      pagesHtml += `
   <!-- Page ${pageNumber} -->
   <div class="page ${isLastActivityPage ? "last-page" : ""}">
     ${generatePageHeader()}
     <div class="page-content">`;
 
-			// First page includes bill-to and details-summary sections
-			if (isFirstPage) {
-				pagesHtml += `
+      // First page includes bill-to and details-summary sections
+      if (isFirstPage) {
+        pagesHtml += `
       <div class="bill-to section">
         <h3>${translations.billTo}</h3>
         <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
         ${
-			paymentProfile.type === "organization"
-				? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
-				: ""
-		}
-        <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+          paymentProfile.type === "organization"
+            ? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
+            : ""
+        }
+        <p>${paymentProfile.address_country}, ${
+          paymentProfile.address_postal_code
+        }</p>
       </div>
 
       <div class="details-summary-container section">
@@ -433,57 +503,69 @@ export async function generateHtmlTemplate(
           <div class="detail-row">
             <span class="detail-label">${translations.statementIssueDate}</span>
             <span class="dot-fill"></span>
-            <span class="detail-value">${monthly_account_balance.created_time}</span>
+            <span class="detail-value">${
+              monthly_account_balance.created_time
+            }</span>
           </div>
         </div>
 
         <div class="summary">
-          <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${
-					monthly_account_balance.billing_period_end
-				}</h3>
+          <h3>${translations.summaryFor} ${
+          monthly_account_balance.billing_period_start
+        } – ${monthly_account_balance.billing_period_end}</h3>
           <div class="summary-row">
             <span class="summary-label">${translations.openingBalance}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+            <span class="summary-value">${
+              monthly_account_balance.opening_balance
+            }</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">${translations.totalAdSpend}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_ad_spend_adjusted}</span>
+            <span class="summary-value">${
+              monthly_account_balance.total_ad_spend_adjusted
+            }</span>
           </div>
           <div class="summary-row">
-            <span class="summary-label">${translations.totalPaymentsReceived}</span>
+            <span class="summary-label">${
+              translations.totalPaymentsReceived
+            }</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+            <span class="summary-value">${
+              monthly_account_balance.total_payments_received
+            }</span>
           </div>
           <div class="summary-row">
             <span class="summary-label">${translations.closingBalance}</span>
             <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+            <span class="summary-value">${
+              monthly_account_balance.closing_balance
+            }</span>
           </div>
         </div>
       </div>`;
-			}
+      }
 
-			// Activity details table
-			pagesHtml += `
+      // Activity details table
+      pagesHtml += `
       <div class="activity-details" style="margin-top: ${customMarginTop}px;">
         <table>
           ${generateActivityTableHeader()}
           <tbody>
             ${campaigns
-				.map(
-					campaign => `
+              .map(
+                (campaign) => `
             <tr>
               <td>${campaign.cpgn_name}</td>
               <td>${campaign.imp}</td>
               <td>${campaign.cost}</td>
-            </tr>`,
-				) // TODO: Draw Balance adjustments
-				.join("")}
+            </tr>`
+              ) // TODO: Draw Balance adjustments
+              .join("")}
             ${
-				isLastActivityPage
-					? `
+              isLastActivityPage
+                ? `
             <tr class="subtotal-row">
               <td></td>
               <td class="label" style="text-align: right;">${translations.subtotal}</td>
@@ -494,8 +576,8 @@ export async function generateHtmlTemplate(
               <td class="label" style="text-align: right;">${translations.total}</td>
               <td class="value">${monthly_account_balance.total_ad_spend_adjusted}</td>
             </tr>`
-					: ""
-			}
+                : ""
+            }
           </tbody>
         </table>
       </div>
@@ -503,38 +585,13 @@ export async function generateHtmlTemplate(
     ${generatePageFooter()}
   </div>`;
 
-			pageNumber++;
-		});
-	}
+      pageNumber++;
+    });
+  }
 
-	// Calculate position context
-	// Activity Details ending position
-	const lastActivityPageCampaigns = activityPages[activityPages.length - 1] || [];
-	const lastActivityPageHeight = calculateCampaignsHeight(lastActivityPageCampaigns, language);
-
-	// Calculate Y position: PAGE_CONTENT_HEIGHT minus (table overhead + rows + footer)
-	// For the last page, we have the subtotal and total rows
-	const activityTableFooterHeight = TABLE_SUBTOTAL_TOTAL_ROWS;
-	const billingY =
-		activityPages.length === 0
-			? PAGE_CONTENT_HEIGHT - firstPageFixedHeight
-			: activityPages.length === 1
-			? PAGE_CONTENT_HEIGHT -
-			  firstPageFixedHeight -
-			  activityTableOverhead -
-			  lastActivityPageHeight -
-			  activityTableFooterHeight
-			: PAGE_CONTENT_HEIGHT -
-			  activityTableOverhead -
-			  lastActivityPageHeight -
-			  activityTableFooterHeight;
-
-	context.setBillingY(billingY);
-	context.setBillingPage(pageNumber - 1);
-
-	// Generate payment pages
-	if (paymentPages.length === 0) {
-		pagesHtml += `
+  // Generate payment pages
+  if (paymentPages.length === 0) {
+    pagesHtml += `
       <!-- Page ${pageNumber} -->
       <div class="page">
         ${generatePageHeader()}
@@ -551,9 +608,11 @@ export async function generateHtmlTemplate(
               <tr class="total-row">
                       <td></td>
                       <td class="label" style="text-align: right;">${
-							translations.totalPaymentsReceived
-						}</td>
-                      <td class="value">${monthly_account_balance.total_payments_received}</td>
+                        translations.totalPaymentsReceived
+                      }</td>
+                      <td class="value">${
+                        monthly_account_balance.total_payments_received
+                      }</td>
                 </tr>
               </tbody>
             </table>
@@ -561,12 +620,12 @@ export async function generateHtmlTemplate(
         </div>
       </div>
           `;
-		pageNumber++;
-	} else {
-		paymentPages.forEach((pagePayments, pageIndex) => {
-			const isLastPaymentPage = pageIndex === paymentPages.length - 1;
+    pageNumber++;
+  } else {
+    paymentPages.forEach((pagePayments, pageIndex) => {
+      const isLastPaymentPage = pageIndex === paymentPages.length - 1;
 
-			pagesHtml += `
+      pagesHtml += `
   <!-- Page ${pageNumber} -->
   <div class="page ${isLastPaymentPage ? "last-page" : ""}">
     ${generatePageHeader()}
@@ -576,18 +635,18 @@ export async function generateHtmlTemplate(
           ${generatePaymentsTableHeader()}
           <tbody>
             ${pagePayments
-				.map(
-					payment => `
+              .map(
+                (payment) => `
             <tr>
               <td>${payment.paid_time}</td>
               <td>${payment.description}</td>
               <td>${payment.total_amount}</td>
-            </tr>`,
-				)
-				.join("")}
+            </tr>`
+              )
+              .join("")}
             ${
-				isLastPaymentPage
-					? `
+              isLastPaymentPage
+                ? `
             <tr class="subtotal-row">
               <td></td>
               <td style="text-align: right;">${translations.tax}</td>
@@ -598,8 +657,8 @@ export async function generateHtmlTemplate(
               <td class="label" style="text-align: right;">${translations.totalPaymentsReceived}</td>
               <td class="value">${monthly_account_balance.total_payments_received}</td>
             </tr>`
-					: ""
-			}
+                : ""
+            }
           </tbody>
         </table>
       </div>
@@ -607,27 +666,11 @@ export async function generateHtmlTemplate(
     ${generatePageFooter()}
   </div>`;
 
-			pageNumber++;
-		});
-	}
+      pageNumber++;
+    });
+  }
 
-	// Calculate position context
-	// Payment Page ending position
-	const lastPaymentPagePayments = paymentPages[paymentPages.length - 1] || [];
-	const lastPaymentPageHeight = lastPaymentPagePayments.length * TABLE_ROW_HEIGHT;
-
-	// Calculate Y position for payment page
-	const paymentTableFooterHeight = TABLE_SUBTOTAL_TOTAL_ROWS;
-	const paymentY =
-		PAGE_CONTENT_HEIGHT -
-		paymentsTableOverhead -
-		lastPaymentPageHeight -
-		paymentTableFooterHeight;
-
-	context.setPaymentY(paymentY);
-	context.setPaymentPage(pageNumber - 1);
-
-	return `
+  return `
 <!DOCTYPE html>
 <html>
 <head>

@@ -56,7 +56,7 @@ describe("English language", () => {
   describe("Short description", () => {
     test(`Edge case #1: No activity details records. No payments received records.`, async () => {
       // ✅ BREAK POINT defined
-      // 🪫 FAILED: Test failing badly
+      // ✅ PASSED
       // Generate the billing statement
       const result = await puppeteerBillingStatementPdf({
         sub_acc_id: "0|0|Shen Yun New York|false|organization",
@@ -68,7 +68,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -77,15 +76,15 @@ describe("English language", () => {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expectHtmlToMatchSnapshot(result.html, "edge-case-1-no-activity.html");
+      expectHtmlToMatchSnapshot(result.html, "en-short-0-0.html");
     }, 10000);
 
-    test(`Edge case #2: Total rows are first thing on a new page after first Billing page`, async () => {
+    test(`Edge case #2: Total rows are last on first Billing page`, async () => {
       // ✅ BREAK POINT defined
-      // 🌗 HALF DONE: Total row should be moved to new page after 11th record
+      // ✅ PASSED
       // Generate the billing statement
       const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "11|18|Shen Yun New York|false|organization",
+        sub_acc_id: "9|17|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "en",
       });
@@ -94,7 +93,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -103,18 +101,15 @@ describe("English language", () => {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expectHtmlToMatchSnapshot(
-        result.html,
-        "edge-case-2-total-row-new-page.html"
-      );
+      expectHtmlToMatchSnapshot(result.html, "en-short-9-17.html");
     }, 10000);
 
-    test(`Edge case #3: Total rows are last on first Billing and Payment page`, async () => {
+    test(`Edge case #3: Total rows are first on a new Billing and Payment page`, async () => {
       // ✅ BREAK POINT defined
-      // 🌕 DONE: Test passed
+      // ✅ DONE: Test passed
       // Generate the billing statement
       const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "10|17|Shen Yun New York|false|organization",
+        sub_acc_id: "10|18|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "en",
       });
@@ -123,7 +118,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -132,10 +126,7 @@ describe("English language", () => {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expectHtmlToMatchSnapshot(
-        result.html,
-        "edge-case-3-total-row-first-page.html"
-      );
+      expectHtmlToMatchSnapshot(result.html, "en-short-10-18.html");
     }, 10000);
 
     test(`Edge case #4: Total rows are last on continuation pages`, async () => {
@@ -152,7 +143,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -161,15 +151,12 @@ describe("English language", () => {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expectHtmlToMatchSnapshot(
-        result.html,
-        "edge-case-4-continuation-last.html"
-      );
+      expectHtmlToMatchSnapshot(result.html, "en-short-28-36.html");
     }, 10000);
 
     test(`Edge case #5: Total rows are first on continuation pages`, async () => {
       // ✅ BREAK POINT defined
-      // 🌕 DONE: Test passed
+      // ✅ DONE: Test passed
       // Generate the billing statement
       const result = await puppeteerBillingStatementPdf({
         sub_acc_id: "29|37|Shen Yun New York|false|organization",
@@ -181,7 +168,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -190,10 +176,7 @@ describe("English language", () => {
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-      expectHtmlToMatchSnapshot(
-        result.html,
-        "edge-case-5-continuation-first.html"
-      );
+      expectHtmlToMatchSnapshot(result.html, "en-short-29-37.html");
     }, 10000);
   });
 
@@ -212,7 +195,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -237,7 +219,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -262,7 +243,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -287,7 +267,6 @@ describe("English language", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -314,7 +293,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -337,7 +315,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -362,7 +339,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -387,7 +363,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -412,7 +387,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -437,7 +411,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -462,7 +435,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -489,7 +461,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -512,7 +483,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -537,7 +507,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -562,7 +531,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -587,7 +555,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -612,7 +579,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
@@ -637,7 +603,6 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("pdf");
       expect(result).toHaveProperty("html");
       expect(result).toHaveProperty("statement_uri");
-      expect(result).toHaveProperty("context");
 
       // Verify PDF is generated
       expect(result.pdf).toBeInstanceOf(Uint8Array);
