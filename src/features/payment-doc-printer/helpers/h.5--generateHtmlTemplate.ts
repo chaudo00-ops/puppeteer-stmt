@@ -177,16 +177,10 @@ export async function generateHtmlTemplate(
     );
 
     // Check if everything fits on first page (with footer)
-    console.log(
-      `👛👛👛 totalCampaignsHeight = ${totalCampaignsHeight}. <= ${
-        firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS
-      }`
-    );
     if (
       totalCampaignsHeight <=
       firstPageAvailableForActivity - TABLE_SUBTOTAL_TOTAL_ROWS
     ) {
-      console.log(`👛👛👛`);
       activityPages.push(remainingCampaigns.splice(0));
     } else {
       // First page - fill until we run out of space
