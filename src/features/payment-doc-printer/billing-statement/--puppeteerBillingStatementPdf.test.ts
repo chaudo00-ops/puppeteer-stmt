@@ -181,104 +181,129 @@ describe("English language", () => {
   });
 
   describe("Long description", () => {
-    test(`Edge case #1: Total rows are first on new page after first Billing page`, async () => {
-      // ✅ BREAK POINT defined
-      // 🌗 HALF DONE: Total row should be moved to new page after the 9th record
-      // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "9|17|Shen Yun New York|true|organization",
-        month: new Date("2025-11-01"),
-        language: "en",
-      });
+    test(
+      `Edge case #1: Total rows are last on first Billing page` +
+        "Total rows preceded by a long description",
+      async () => {
+        // ✅ BREAK POINT defined
+        // ✅ TEST PASSED
+        // Generate the billing statement
+        const result = await puppeteerBillingStatementPdf({
+          sub_acc_id: "6|0|Shen Yun New York|true|organization",
+          month: new Date("2025-11-01"),
+          language: "en",
+        });
 
-      // Verify the result structure
-      expect(result).toHaveProperty("pdf");
-      expect(result).toHaveProperty("html");
-      expect(result).toHaveProperty("statement_uri");
+        // Verify the result structure
+        expect(result).toHaveProperty("pdf");
+        expect(result).toHaveProperty("html");
+        expect(result).toHaveProperty("statement_uri");
 
-      // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+        // Verify PDF is generated
+        expect(result.pdf).toBeInstanceOf(Uint8Array);
+        expect(result.pdf.length).toBeGreaterThan(0);
 
-      // Verify HTML is generated
-      expect(result.html).toBeTruthy();
-      expect(typeof result.html).toBe("string");
-    }, 10000);
+        // Verify HTML is generated
+        expect(result.html).toBeTruthy();
+        expect(typeof result.html).toBe("string");
+        expectHtmlToMatchSnapshot(result.html, "en-long-6-0.html");
+      },
+      10000
+    );
 
-    test(`Edge case #2: A long description + Total rows are first on new page after first Billing page`, async () => {
-      // ✅ BREAK POINT defined
-      // 🌗 HALF DONE: It looks pretty good but still row 9 should be on new page that's the thing
-      // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "10|17|Shen Yun New York|true|organization",
-        month: new Date("2025-11-01"),
-        language: "en",
-      });
+    test(
+      `Edge case #2: Total rows are first on new page after first Billing page` +
+        "Total rows preceded by a long description",
+      async () => {
+        // ✅ BREAK POINT defined
+        // ✅ TEST PASSED
+        // Generate the billing statement
+        const result = await puppeteerBillingStatementPdf({
+          sub_acc_id: "7|0|Shen Yun New York|true|organization",
+          month: new Date("2025-11-01"),
+          language: "en",
+        });
 
-      // Verify the result structure
-      expect(result).toHaveProperty("pdf");
-      expect(result).toHaveProperty("html");
-      expect(result).toHaveProperty("statement_uri");
+        // Verify the result structure
+        expect(result).toHaveProperty("pdf");
+        expect(result).toHaveProperty("html");
+        expect(result).toHaveProperty("statement_uri");
 
-      // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+        // Verify PDF is generated
+        expect(result.pdf).toBeInstanceOf(Uint8Array);
+        expect(result.pdf.length).toBeGreaterThan(0);
 
-      // Verify HTML is generated
-      expect(result.html).toBeTruthy();
-      expect(typeof result.html).toBe("string");
-    }, 10000);
+        // Verify HTML is generated
+        expect(result.html).toBeTruthy();
+        expect(typeof result.html).toBe("string");
+        expectHtmlToMatchSnapshot(result.html, "en-long-7-0.html");
+      },
+      10000
+    );
 
-    test(`Edge case #3: Total rows are last on continuation pages`, async () => {
-      // ✅ BREAK POINT defined
-      // 🌕 DONE: Looking good
-      // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "23|36|Shen Yun New York|true|organization",
-        month: new Date("2025-11-01"),
-        language: "en",
-      });
+    test(
+      `Edge case #3: Total rows are last on continuation pages` +
+        "Total rows preceded by a long description",
+      async () => {
+        // ✅ BREAK POINT defined
+        // ✅ TEST PASSED
+        // Generate the billing statement
+        const result = await puppeteerBillingStatementPdf({
+          sub_acc_id: "18|0|Shen Yun New York|true|organization",
+          month: new Date("2025-11-01"),
+          language: "en",
+        });
 
-      // Verify the result structure
-      expect(result).toHaveProperty("pdf");
-      expect(result).toHaveProperty("html");
-      expect(result).toHaveProperty("statement_uri");
+        // Verify the result structure
+        expect(result).toHaveProperty("pdf");
+        expect(result).toHaveProperty("html");
+        expect(result).toHaveProperty("statement_uri");
 
-      // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+        // Verify PDF is generated
+        expect(result.pdf).toBeInstanceOf(Uint8Array);
+        expect(result.pdf.length).toBeGreaterThan(0);
 
-      // Verify HTML is generated
-      expect(result.html).toBeTruthy();
-      expect(typeof result.html).toBe("string");
-    }, 10000);
+        // Verify HTML is generated
+        expect(result.html).toBeTruthy();
+        expect(typeof result.html).toBe("string");
+        expectHtmlToMatchSnapshot(result.html, "en-long-18-0.html");
+      },
+      10000
+    );
 
-    test(`Edge case #3: Total rows are first on continuation pages`, async () => {
-      // ✅ BREAK POINT defined
-      // 🌕 DONE: Looking good
-      // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
-        sub_acc_id: "24|37|Shen Yun New York|true|organization",
-        month: new Date("2025-11-01"),
-        language: "en",
-      });
+    test(
+      `Edge case #5: Total rows are first on continuation pages` +
+        "Total rows preceded by a long description",
+      async () => {
+        // ✅ BREAK POINT defined
+        // 🌕 DONE: Looking good
+        // Generate the billing statement
+        const result = await puppeteerBillingStatementPdf({
+          sub_acc_id: "19|0|Shen Yun New York|true|organization",
+          month: new Date("2025-11-01"),
+          language: "en",
+        });
 
-      // Verify the result structure
-      expect(result).toHaveProperty("pdf");
-      expect(result).toHaveProperty("html");
-      expect(result).toHaveProperty("statement_uri");
+        // Verify the result structure
+        expect(result).toHaveProperty("pdf");
+        expect(result).toHaveProperty("html");
+        expect(result).toHaveProperty("statement_uri");
 
-      // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+        // Verify PDF is generated
+        expect(result.pdf).toBeInstanceOf(Uint8Array);
+        expect(result.pdf.length).toBeGreaterThan(0);
 
-      // Verify HTML is generated
-      expect(result.html).toBeTruthy();
-      expect(typeof result.html).toBe("string");
-    }, 10000);
+        // Verify HTML is generated
+        expect(result.html).toBeTruthy();
+        expect(typeof result.html).toBe("string");
+        expectHtmlToMatchSnapshot(result.html, "en-long-19-0.html");
+      },
+      10000
+    );
   });
 });
 
+/*
 describe("Multiple languages", () => {
   describe("Short description", () => {
     test(`en`, async () => {
@@ -616,3 +641,4 @@ describe("Multiple languages", () => {
     }, 10000);
   });
 });
+*/

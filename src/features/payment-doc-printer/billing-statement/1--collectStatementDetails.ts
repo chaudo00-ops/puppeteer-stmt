@@ -41,7 +41,7 @@ export async function collectStatementDetails(
     sub_acc_id,
     cpgn_id: `m_${index}`,
     cpgn_name: `Campaign ${
-      long_desc && (index % 9 === 0 || index % 37 === 0 || index % 38 === 0)
+      long_desc && (index % 5 === 0 || index % 6 === 0 || index % 17 === 0)
         ? longDescription
         : index
     }`,

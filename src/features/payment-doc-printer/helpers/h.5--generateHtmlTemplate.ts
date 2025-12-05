@@ -245,13 +245,8 @@ export async function generateHtmlTemplate(
           activityPages.length > 1
             ? continuationPageAvailable
             : firstPageAvailableForActivity;
-        console.log(
-          `1. 👛 . activityPages.length = ${activityPages.length} currentPageCampaigns height = ${height} > pageAvailable = ${pageAvailable}. continuationPageAvailable = ${continuationPageAvailable}. firstPageAvailableForActivity = ${firstPageAvailableForActivity}`
-        );
-
         if (height + TABLE_SUBTOTAL_TOTAL_ROWS > pageAvailable) {
           activityPages.push([]);
-          console.log(`1. a 👛👛`);
         }
       } else if (
         remainingCampaigns.length === 0 &&
@@ -259,7 +254,6 @@ export async function generateHtmlTemplate(
       ) {
         // Edge case: no pages created yet
         activityPages.push([]);
-        console.log(`2. 👛👛👛`);
       }
     }
   }
