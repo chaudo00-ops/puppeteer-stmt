@@ -21,7 +21,7 @@ export type TBillingStatementDetails = {
 		| "linked_pmt_prf_id"
 		| "linked_pmt_sub_acc_id"
 	>;
-	paymentProfile: Pick<
+	payment_profile: Pick<
 		TFields_v2_payment_profiles,
 		| "type"
 		| "legal_name"
@@ -46,6 +46,10 @@ export type TBillingStatementDetails = {
 		TFields_v2_monthly_campaign_spend_ui,
 		"sub_acc_id" | "cpgn_id" | "cpgn_name" | "cost" | "imp"
 	>[];
+	pmt_prf_link_history?: Pick<
+		TFields_v2_pmt_prf_links_history,
+		"linked_pmt_prf_id" | "linked_pmt_sub_acc_id" | "sub_acc_id" | "link_time" | "unlink_time"
+	>[];
 };
 
 export type TBillingStatementDetails_Display = Omit<
@@ -63,6 +67,8 @@ export type TBillingStatementDetails_Display = Omit<
 		total_ad_spend_adjusted: string;
 	};
 	total_tax: string;
+	pmt_prf_link_history?: TBillingStatementDetails["pmt_prf_link_history"] &
+		{ active_period_display: string }[];
 };
 
 export type TInvoiceDetails = {
@@ -72,15 +78,13 @@ export type TInvoiceDetails = {
 	>;
 	payment: Pick<
 		TFields_v2_payments,
-		"payment_id" | "paid_time" | "sub_acc_id" | "tax" | "total_amount"
+		"payment_id" | "paid_time" | "sub_acc_id" | "tax" | "total_amount" | "paid_amount"
 	>;
-	account: Pick<TFields_v2_sub_account, "advertiser_time_zone_name">;
+	account: Pick<TFields_v2_sub_account, "advertiser_time_zone_name" | "account_id">;
 };
 
 export type TInvoiceDetails_Display = {
-	payment: TInvoiceDetails["payment"] & {
-		paid_total: string;
-	};
+	payment: TInvoiceDetails["payment"];
 	paymentProfile: Omit<TInvoiceDetails["paymentProfile"], "legal_name" | "org_name" | "type"> & {
 		payee_display_name: string;
 	};

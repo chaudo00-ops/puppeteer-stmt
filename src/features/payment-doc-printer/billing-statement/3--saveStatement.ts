@@ -4,6 +4,7 @@ import {
   STATEMENT_PREFIX,
   type TCreateBillingStatementPdfParams,
 } from "../--IPMTDocPrinter";
+import { fileURLToPath } from "url";
 
 export async function saveStatement(
   params: TCreateBillingStatementPdfParams,
@@ -18,6 +19,7 @@ export async function saveStatement(
   const htmlFileName = `${languageSuffix}-${month}-${STATEMENT_PREFIX}.html`;
 
   // Save to output-pdfs directory
+  const __dirname = path.dirname(fileURLToPath(import.meta.url));
   const outputDir = path.join(__dirname, "..", "..", "..", "output-pdfs");
   const outputPath = path.join(outputDir, fileName);
   const htmlOutputPath = path.join(outputDir, htmlFileName);

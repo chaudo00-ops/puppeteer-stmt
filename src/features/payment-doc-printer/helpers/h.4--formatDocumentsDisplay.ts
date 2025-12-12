@@ -1,159 +1,161 @@
 import { getUTCOffsetDisplay } from "../../../shared/helpers/datetime-utils";
-import type {
-  TInvoiceDetails,
-  TInvoiceDetails_Display,
-  TBillingStatementDetails,
-  TBillingStatementDetails_Display,
+import {
+	TBillingStatementDetails,
+	TBillingStatementDetails_Display,
+	TInvoiceDetails,
+	TInvoiceDetails_Display,
 } from "./h.0--types";
-
+import { formatCurrencyDisplay, formatNumberDisplay } from "./h.3--formatNumberDisplay";
 import {
-  formatCurrencyDisplay,
-  formatNumberDisplay,
-} from "./h.3--formatNumberDisplay";
-import {
-  formatDateDisplay,
-  replaceUnderscoreWithSpace,
+	formatDateDisplay,
+	formatDateDisplay_MultiPaymentProfile,
+	replaceUnderscoreWithSpace,
 } from "./h.3.1--formatDateDisplay";
+("src/features/payment-doc-printer/helpers/h.5--formatDocumentsDisplay.ts");
+
 /** Transform invoice_details to display-ready format */
-export function formatInvoiceDisplay(
-  invoice_details: TInvoiceDetails
-): TInvoiceDetails_Display {
-  const timeZoneName = invoice_details.account.advertiser_time_zone_name!;
+export function formatInvoiceDisplay(invoice_details: TInvoiceDetails): TInvoiceDetails_Display {
+	const timeZoneName = invoice_details.account.advertiser_time_zone_name!;
 
-  const invoice_details_display: TInvoiceDetails_Display = {
-    ...invoice_details,
-    paymentProfile: {
-      ...invoice_details.paymentProfile,
+	const invoice_details_display: TInvoiceDetails_Display = {
+		...invoice_details,
+		paymentProfile: {
+			...invoice_details.paymentProfile,
 
-      // Payee display name
-      payee_display_name:
-        invoice_details.paymentProfile.type === "individual"
-          ? invoice_details.paymentProfile.legal_name || ""
-          : invoice_details.paymentProfile.org_name || "",
-    },
-    payment: {
-      ...invoice_details.payment,
+			// Payee display name
+			payee_display_name:
+				invoice_details.paymentProfile.type === "individual"
+					? invoice_details.paymentProfile.legal_name || ""
+					: invoice_details.paymentProfile.org_name || "",
+		},
+		payment: {
+			...invoice_details.payment,
 
-      // Invoice metadata
-      payment_id: invoice_details.payment.payment_id.replace(/^p+_/, ""),
-      sub_acc_id: `Account balance top up: ${invoice_details.payment.sub_acc_id}`,
+			// Invoice metadata
+			payment_id: invoice_details.payment.payment_id.replace(/^p+_/, ""),
+			sub_acc_id: `Account balance top up: ${invoice_details.account.account_id}`,
 
-      // Dates
-      paid_time: `${formatDateDisplay({
-        dateVal: invoice_details.payment.paid_time,
-        timeZone: timeZoneName,
-        showHour: true,
-        monthAbbr: false,
-        format: "human_friendly",
-      })} (UTC${getUTCOffsetDisplay(
-        timeZoneName ?? ""
-      )}) ${replaceUnderscoreWithSpace(timeZoneName)} Time`,
+			// Dates
+			paid_time: `${formatDateDisplay({
+				dateVal: invoice_details.payment.paid_time,
+				timeZone: timeZoneName,
+				showHour: true,
+				monthAbbr: false,
+				format: "human_friendly",
+			})} (UTC${getUTCOffsetDisplay(timeZoneName ?? "")}) ${replaceUnderscoreWithSpace(
+				timeZoneName,
+			)} Time`,
 
-      // Positive dollar amounts
-      tax: formatCurrencyDisplay(invoice_details.payment.tax),
-      total_amount: formatCurrencyDisplay(invoice_details.payment.total_amount),
-      paid_total: formatCurrencyDisplay(
-        Number(invoice_details.payment.total_amount) +
-          Number(invoice_details.payment.tax)
-      ),
-    },
-  };
+			// Positive dollar amounts
+			tax: formatCurrencyDisplay(invoice_details.payment.tax),
+			paid_amount: formatCurrencyDisplay(invoice_details.payment.paid_amount),
+			total_amount: formatCurrencyDisplay(invoice_details.payment.total_amount),
+		},
+	};
 
-  return invoice_details_display;
+	return invoice_details_display;
 }
 
 export function formatStatementDisplay(
-  statement_details: TBillingStatementDetails
+	statement_details: TBillingStatementDetails,
 ): TBillingStatementDetails_Display {
-  const { period, ...rest_monthly_acount_balance } =
-    statement_details.monthly_account_balance;
-  const [billing_period_start, billing_period_end] = period.split(" -- ");
-  const timeZoneName = statement_details.account.advertiser_time_zone_name!;
+	const { period, ...rest_monthly_acount_balance } = statement_details.monthly_account_balance;
+	const [billing_period_start, billing_period_end] = period.split(" -- ");
+	const timeZoneName = statement_details.account.advertiser_time_zone_name!;
 
-  // Sort ad campaigns by cost in descending order
-  const sorted_spend = statement_details.monthly_campaign_spends.sort(
-    (a, b) => Number(b.cost) - Number(a.cost)
-  );
+	// Sort ad campaigns by cost in descending order
+	const sorted_spend = statement_details.monthly_campaign_spends.sort(
+		(a, b) => Number(b.cost) - Number(a.cost),
+	);
 
-  // Sort payments by date
-  const sorted_payments = statement_details.payments.sort((a, b) =>
-    a.paid_time.localeCompare(b.paid_time)
-  );
+	// Sort payments by date
+	const sorted_payments = statement_details.payments.sort((a, b) =>
+		a.paid_time.localeCompare(b.paid_time),
+	);
 
-  const statement_details_display: TBillingStatementDetails_Display = {
-    ...statement_details,
-    monthly_account_balance: {
-      ...rest_monthly_acount_balance,
+	// pmt_prf_link_history:
 
-      created_time: `${formatDateDisplay({
-        dateVal: statement_details.monthly_account_balance.created_time,
-        timeZone: timeZoneName,
-        format: "human_friendly",
-        monthAbbr: true,
-        showHour: false,
-      })}`,
+	const statement_details_display: TBillingStatementDetails_Display = {
+		...statement_details,
+		monthly_account_balance: {
+			...rest_monthly_acount_balance,
 
-      billing_period_start: formatDateDisplay({
-        dateVal: billing_period_start,
-        monthAbbr: true,
-      }),
-      billing_period_end: formatDateDisplay({
-        dateVal: billing_period_end,
-        monthAbbr: true,
-      }),
+			created_time: `${formatDateDisplay({
+				dateVal: statement_details.monthly_account_balance.created_time,
+				timeZone: timeZoneName,
+				format: "human_friendly",
+				monthAbbr: true,
+				showHour: false,
+			})}`,
 
-      opening_balance: formatCurrencyDisplay(
-        statement_details.monthly_account_balance.opening_balance
-      ),
-      closing_balance: formatCurrencyDisplay(
-        statement_details.monthly_account_balance.closing_balance
-      ),
-      total_ad_spend_adjusted: formatCurrencyDisplay(
-        -Number(
-          statement_details.monthly_account_balance.total_ad_spend_adjusted
-        )
-      ),
-      total_payments_received: formatCurrencyDisplay(
-        statement_details.monthly_account_balance.total_payments_received
-      ),
-    },
+			billing_period_start: formatDateDisplay({
+				dateVal: billing_period_start,
+				monthAbbr: true,
+			}),
 
-    monthly_campaign_spends: sorted_spend.map((spend) => ({
-      ...spend,
-      cost: formatCurrencyDisplay(-Number(spend.cost)),
-      imp: formatNumberDisplay(Number(spend.imp)),
-    })),
+			billing_period_end: formatDateDisplay({
+				dateVal: billing_period_end,
+				monthAbbr: true,
+			}),
 
-    balance_adjustments: statement_details.balance_adjustments.map(
-      (bal_adj) => ({
-        ...bal_adj,
-        bal_adj_id: `Balance Correction Adjustment`,
-        applied_amount: formatCurrencyDisplay(Number(bal_adj.applied_amount)),
-        notes: "",
-      })
-    ),
+			opening_balance: formatCurrencyDisplay(
+				statement_details.monthly_account_balance.opening_balance,
+			),
+			closing_balance: formatCurrencyDisplay(
+				statement_details.monthly_account_balance.closing_balance,
+			),
+			total_ad_spend_adjusted: formatCurrencyDisplay(
+				-Number(statement_details.monthly_account_balance.total_ad_spend_adjusted),
+			),
+			total_payments_received: formatCurrencyDisplay(
+				statement_details.monthly_account_balance.total_payments_received,
+			),
+		},
 
-    payments: sorted_payments.map((payment) => ({
-      ...payment,
-      paid_time: `${formatDateDisplay({
-        dateVal: payment.paid_time,
-        timeZone: timeZoneName,
-        format: "machine_friendly",
-        showHour: true,
-      })} (UTC${getUTCOffsetDisplay(timeZoneName ?? "")})`,
-      total_amount: formatCurrencyDisplay(payment.total_amount),
-    })),
+		monthly_campaign_spends: sorted_spend.map(spend => ({
+			...spend,
+			cost: formatCurrencyDisplay(-Number(spend.cost)),
+			imp: formatNumberDisplay(Number(spend.imp)),
+		})),
 
-    // Loops through the payments array accumulate the total of all tax values
-    total_tax: formatCurrencyDisplay(
-      Number(
-        statement_details.payments.reduce(
-          (sum, payment) => sum - Number(payment.tax),
-          0
-        )
-      )
-    ),
-  };
+		balance_adjustments: statement_details.balance_adjustments.map(bal_adj => ({
+			...bal_adj,
+			bal_adj_id: `Balance Correction Adjustment`,
+			applied_amount: formatCurrencyDisplay(Number(bal_adj.applied_amount)),
+			notes: "",
+		})),
 
-  return statement_details_display;
+		payments: sorted_payments.map(payment => ({
+			...payment,
+			paid_time: `${formatDateDisplay({
+				dateVal: payment.paid_time,
+				timeZone: timeZoneName,
+				format: "machine_friendly",
+				showHour: true,
+			})} (UTC${getUTCOffsetDisplay(timeZoneName ?? "")})`,
+			total_amount: formatCurrencyDisplay(payment.total_amount),
+		})),
+
+		// Loops through the payments array accumulate the total of all tax values
+		total_tax: formatCurrencyDisplay(
+			Number(
+				statement_details.payments.reduce((sum, payment) => sum - Number(payment.tax), 0),
+			),
+		),
+
+		pmt_prf_link_history: statement_details.pmt_prf_link_history?.map(link_history => {
+			const target_month = billing_period_start.slice(0, 7);
+			return {
+				...link_history,
+				active_period_display: formatDateDisplay_MultiPaymentProfile(
+					link_history.link_time,
+					link_history.unlink_time,
+					target_month,
+					timeZoneName,
+				),
+			};
+		}),
+	};
+
+	return statement_details_display;
 }

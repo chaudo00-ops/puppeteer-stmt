@@ -5,8 +5,6 @@
 // Units noted: "px" used for DOM rendering reference; comments include pt values.
 // -----------------------------------------------------------------------------
 
-import { rgb } from "pdf-lib";
-
 // -----------------------------------------------------------------------------
 // PAGE DIMENSIONS & LAYOUT
 // -----------------------------------------------------------------------------
@@ -81,7 +79,7 @@ export const TABLE_CELL_PADDING_HORIZONTAL = 16; // 12 pt
 export const TABLE_CELL_PADDING_VERTICAL = 12; // 12 pt
 
 // Table borders & colors
-export const TBL_BORDER_COLOR = rgb(220 / 255, 220 / 255, 220 / 255);
+export const TBL_BORDER_COLOR = "#DCDCDC";
 export const TABLE_HEADER_BG_COLOR = "#16355A";
 export const TABLE_HEADER_TEXT_COLOR = "#FFFFFF";
 export const TABLE_EVEN_ROW_COLOR = "#F1F6FC";
