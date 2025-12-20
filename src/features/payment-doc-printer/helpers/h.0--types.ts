@@ -41,7 +41,7 @@ export type TBillingStatementDetails = {
 		| "closing_balance"
 		| "total_payments_received"
 	>;
-	balance_adjustments: TFields_v2_balance_adjustments[];
+	balance_adjustments?: TFields_v2_balance_adjustments[];
 	monthly_campaign_spends: Pick<
 		TFields_v2_monthly_campaign_spend_ui,
 		"sub_acc_id" | "cpgn_id" | "cpgn_name" | "cost" | "imp"

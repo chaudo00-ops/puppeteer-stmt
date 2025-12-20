@@ -17,13 +17,16 @@ import {
 	TABLE_ROW_HEIGHT,
 	TABLE_SUBTOTAL_TOTAL_ROWS,
 	TABLE_TITLE_HEIGHT,
+	SUMMARY_FOOTNOTES_HEIGHT_PX,
+	SUMMARY_FOOTNOTES_LINE_HEIGHT_PX,
+	SUMMARY_FOOTNOTES_AVAILABLE_WIDTH_PX,
 } from "./h.0--puppeteer-consts";
 import { type TBillingStatementTranslations, type TSupportedLanguage } from "./h.0--translations";
 import type { TBillingStatementDetails_Display } from "./h.0--types";
 
 type ActivityTableEntry =
 	| TBillingStatementDetails_Display["monthly_campaign_spends"][number]
-	| TBillingStatementDetails_Display["balance_adjustments"][number];
+	| NonNullable<TBillingStatementDetails_Display["balance_adjustments"]>[number];
 type PaymentEntry = TBillingStatementDetails_Display["payments"][number];
 
 export type TemplateContext = {
@@ -40,6 +43,7 @@ export type TemplateContext = {
 	generatePageFooter: () => string;
 	generateActivityTableHeader: () => string;
 	generatePaymentsTableHeader: () => string;
+	includeSummaryFootnotes: boolean;
 };
 
 function estimateRowHeight(text: string, language: TSupportedLanguage): number {
@@ -98,7 +102,16 @@ export async function prepareTemplateContext(
 
 	const fontFamily = fontFamilyMap[language];
 
-	const firstPageFixedHeight = BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX;
+	const includeSummaryFootnotes = Boolean(pmt_prf_link_history?.length);
+	const summaryFootnotesHeight =
+		includeSummaryFootnotes && pmt_prf_link_history
+			? estimateSummaryFootnotesHeight(
+					paymentProfile.pmt_prf_name,
+					pmt_prf_link_history[0].active_period_display,
+			  )
+			: 0;
+	const firstPageFixedHeight =
+		BILL_TO_SECTION_HEIGHT_PX + DETAILS_SUMMARY_SECTION_HEIGHT_PX + summaryFootnotesHeight;
 	const activityTableOverhead = TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
 	const paymentsTableOverhead = TABLE_TITLE_HEIGHT + TABLE_HEADER_HEIGHT + PAGE_FOOTER_HEIGHT;
 
@@ -117,7 +130,7 @@ export async function prepareTemplateContext(
 	const activityPages: ActivityTableEntry[][] = [];
 	const remainingActivityEntries: ActivityTableEntry[] = [
 		...monthly_campaign_spends,
-		...balance_adjustments,
+		...(balance_adjustments ?? []),
 	];
 	if (remainingActivityEntries.length > 0) {
 		const totalCampaignsHeight = calculateActivityEntriesHeight(
@@ -268,5 +281,24 @@ export async function prepareTemplateContext(
 		generatePageFooter,
 		generateActivityTableHeader,
 		generatePaymentsTableHeader,
+		includeSummaryFootnotes,
 	};
+}
+function estimateSummaryFootnotesHeight(
+	paymentProfileName: string,
+	activePeriodDisplay?: string,
+): number {
+	if (!activePeriodDisplay) {
+		return SUMMARY_FOOTNOTES_HEIGHT_PX;
+	}
+
+	const charsPerLine = Math.max(
+		1,
+		Math.floor(SUMMARY_FOOTNOTES_AVAILABLE_WIDTH_PX / AVG_CHAR_WIDTH_LATIN),
+	);
+	const firstParagraph = `(1) Payment Profile "${paymentProfileName}" was active ${activePeriodDisplay}.`;
+	const linesNeeded = Math.ceil(firstParagraph.length / charsPerLine);
+	const extraLines = Math.max(0, linesNeeded - 1);
+
+	return SUMMARY_FOOTNOTES_HEIGHT_PX + extraLines * SUMMARY_FOOTNOTES_LINE_HEIGHT_PX;
 }

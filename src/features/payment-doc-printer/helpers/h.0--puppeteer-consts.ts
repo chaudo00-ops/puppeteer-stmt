@@ -110,3 +110,6 @@ export const PAGE_CONTENT_HEIGHT = 900; // PAGE_HEIGHT (1056) - HEADER - FOOTER
 // Section heights (approximate)
 export const BILL_TO_SECTION_HEIGHT_PX = 140;
 export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 190;
+export const SUMMARY_FOOTNOTES_HEIGHT_PX = 46;
+export const SUMMARY_FOOTNOTES_LINE_HEIGHT_PX = 17; // 12px font with 1.4 line-height
+export const SUMMARY_FOOTNOTES_AVAILABLE_WIDTH_PX = 320; // approx. half-page column width

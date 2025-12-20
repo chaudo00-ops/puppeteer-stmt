@@ -6,7 +6,7 @@ import * as fs from "fs";
 import * as path from "path";
 import { ads_test_utils } from "../../table-tests/helpers/ads-test-utils";
 import { uTest_initAdsTables } from "../../table-tests/helpers/init-ads-tables";
-import { puppeteerBillingStatementPdf } from "./__mocks__/--puppeteerBillingStatementPdf-MultiplePaymentProfiles";
+import { puppeteerBillingStatementPdf } from "./--puppeteerBillingStatementPdf-MultiplePaymentProfiles";
 import { dbg_var_saveStmt } from "./3--saveStatement";
 
 initIntegrationTest(
@@ -21,9 +21,9 @@ initIntegrationTest(
 	uTest_initAdsTables,
 );
 
-// jest.mock("./1--collectStatementDetails", () =>
-// 	require("./__mocks__/1--collectStatementDetails_puppeteer"),
-// );
+jest.mock("./1--collectStatementDetails-MultiplePaymentProfiles", () =>
+	require("./__mocks__/1--collectStatementDetails_puppeteer_MultiplePaymentProfiles"),
+);
 
 dbg_var_saveStmt.save_html = true;
 

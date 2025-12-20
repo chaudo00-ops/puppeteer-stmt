@@ -33,6 +33,7 @@ describe("collectStatementDetails - multiple payment profiles", () => {
 			monthly_account_balance: monthly_account_balance_1,
 			monthly_campaign_spends: monthly_campaign_spends_1,
 			payment_profile: payment_profile_1,
+			pmt_prf_link_history: pmt_prf_link_history_1,
 			payments: payments_1,
 		} = res[0];
 
@@ -42,6 +43,7 @@ describe("collectStatementDetails - multiple payment profiles", () => {
 			monthly_account_balance: monthly_account_balance_2,
 			monthly_campaign_spends: monthly_campaign_spends_2,
 			payment_profile: payment_profile_2,
+			pmt_prf_link_history: pmt_prf_link_history_2,
 			payments: payments_2,
 		} = res[1];
 
@@ -55,35 +57,15 @@ describe("collectStatementDetails - multiple payment profiles", () => {
 		  "linked_pmt_sub_acc_id": "b_25x4HMhX_1731613358261",
 		}
 	`);
-		expect(account_2).toMatchInlineSnapshot(`
-		{
-		  "account_id": "2101715886",
-		  "ads_sub_acc_name": "Tester's Ad Account",
-		  "advertiser_time_zone_name": "America/New_York",
-		  "linked_pmt_prf_id": "pp_9F7KW6w36jBmTC54PjGJwQ",
-		  "linked_pmt_sub_acc_id": "b_25x4HMhX_1731613358261",
-		}
-	`);
+		expect(account_1).toBe(account_2);
 
 		// 2. Balance Adjustments
-		expect(derandomize(balance_adjustments_1, ["updated_time", "adj_time", "created_time_utc"]))
-			.toMatchInlineSnapshot(`
-		[
-		  {
-		    "adj_amount": "9800",
-		    "applied_amount": "20000",
-		    "bal_adj_id": "ba_g79pjBPzjhQHlr6t0dLwOE",
-		    "created_by": "u_m7TgkH8NPdwk",
-		    "created_time": 2025-07-26T17:30:07.887Z,
-		    "notes": "note 2",
-		    "sub_acc_id": "b_25x4HMhX_1731613358261",
-		    "unapplied_amount": "7800",
-		    "updated_by": "u_m7TgkH8NPdwk",
-		  },
-		]
-	`);
-		expect(derandomize(balance_adjustments_2, ["updated_time", "adj_time", "created_time_utc"]))
-			.toMatchInlineSnapshot(`
+		expect(balance_adjustments_1).toBeUndefined();
+
+		expect(balance_adjustments_2).toBeDefined();
+		expect(
+			derandomize(balance_adjustments_2!, ["updated_time", "adj_time", "created_time_utc"]),
+		).toMatchInlineSnapshot(`
 		[
 		  {
 		    "adj_amount": "9800",
@@ -209,6 +191,31 @@ describe("collectStatementDetails - multiple payment profiles", () => {
 		    "paid_time": "2025-10-21T23:00:00.423Z",
 		    "tax": "325",
 		    "total_amount": "2825",
+		  },
+		]
+	`);
+
+		// 7. Payment Profile Links History
+		expect(pmt_prf_link_history_1).toMatchInlineSnapshot(`
+		[
+		  {
+		    "link_time": 2025-05-12T00:00:00.000Z,
+		    "linked_pmt_prf_id": "pp_9F7KW6w36jBmTC54PjGJwQ",
+		    "linked_pmt_sub_acc_id": "b_25x4HMhX_1731613358261",
+		    "sub_acc_id": "b_25x4HMhX_1731613358261",
+		    "unlink_time": 2025-10-15T23:59:59.999Z,
+		  },
+		]
+	`);
+
+		expect(pmt_prf_link_history_2).toMatchInlineSnapshot(`
+		[
+		  {
+		    "link_time": 2025-10-16T00:00:00.000Z,
+		    "linked_pmt_prf_id": "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+		    "linked_pmt_sub_acc_id": "b_JJP3gMXt_1739228030676",
+		    "sub_acc_id": "b_25x4HMhX_1731613358261",
+		    "unlink_time": 2025-11-10T23:59:59.999Z,
 		  },
 		]
 	`);

@@ -103,6 +103,11 @@ export async function collectStatementDetails(
 
 	const balance_adjustments = balance_adj_res.list as TFields_v2_balance_adjustments[];
 
+	const balance_adj_assign_to = latestLinkedProfile(
+		pmt_prf_link_history,
+		balance_adjustments[0].adj_time,
+	);
+
 	// 5. Load monthly_campaign_spend
 	// -----------------------------------------------------------------------
 
@@ -138,8 +143,10 @@ export async function collectStatementDetails(
 		monthly_account_balance: monthly_account_balances[index],
 		monthly_campaign_spends: monthly_campaign_spends[index],
 		payments: payments[index],
-		balance_adjustments,
-		pmt_prf_link_history,
+		...(payment_profile.pmt_prf_id === balance_adj_assign_to && { balance_adjustments }),
+		pmt_prf_link_history: pmt_prf_link_history.filter(
+			history => history.linked_pmt_prf_id === payment_profile.pmt_prf_id,
+		),
 	}));
 
 	return res;
@@ -286,4 +293,22 @@ async function fetchPayments(params: {
 	}));
 
 	return payments;
+}
+
+/*
+ * Find the payment profile that has the latest link time that is still earlier than the balance adjust time (adj_time)
+ */
+function latestLinkedProfile(
+	link_history_records: TBillingStatementDetails["pmt_prf_link_history"],
+	balance_adj_time: Date,
+): string | undefined {
+	const sorted = link_history_records!
+		.map(item => ({
+			pmt_prf_id: item.linked_pmt_prf_id,
+			link_time: new Date(item.link_time).getTime(),
+		}))
+		.filter(item => item.link_time < balance_adj_time.getTime())
+		.sort((a, b) => b.link_time - a.link_time);
+
+	return sorted.length > 0 ? sorted[0].pmt_prf_id : undefined;
 }

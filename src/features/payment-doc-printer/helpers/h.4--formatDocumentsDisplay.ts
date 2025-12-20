@@ -118,12 +118,14 @@ export function formatStatementDisplay(
 			imp: formatNumberDisplay(Number(spend.imp)),
 		})),
 
-		balance_adjustments: statement_details.balance_adjustments.map(bal_adj => ({
-			...bal_adj,
-			bal_adj_id: `Balance Correction Adjustment`,
-			applied_amount: formatCurrencyDisplay(Number(bal_adj.applied_amount)),
-			notes: "",
-		})),
+		...(statement_details.balance_adjustments && {
+			balance_adjustments: statement_details.balance_adjustments.map(bal_adj => ({
+				...bal_adj,
+				bal_adj_id: `Balance Correction Adjustment`,
+				applied_amount: formatCurrencyDisplay(Number(bal_adj.applied_amount)),
+				notes: "",
+			})),
+		}),
 
 		payments: sorted_payments.map(payment => ({
 			...payment,

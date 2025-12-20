@@ -23,10 +23,25 @@ export function buildPagesHtml(
 		generatePageFooter,
 		generateActivityTableHeader,
 		generatePaymentsTableHeader,
+		includeSummaryFootnotes,
 	} = context;
 
 	let pagesHtml = "";
 	let pageNumber = 1;
+
+	const renderSummaryFootnotes = () => {
+		if (!includeSummaryFootnotes || !pmt_prf_link_history?.length) {
+			return "";
+		}
+
+		return `
+          <div class="summary-footnotes">
+            <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${
+				pmt_prf_link_history[0].active_period_display
+			}.</p>
+            <p>(2) Balances were carried over between active periods.</p>
+          </div>`;
+	};
 
 	if (activityPages.length === 0) {
 		pagesHtml += `
@@ -95,13 +110,7 @@ export function buildPagesHtml(
             <span class="dot-fill"></span>
             <span class="summary-value">${monthly_account_balance.closing_balance}</span>
           </div>
-          <div class="summary-divider"></div>
-          <div class="summary-footnotes">
-            <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${
-			pmt_prf_link_history![0].active_period_display
-		}.</p>
-            <p>(2) Balances were carried over between active periods.</p>
-          </div>
+          ${renderSummaryFootnotes()}
         </div>
       </div>
     </div>
@@ -186,13 +195,7 @@ export function buildPagesHtml(
             <span class="dot-fill"></span>
             <span class="summary-value">${monthly_account_balance.closing_balance}</span>
           </div>
-          <div class="summary-divider"></div>
-          <div class="summary-footnotes">
-            <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${
-					pmt_prf_link_history![0].active_period_display
-				}.</p>
-            <p>(2) Balances were carried over between active periods.</p>
-          </div>
+          ${renderSummaryFootnotes()}
         </div>
       </div>`;
 			}

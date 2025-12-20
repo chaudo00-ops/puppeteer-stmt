@@ -36,7 +36,7 @@ export async function collectStatementDetails(
 	const longDescription = longDescriptions[language];
 
 	const getNextCost = createSequentialCost();
-	const daily_campaign_ad_spend: Pick<
+	const monthly_campaign_spends: Pick<
 		TFields_v2_monthly_campaign_spend_ui,
 		"sub_acc_id" | "cpgn_id" | "cpgn_name" | "cost" | "imp"
 	>[] = Array.from({ length: numRows_campaignSpends }, (_, index) => ({
@@ -135,19 +135,18 @@ export async function collectStatementDetails(
 			ads_sub_acc_name: org_name,
 			advertiser_time_zone_name: "America/New_York",
 		},
-		payment_profile: [v2_payment_profile],
-		monthly_account_balance: [
-			{
-				period: "2025-09-01 -- 2025-09-30", // <= Summary for <end>
-				total_ad_spend_adjusted: 824750,
-				created_time: new Date("2025-09-01").toISOString(), // <= Statement issue date
-				opening_balance: 1000000,
-				closing_balance: 890000,
-				total_payments_received: "165726", // <= Total payments received (in cents)
-			},
-		],
+		payment_profile: v2_payment_profile,
+		monthly_account_balance: {
+			period: "2025-09-01 -- 2025-09-30", // <= Summary for <end>
+			total_ad_spend_adjusted: 824750,
+			created_time: new Date("2025-09-01").toISOString(), // <= Statement issue date
+			opening_balance: 1000000,
+			closing_balance: 890000,
+			total_payments_received: "165726", // <= Total payments received (in cents)
+		},
+
 		balance_adjustments,
-		monthly_campaign_spends: [daily_campaign_ad_spend],
+		monthly_campaign_spends,
 		payments: payments_received,
 	};
 	return res;
