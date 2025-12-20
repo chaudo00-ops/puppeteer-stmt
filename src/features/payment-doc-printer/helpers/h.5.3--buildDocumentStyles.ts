@@ -205,15 +205,6 @@ export function buildDocumentStyles(fontFamily: string): string {
       flex: 0 0 auto;
     }
 
-    .summary-divider {
-      width: 100%;
-      height: 1px;                 /* actual height */
-      background-color: ${DIVIDER_LINE_COLOR};   /* your color */
-      transform: scaleY(0.5);      /* scales down to 0.5px visually */
-      transform-origin: top;       /* ensures top alignment */
-      margin: 4px 0 8px 0;
-    }
-
     .summary-footnotes {
       font-size: 12px;
       color:${TEXT_COLOR};

@@ -25,11 +25,11 @@ cp "$SOURCE/helpers/h.5.2--buildPagesHtml.ts" "$DESTINATION/src/features/payment
 cp "$SOURCE/helpers/h.5.3--buildDocumentStyles.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.5.3--buildDocumentStyles.ts"
 
 # Puppeteer multiple payment profiles
-cp "$SOURCE/billing-statement/--puppeteerBillingStatementPdf-MultiplePaymentProfiles.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf-MultiplePaymentProfiles.ts"
-cp "$SOURCE/billing-statement/--puppeteerBillingStatementPdf-MultiplePaymentProfiles.test.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf-MultiplePaymentProfiles.test.ts"
-cp "$SOURCE/billing-statement/1--collectStatementDetails-MultiplePaymentProfiles.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails-MultiplePaymentProfiles.ts"
-cp "$SOURCE/billing-statement/1--collectStatementDetails-MultiplePaymentProfiles.test.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails-MultiplePaymentProfiles.test.ts"
-cp "$SOURCE/billing-statement/__mocks__/1--collectStatementDetails_puppeteer_MultiplePaymentProfiles.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails_puppeteer_MultiplePaymentProfiles.ts"
+cp "$SOURCE/billing-statement/--puppeteerBillingStatementPdf.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf.ts"
+cp "$SOURCE/billing-statement/--puppeteerBillingStatementPdf-MPP.test.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf-collectStatementDetails_puppeteer_MultiplePaymentProfiles.test.ts"
+cp "$SOURCE/billing-statement/1--collectStatementDetails.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails.ts"
+cp "$SOURCE/billing-statement/1--collectStatementDetails.test.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails.test.ts"
+cp "$SOURCE/billing-statement/__mocks__/1--collectStatementDetails_puppeteer_MPP.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails_puppeteer_MultiplePaymentProfiles.ts"
 
 
 # Copy src files

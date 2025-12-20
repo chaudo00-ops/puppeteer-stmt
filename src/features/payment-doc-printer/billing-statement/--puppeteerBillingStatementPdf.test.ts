@@ -5,22 +5,29 @@ import { initIntegrationTest } from "df-backend-02/dist/src/test/init-integratio
 import * as fs from "fs";
 import * as path from "path";
 import { ads_test_utils } from "../../table-tests/helpers/ads-test-utils";
+import { uTest_initAdsTables } from "../../table-tests/helpers/init-ads-tables";
 import { puppeteerBillingStatementPdf } from "./--puppeteerBillingStatementPdf";
 import { dbg_var_saveStmt } from "./3--saveStatement";
 
 initIntegrationTest(__filename, [], ads_test_utils.initDBAndServices);
+
+initIntegrationTest(
+	__filename,
+	[
+		ads_test_utils.db.users.tester_clean,
+		ads_test_utils.db.subaccounts.tester,
+		ads_test_utils.db.extensions.tester.billing_statement,
+		ads_test_utils.db.extensions.tester.multi_payment_profile,
+	],
+	ads_test_utils.initDBAndServices,
+	uTest_initAdsTables,
+);
 
 jest.mock("./1--collectStatementDetails", () =>
 	require("./__mocks__/1--collectStatementDetails_puppeteer"),
 );
 
 dbg_var_saveStmt.save_html = true;
-
-/*
- * Billing Statement To Do
- * Add Balance Adjustments
- * Shuffle. campaign name and cost
- */
 
 /*
  * Test for case where there Payment Profile ID overflows to the next line
@@ -71,11 +78,14 @@ describe("English language", () => {
 			// ✅ BREAK POINT defined
 			// ✅ PASSED
 			// Generate the billing statement
-			const result = await puppeteerBillingStatementPdf({
+			const res = await puppeteerBillingStatementPdf({
 				sub_acc_id: "0|0|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
+
+			expect(res.length).toBe(1);
+			const result = res[0];
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
@@ -96,11 +106,12 @@ describe("English language", () => {
 			// ✅ BREAK POINT defined
 			// ✅ PASSED
 			// Generate the billing statement
-			const result = await puppeteerBillingStatementPdf({
+			const res = await puppeteerBillingStatementPdf({
 				sub_acc_id: "9|17|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
+			const result = res[0];
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
@@ -121,11 +132,12 @@ describe("English language", () => {
 			// ✅ BREAK POINT defined
 			// ✅ DONE: Test passed
 			// Generate the billing statement
-			const result = await puppeteerBillingStatementPdf({
+			const res = await puppeteerBillingStatementPdf({
 				sub_acc_id: "10|18|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
+			const result = res[0];
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
@@ -146,11 +158,12 @@ describe("English language", () => {
 			// ✅ BREAK POINT defined
 			// 🌕 DONE: Test passed
 			// Generate the billing statement
-			const result = await puppeteerBillingStatementPdf({
+			const res = await puppeteerBillingStatementPdf({
 				sub_acc_id: "28|36|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
+			const result = res[0];
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
@@ -171,11 +184,12 @@ describe("English language", () => {
 			// ✅ BREAK POINT defined
 			// ✅ DONE: Test passed
 			// Generate the billing statement
-			const result = await puppeteerBillingStatementPdf({
+			const res = await puppeteerBillingStatementPdf({
 				sub_acc_id: "29|37|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
+			const result = res[0];
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
@@ -201,11 +215,12 @@ describe("English language", () => {
 				// ✅ BREAK POINT defined
 				// ✅ TEST PASSED
 				// Generate the billing statement
-				const result = await puppeteerBillingStatementPdf({
+				const res = await puppeteerBillingStatementPdf({
 					sub_acc_id: "6|0|Shen Yun New York|true|organization|false",
 					month: new Date("2025-11-01"),
 					language: "en",
 				});
+				const result = res[0];
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
@@ -231,11 +246,12 @@ describe("English language", () => {
 				// ✅ BREAK POINT defined
 				// ✅ TEST PASSED
 				// Generate the billing statement
-				const result = await puppeteerBillingStatementPdf({
+				const res = await puppeteerBillingStatementPdf({
 					sub_acc_id: "7|0|Shen Yun New York|true|organization|false",
 					month: new Date("2025-11-01"),
 					language: "en",
 				});
+				const result = res[0];
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
@@ -261,11 +277,12 @@ describe("English language", () => {
 				// ✅ BREAK POINT defined
 				// ✅ TEST PASSED
 				// Generate the billing statement
-				const result = await puppeteerBillingStatementPdf({
+				const res = await puppeteerBillingStatementPdf({
 					sub_acc_id: "18|0|Shen Yun New York|true|organization|false",
 					month: new Date("2025-11-01"),
 					language: "en",
 				});
+				const result = res[0];
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
@@ -291,11 +308,12 @@ describe("English language", () => {
 				// ✅ BREAK POINT defined
 				// 🌕 DONE: Looking good
 				// Generate the billing statement
-				const result = await puppeteerBillingStatementPdf({
+				const res = await puppeteerBillingStatementPdf({
 					sub_acc_id: "19|0|Shen Yun New York|true|organization|false",
 					month: new Date("2025-11-01"),
 					language: "en",
 				});
+				const result = res[0];
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
@@ -318,11 +336,12 @@ describe("English language", () => {
 	describe("Edge case: With balance adjustments record", () => {
 		test("Balance adjustment = []", async () => {
 			// + Balance adjustments: 3 rows
-			const result = await puppeteerBillingStatementPdf({
+			const res = await puppeteerBillingStatementPdf({
 				sub_acc_id: "4|4|Shen Yun NY|false|organization",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
+			const result = res[0];
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
@@ -346,7 +365,7 @@ describe("Multiple languages", () => {
   describe("Short description", () => {
     test(`en`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "68|95|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "en",
@@ -368,7 +387,7 @@ describe("Multiple languages", () => {
 
     test(`zh-TW`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "87|99|神韻紐約|false|organization",
         month: new Date("2025-11-01"),
         language: "zh-TW",
@@ -392,7 +411,7 @@ describe("Multiple languages", () => {
 
     test(`zh-CN`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|神韵纽约|false|organization",
         month: new Date("2025-11-01"),
         language: "zh-CN",
@@ -416,7 +435,7 @@ describe("Multiple languages", () => {
 
     test(`vi`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "vi",
@@ -440,7 +459,7 @@ describe("Multiple languages", () => {
 
     test(`ko`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|Shen Yun New York|false|organization",
         month: new Date("2025-11-01"),
         language: "ko",
@@ -464,7 +483,7 @@ describe("Multiple languages", () => {
 
     test(`ja`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "87|99|神韻ニューヨーク|false|organization",
         month: new Date("2025-11-01"),
         language: "ja",
@@ -488,7 +507,7 @@ describe("Multiple languages", () => {
 
     test(`es`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|Shen Yun Nueva York|false|organization",
         month: new Date("2025-11-01"),
         language: "es",
@@ -514,7 +533,7 @@ describe("Multiple languages", () => {
   describe("Long description", () => {
     test(`en`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "68|95|Shen Yun New York|TRUE|organization",
         month: new Date("2025-12-01"),
         language: "en",
@@ -536,7 +555,7 @@ describe("Multiple languages", () => {
 
     test(`zh-TW`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "87|99|神韻紐約|true|organization",
         month: new Date("2025-12-01"),
         language: "zh-TW",
@@ -560,7 +579,7 @@ describe("Multiple languages", () => {
 
     test(`zh-CN`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|神韵纽约|true|organization",
         month: new Date("2025-12-01"),
         language: "zh-CN",
@@ -584,7 +603,7 @@ describe("Multiple languages", () => {
 
     test(`vi`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|Shen Yun New York|true|organization",
         month: new Date("2025-12-01"),
         language: "vi",
@@ -608,7 +627,7 @@ describe("Multiple languages", () => {
 
     test(`ko`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|Shen Yun New York|true|organization",
         month: new Date("2025-12-01"),
         language: "ko",
@@ -632,7 +651,7 @@ describe("Multiple languages", () => {
 
     test(`ja`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "87|99|神韻ニューヨーク|true|organization",
         month: new Date("2025-12-01"),
         language: "ja",
@@ -656,7 +675,7 @@ describe("Multiple languages", () => {
 
     test(`es`, async () => {
       // Generate the billing statement
-      const result = await puppeteerBillingStatementPdf({
+      const res = await puppeteerBillingStatementPdf({
         sub_acc_id: "91|99|Shen Yun Nueva York|true|organization",
         month: new Date("2025-12-01"),
         language: "es",

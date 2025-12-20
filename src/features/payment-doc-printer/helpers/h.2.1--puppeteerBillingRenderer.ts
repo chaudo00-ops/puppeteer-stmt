@@ -8,13 +8,16 @@ import { generateHtmlTemplate } from "./h.5--generateHtmlTemplate";
  */
 export class PuppeteerBillingRenderer extends PuppeteerRenderer {
 	protected statement_details: TBillingStatementDetails_Display;
+	protected includeSummaryFootnotes: boolean;
 
 	constructor(
 		statement_details: TBillingStatementDetails_Display,
 		language: TSupportedLanguage = "en",
+		includeSummaryFootnotes: boolean = false,
 	) {
 		super(language);
 		this.statement_details = statement_details;
+		this.includeSummaryFootnotes = includeSummaryFootnotes;
 	}
 
 	/** Initialize and generate HTML */
@@ -24,6 +27,7 @@ export class PuppeteerBillingRenderer extends PuppeteerRenderer {
 			this.statement_details,
 			translations,
 			this.language,
+			this.includeSummaryFootnotes,
 		);
 		this.setHtml(html);
 	}

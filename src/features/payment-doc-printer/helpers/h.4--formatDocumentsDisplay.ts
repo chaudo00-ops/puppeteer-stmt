@@ -105,7 +105,7 @@ export function formatStatementDisplay(
 				statement_details.monthly_account_balance.closing_balance,
 			),
 			total_ad_spend_adjusted: formatCurrencyDisplay(
-				-Number(statement_details.monthly_account_balance.total_ad_spend_adjusted),
+				Number(-statement_details.monthly_account_balance.total_ad_spend_adjusted),
 			),
 			total_payments_received: formatCurrencyDisplay(
 				statement_details.monthly_account_balance.total_payments_received,
@@ -114,7 +114,7 @@ export function formatStatementDisplay(
 
 		monthly_campaign_spends: sorted_spend.map(spend => ({
 			...spend,
-			cost: formatCurrencyDisplay(-Number(spend.cost)),
+			cost: formatCurrencyDisplay(Number(-spend.cost)),
 			imp: formatNumberDisplay(Number(spend.imp)),
 		})),
 
@@ -145,18 +145,19 @@ export function formatStatementDisplay(
 			),
 		),
 
-		pmt_prf_link_history: statement_details.pmt_prf_link_history?.map(link_history => {
-			const target_month = billing_period_start.slice(0, 7);
-			return {
-				...link_history,
-				active_period_display: formatDateDisplay_MultiPaymentProfile(
-					link_history.link_time,
-					link_history.unlink_time,
-					target_month,
-					timeZoneName,
-				),
-			};
-		}),
+		pmt_prf_link_history:
+			statement_details.pmt_prf_link_history?.map(link_history => {
+				const target_month = billing_period_start.slice(0, 7);
+				return {
+					...link_history,
+					active_period_display: formatDateDisplay_MultiPaymentProfile(
+						link_history.link_time,
+						link_history.unlink_time,
+						target_month,
+						timeZoneName,
+					),
+				};
+			}) ?? [],
 	};
 
 	return statement_details_display;

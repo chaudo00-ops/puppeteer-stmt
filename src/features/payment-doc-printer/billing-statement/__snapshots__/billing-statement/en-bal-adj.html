@@ -167,6 +167,27 @@
       flex: 0 0 auto;
     }
 
+    .summary-divider {
+      width: 100%;
+      height: 1px;                 /* actual height */
+      background-color: #DCDCDC;   /* your color */
+      transform: scaleY(0.5);      /* scales down to 0.5px visually */
+      transform-origin: top;       /* ensures top alignment */
+      margin: 4px 0 8px 0;
+    }
+
+    .summary-footnotes {
+      font-size: 12px;
+      color:#0F0F0F;
+      opacity: 1;
+      line-height: 1.4;
+      font-weight: 100;
+    }
+
+    .summary-footnotes p {
+      margin: 4px 0;
+    }
+
     .activity-details {
       border-bottom: none !important;
     }
@@ -399,6 +420,7 @@
             <span class="dot-fill"></span>
             <span class="summary-value">$8,900</span>
           </div>
+          
         </div>
       </div>
       <div class="activity-details" style="margin-top: 24px;">
@@ -424,24 +446,24 @@
           <tbody>
             
             <tr>
+              <td>Campaign 4</td>
+              <td>2,175</td>
+              <td>-$110.25</td>
+            </tr>
+            <tr>
               <td>Campaign 3</td>
-              <td>98,765</td>
-              <td>-$103</td>
+              <td>2,150</td>
+              <td>-$108.50</td>
             </tr>
             <tr>
               <td>Campaign 2</td>
-              <td>98,765</td>
-              <td>-$102</td>
+              <td>2,125</td>
+              <td>-$106.75</td>
             </tr>
             <tr>
               <td>Campaign 1</td>
-              <td>98,765</td>
-              <td>-$101</td>
-            </tr>
-            <tr>
-              <td>Campaign 0</td>
-              <td>98,765</td>
-              <td>-$100</td>
+              <td>2,100</td>
+              <td>-$105</td>
             </tr>
             <tr>
               <td>Balance Correction Adjustment</td>
@@ -451,12 +473,12 @@
             <tr>
               <td>Balance Correction Adjustment</td>
               <td></td>
-              <td>$20</td>
+              <td>$98</td>
             </tr>
             <tr>
               <td>Balance Correction Adjustment</td>
               <td></td>
-              <td>$40</td>
+              <td>$280</td>
             </tr>
             
             <tr class="subtotal-row">
@@ -510,30 +532,30 @@
           <tbody>
             
             <tr>
-              <td>2025-09-30, 20:00 (UTC-04:00)</td>
-              <td> Mastercard ***8888</td>
-              <td>$300</td>
-            </tr>
-            <tr>
-              <td>2025-10-01, 20:00 (UTC-04:00)</td>
-              <td> Mastercard ***8888</td>
-              <td>$300</td>
-            </tr>
-            <tr>
               <td>2025-10-02, 20:00 (UTC-04:00)</td>
-              <td> Mastercard ***8888</td>
-              <td>$300</td>
+              <td> Mastercard ***9001</td>
+              <td>$335</td>
             </tr>
             <tr>
               <td>2025-10-03, 20:00 (UTC-04:00)</td>
-              <td> Mastercard ***8888</td>
-              <td>$300</td>
+              <td> Mastercard ***8999</td>
+              <td>$325</td>
+            </tr>
+            <tr>
+              <td>2025-10-04, 20:00 (UTC-04:00)</td>
+              <td> Mastercard ***9000</td>
+              <td>$330</td>
+            </tr>
+            <tr>
+              <td>2025-10-05, 20:00 (UTC-04:00)</td>
+              <td> Mastercard ***9002</td>
+              <td>$340</td>
             </tr>
             
             <tr class="subtotal-row">
               <td></td>
               <td style="text-align: right;">Tax :</td>
-              <td>-$6</td>
+              <td>-$6.30</td>
             </tr>
             <tr class="total-row">
               <td></td>

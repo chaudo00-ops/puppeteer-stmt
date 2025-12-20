@@ -11,10 +11,21 @@ export async function generateHtmlTemplate(
 	displayed_details: TBillingStatementDetails_Display,
 	translations: TBillingStatementTranslations,
 	language: TSupportedLanguage,
+	includeSummaryFootnotes: boolean = false,
 ): Promise<string> {
-	const templateContext = await prepareTemplateContext(displayed_details, translations, language);
+	const templateContext = await prepareTemplateContext(
+		displayed_details,
+		translations,
+		language,
+		includeSummaryFootnotes,
+	);
 
-	const pagesHtml = buildPagesHtml(templateContext, translations, language);
+	const pagesHtml = buildPagesHtml(
+		templateContext,
+		translations,
+		language,
+		includeSummaryFootnotes,
+	);
 	const styles = buildDocumentStyles(templateContext.fontFamily);
 
 	return `

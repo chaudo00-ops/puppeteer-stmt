@@ -1,5 +1,6 @@
 import { MARGIN_TOP_SECTION } from "./h.0--puppeteer-consts";
 import { type TBillingStatementTranslations, type TSupportedLanguage } from "./h.0--translations";
+import { joinWithAnd } from "./h.3.2--formatStringDisplay";
 import {
 	calculateActivityEntriesHeight,
 	type TemplateContext,
@@ -9,6 +10,7 @@ export function buildPagesHtml(
 	context: TemplateContext,
 	translations: TBillingStatementTranslations,
 	language: TSupportedLanguage,
+	includeSummaryFootnotes: boolean = false,
 ): string {
 	const {
 		account,
@@ -23,25 +25,10 @@ export function buildPagesHtml(
 		generatePageFooter,
 		generateActivityTableHeader,
 		generatePaymentsTableHeader,
-		includeSummaryFootnotes,
 	} = context;
 
 	let pagesHtml = "";
 	let pageNumber = 1;
-
-	const renderSummaryFootnotes = () => {
-		if (!includeSummaryFootnotes || !pmt_prf_link_history?.length) {
-			return "";
-		}
-
-		return `
-          <div class="summary-footnotes">
-            <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${
-				pmt_prf_link_history[0].active_period_display
-			}.</p>
-            <p>(2) Balances were carried over between active periods.</p>
-          </div>`;
-	};
 
 	if (activityPages.length === 0) {
 		pagesHtml += `
@@ -110,7 +97,16 @@ export function buildPagesHtml(
             <span class="dot-fill"></span>
             <span class="summary-value">${monthly_account_balance.closing_balance}</span>
           </div>
-          ${renderSummaryFootnotes()}
+${
+	includeSummaryFootnotes
+		? `<div class="summary-footnotes">
+        <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${joinWithAnd(
+				pmt_prf_link_history?.map(hist => hist.active_period_display) ?? [],
+		  )}.</p>
+        <p>(2) Balances were carried over between active periods.</p>
+      </div>`
+		: ""
+}
         </div>
       </div>
     </div>
@@ -195,7 +191,16 @@ export function buildPagesHtml(
             <span class="dot-fill"></span>
             <span class="summary-value">${monthly_account_balance.closing_balance}</span>
           </div>
-          ${renderSummaryFootnotes()}
+          ${
+				includeSummaryFootnotes
+					? `<div class="summary-footnotes">
+                  <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${joinWithAnd(
+							pmt_prf_link_history?.map(hist => hist.active_period_display) ?? [],
+					  )}.</p>
+                  <p>(2) Balances were carried over between active periods.</p>
+                </div>`
+					: ""
+			}
         </div>
       </div>`;
 			}
