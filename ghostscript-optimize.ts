@@ -63,12 +63,12 @@ function checkGhostscript(): boolean {
 function optimizePDF(inputPath: string, outputPath: string): void {
   console.log(`\nOptimizing: ${inputPath}`);
 
-  // Ghostscript command with aggressive font subsetting
+  // Ghostscript command with aggressive font subsetting + image downsampling
   const gsCommand = [
     "gs",
     "-sDEVICE=pdfwrite",
     "-dCompatibilityLevel=1.4",
-    "-dPDFSETTINGS=/ebook", // Balanced quality/size (other options: /screen, /printer, /prepress)
+    "-dPDFSETTINGS=/ebook", // Balanced quality/size
     "-dNOPAUSE",
     "-dQUIET",
     "-dBATCH",
@@ -80,11 +80,16 @@ function optimizePDF(inputPath: string, outputPath: string): void {
     "-dDetectDuplicateImages=true",
     "-dCompressPages=true",
     "-dAutoRotatePages=/None", // Preserve page orientation
-    // Logo handling
-    "-dDownsampleImages=false", // Preserve original image resolution
-    "-dColorImageResolution=600", // Increase Resolution Limits
-    "-dGrayImageResolution=600", // Increase Resolution Limits
-    "-dMonoImageResolution=1200", // Increase Resolution Limits
+    // Image handling (balanced: keep color sharp, downsample gray/mono)
+    "-dDownsampleColorImages=false",
+    "-dDownsampleGrayImages=true",
+    "-dDownsampleMonoImages=true",
+    "-dGrayImageDownsampleType=/Bicubic",
+    "-dMonoImageDownsampleType=/Bicubic",
+    "-dColorImageResolution=600",
+    "-dGrayImageResolution=200",
+    "-dMonoImageResolution=300",
+    "-dGrayImageFilter=/DCTEncode",
     // Output
     `-sOutputFile=${outputPath}`,
     inputPath,

@@ -1,5 +1,6 @@
 import type { TCreateBillingStatementPdfParams } from "../--IPMTDocPrinter";
 import { formatStatementDisplay } from "../helpers/h.4--formatDocumentsDisplay";
+import { optimizePdfBuffer } from "../helpers/h.6--optimizePdf";
 import { collectStatementDetails } from "./1--collectStatementDetails";
 import { drawPuppeteerStatementPdf } from "./2--drawPuppeteerStatementPdf";
 import { saveStatement } from "./3--saveStatement";
@@ -16,9 +17,18 @@ export async function puppeteerBillingStatementPdf(params: TCreateBillingStateme
 	const includeSummaryFootnotes = statement_details.length > 1;
 
 	const pdf_html_pairs = await Promise.all(
-		displayed_details.map(stmt =>
-			drawPuppeteerStatementPdf(stmt, language, includeSummaryFootnotes),
-		),
+		displayed_details.map(async stmt => {
+			const rendered = await drawPuppeteerStatementPdf(
+				stmt,
+				language,
+				includeSummaryFootnotes,
+			);
+			const optimizedPdf = await optimizePdfBuffer(rendered.pdf);
+			return {
+				pdf: optimizedPdf,
+				html: rendered.html,
+			};
+		}),
 	);
 
 	// Step 3: Save PDF and HTML versions

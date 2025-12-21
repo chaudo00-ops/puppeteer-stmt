@@ -105,7 +105,7 @@ export async function prepareTemplateContext(
 		pmt_prf_link_history,
 	} = displayed_details;
 
-	const logoPath = path.join(__dirname, "..", "assets", "images", "gjw-logo-transparent.png");
+	const logoPath = path.join(__dirname, "..", "assets", "images", "gjw-logo-optimized.png");
 	const logoBuffer = await fs.readFile(logoPath);
 	const logoBase64 = `data:image/png;base64,${logoBuffer.toString("base64")}`;
 
