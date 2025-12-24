@@ -23,7 +23,7 @@ async function main() {
 		process.exit(1);
 	}
 
-	const outputDir = process.env.OUTPUT_DIR ?? "tmp";
+	const outputDir = process.env.OUTPUT_DIR ?? path.join("src", "output-pdfs");
 	await mkdir(outputDir, { recursive: true });
 
 	console.log("Generating invoice PDF via Puppeteer...");
