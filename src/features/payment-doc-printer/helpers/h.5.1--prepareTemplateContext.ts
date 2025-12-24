@@ -5,8 +5,6 @@ import {
 	AVG_CHAR_WIDTH_LATIN,
 	BILL_TO_SECTION_HEIGHT_PX,
 	COL_WIDTH_LG,
-	COL_WIDTH_MD,
-	COL_WIDTH_SM,
 	DETAILS_SUMMARY_SECTION_HEIGHT_PX,
 	PAGE_CONTENT_HEIGHT,
 	PAGE_FOOTER_HEIGHT,
@@ -35,6 +33,8 @@ export type TemplateContext = {
 	monthly_account_balance: TBillingStatementDetails_Display["monthly_account_balance"];
 	pmt_prf_link_history: TBillingStatementDetails_Display["pmt_prf_link_history"];
 	total_tax: TBillingStatementDetails_Display["total_tax"];
+	total_payments: TBillingStatementDetails_Display["total_payments"];
+	total_payments_with_tax: TBillingStatementDetails_Display["total_payments_with_tax"];
 	fontFamily: string;
 	activityPages: ActivityTableEntry[][];
 	paymentPages: PaymentEntry[][];
@@ -96,12 +96,14 @@ export async function prepareTemplateContext(
 ): Promise<TemplateContext> {
 	const {
 		account,
-		payment_profile: paymentProfile,
+		payment_profile,
 		monthly_account_balance,
 		monthly_campaign_spends,
 		balance_adjustments,
 		payments,
 		total_tax,
+		total_payments,
+		total_payments_with_tax,
 		pmt_prf_link_history,
 	} = displayed_details;
 
@@ -124,7 +126,7 @@ export async function prepareTemplateContext(
 	const summaryFootnotesHeight =
 		includeSummaryFootnotes && pmt_prf_link_history
 			? estimateSummaryFootnotesHeight(
-					paymentProfile.pmt_prf_name,
+					payment_profile.pmt_prf_name,
 					pmt_prf_link_history[0].active_period_display,
 			  )
 			: 0;
@@ -250,9 +252,9 @@ export async function prepareTemplateContext(
 
 	const generateActivityTableHeader = () => `
           <colgroup>
-            <col style="width: ${COL_WIDTH_LG}px;">
-            <col style="width: ${COL_WIDTH_SM}px;">
-            <col style="width: ${COL_WIDTH_SM}px;">
+            <col style="width: 393px;">
+            <col style="width: 160px;">
+            <col style="width: 160px;">
           </colgroup>
           <thead>
             <tr class="table-title">
@@ -269,9 +271,11 @@ export async function prepareTemplateContext(
 
 	const generatePaymentsTableHeader = () => `
           <colgroup>
-            <col style="width: ${COL_WIDTH_MD}px;">
-            <col style="width: ${COL_WIDTH_MD}px;">
-            <col style="width: ${COL_WIDTH_MD};">
+            <col style="width: 200px;">
+            <col style="width: 140px;">
+            <col style="width: 100px;">
+            <col style="width: 80px;">
+			<col style="width: 140px;">
           </colgroup>
           <thead>
             <tr class="table-title">
@@ -282,16 +286,20 @@ export async function prepareTemplateContext(
             <tr>
               <th>${translations.date}</th>
               <th>${translations.description}</th>
-              <th>${translations.amount}</th>
+              <th>${translations.adPayment}</th>
+              <th>${translations.tax}</th>
+              <th>${translations.totalWithTax}</th>
             </tr>
           </thead>`;
 
 	return {
 		account,
-		paymentProfile,
+		paymentProfile: payment_profile,
 		monthly_account_balance,
 		pmt_prf_link_history,
 		total_tax,
+		total_payments,
+		total_payments_with_tax,
 		fontFamily,
 		activityPages,
 		paymentPages,

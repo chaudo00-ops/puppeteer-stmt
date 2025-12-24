@@ -11,7 +11,7 @@
 export const PAGE_WIDTH = 8.5; // 612 pt
 export const PAGE_HEIGHT = 11; // 792 pt
 
-export const LEFT_RIGHT_MARGIN = 50; // ≈ 38 pt
+export const LEFT_RIGHT_MARGIN = 40; //
 export const LEFT_PADDING = 53.33; // 40 pt
 
 // Positioning for dual-column layout on statements
@@ -21,7 +21,7 @@ export const LEFT_COLUMN_X = 440; // 330 pt
 // PAGE PADDING & SPACING
 // -----------------------------------------------------------------------------
 export const MARGIN_TOP_HEADER = 60;
-export const MARGIN_TOP_SECTION = 24; // Space between sections
+export const MARGIN_TOP_SECTION = 20; // Space between sections
 export const MARGIN_TOP_TABLE = 12; // Space above tables
 export const PADDING_BOTTOM_SECTION = 16; // Space below a section header
 
@@ -70,6 +70,7 @@ export const TABLE_HEADER_HEIGHT = 28;
 export const TBL_ROW_HEIGHT = 38; // ≈ 29 pt
 
 // Column widths
+export const COL_WIDTH_XS = 100; // Small column (Impression, Cost)
 export const COL_WIDTH_SM = 160; // Small column (Impression, Cost)
 export const COL_WIDTH_MD = 237.33; // Medium column (Payments table)
 export const COL_WIDTH_LG = 393.33; // Large column (Description)
@@ -98,18 +99,18 @@ export const TABLE_ROW_HEIGHT = 38;
 export const TABLE_SUBTOTAL_TOTAL_ROWS = 80; // subtotal + total rows
 
 // Constants for multiline row height estimation
-export const AVG_CHAR_WIDTH_LATIN = 8; // Average character width for 12px font
-export const AVG_CHAR_WIDTH_CJK = 14; // Average character width for CJK 12px font
+export const AVG_CHAR_WIDTH_LATIN = 8; // Average character width for 10px font
+export const AVG_CHAR_WIDTH_CJK = 14; // Average character width for CJK 10px font
 // -----------------------------------------------------------------------------
 // NUMERIC HEIGHT VALUES FOR PAGE CALCULATIONS (in pixels)
 // -----------------------------------------------------------------------------
 export const PAGE_HEADER_HEIGHT = 108;
-export const PAGE_FOOTER_HEIGHT = 48;
+export const PAGE_FOOTER_HEIGHT = 30;
 export const PAGE_CONTENT_HEIGHT = 900; // PAGE_HEIGHT (1056) - HEADER - FOOTER
 
 // Section heights (approximate)
 export const BILL_TO_SECTION_HEIGHT_PX = 140;
-export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 190;
+export const DETAILS_SUMMARY_SECTION_HEIGHT_PX = 232; // Used to be 190 px
 export const SUMMARY_FOOTNOTES_HEIGHT_PX = 46;
 export const SUMMARY_FOOTNOTES_LINE_HEIGHT_PX = 17; // 12px font with 1.4 line-height
-export const SUMMARY_FOOTNOTES_AVAILABLE_WIDTH_PX = 320; // approx. half-page column width
+export const SUMMARY_FOOTNOTES_AVAILABLE_WIDTH_PX = PAGE_WIDTH * 96; // approx. half-page column width

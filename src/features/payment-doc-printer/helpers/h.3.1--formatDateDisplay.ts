@@ -70,7 +70,7 @@ function resolvePattern(opts: { mode: FormatMode; showHour: boolean; monthAbbr: 
  * punctuateMonthAbbr("Nov 1, 2025") // → "Nov. 1, 2025"
  */
 function punctuateMonthAbbr(output: string): string {
-	return output.replace(/\b(Jan|Feb|Mar|Apr|May|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b(?!\.)/g, "$1.");
+	return output.replace(/\b(Jan|Feb|Mar|Apr|Jun|Jul|Aug|Sep|Oct|Nov|Dec)\b(?!\.)/g, "$1.");
 }
 
 /**
@@ -136,4 +136,118 @@ export function formatDateDisplay({
 
 export function replaceUnderscoreWithSpace(input: string): string {
 	return input.replace(/_/g, " ");
+}
+
+/**
+ * Returns the last calendar date of a given month.
+ *
+ * @param ym - A string representing a year and month in "YYYY-MM" format.
+ *             Example: "2025-02".
+ *
+ * @returns A string representing the last day of that month in "YYYY-MM-DD" format.
+ *          Handles leap years automatically.
+ *
+ * @example
+ *   getLastDateOfMonth("2025-02"); // "2025-02-28"
+ */
+export function getLastDateOfMonth(ym: string): string {
+	// ym = "2025-02" for example
+	const [yearStr, monthStr] = ym.split("-");
+	const year = Number(yearStr);
+	const month = Number(monthStr);
+
+	// Create a date for the *next* month, day=0 gives the last day of previous month
+	const lastDay = new Date(year, month, 0).getDate();
+
+	return `${yearStr}-${monthStr}-${String(lastDay).padStart(2, "0")}`;
+}
+
+/**
+ * Formats a date range (link_time → unlink_time) into a condensed month/day display
+ * for a specified target month, with full timezone-aware handling.
+ *
+ * Expected date format for link_time and unlink_time:
+ *   "Sep. 16, 2025"   (3-letter month + period, day, year)
+ *
+ * target_month format:
+ *   "YYYY-MM-01" (only the "YYYY-MM" portion is used)
+ *
+ * Behavior:
+ *   - If link_time is before the target month → startDay = 1
+ *   - If unlink_time is after the target month → endDay = last day of the month
+ *   - Otherwise actual day values are used
+ *   - Month name in the output always reflects target_month
+ *
+ * Returns a string like: "Sep. 1-15" or "Sep. 14-30"
+ */
+
+export function formatDateDisplay_MultiPaymentProfile(
+	link_time: string,
+	unlink_time: string,
+	target_month: string,
+	timeZone: string = "America/New_York",
+): string {
+	// Parse Date.toString() format directly
+	const startDate = new Date(link_time);
+	const endDate = new Date(unlink_time);
+
+	// Get date components in the specified timezone
+	const getDateInTimeZone = (date: Date): { year: number; month: number; day: number } => {
+		const formatter = new Intl.DateTimeFormat("en-US", {
+			timeZone,
+			year: "numeric",
+			month: "2-digit",
+			day: "2-digit",
+		});
+
+		const parts = formatter.formatToParts(date);
+		return {
+			year: parseInt(parts.find(p => p.type === "year")!.value),
+			month: parseInt(parts.find(p => p.type === "month")!.value),
+			day: parseInt(parts.find(p => p.type === "day")!.value),
+		};
+	};
+
+	// Extract YYYY-MM and parse target month
+	const targetMonthStr = target_month.slice(0, 7); // "2025-09"
+	const [targetYear, targetMonthNum] = targetMonthStr.split("-").map(Number);
+
+	// Build first and last day of target month
+	const firstOfMonth = new Date(targetYear, targetMonthNum - 1, 1);
+	const lastOfMonth = new Date(targetYear, targetMonthNum, 0);
+
+	// Get day numbers in the specified timezone
+	const startDateInfo = getDateInTimeZone(startDate);
+	const endDateInfo = getDateInTimeZone(endDate);
+	const firstOfMonthInfo = getDateInTimeZone(firstOfMonth);
+	const lastOfMonthInfo = getDateInTimeZone(lastOfMonth);
+
+	// Compare dates to determine if clamping is needed
+	const isStartBeforeMonth =
+		startDateInfo.year < firstOfMonthInfo.year ||
+		(startDateInfo.year === firstOfMonthInfo.year &&
+			startDateInfo.month < firstOfMonthInfo.month) ||
+		(startDateInfo.year === firstOfMonthInfo.year &&
+			startDateInfo.month === firstOfMonthInfo.month &&
+			startDateInfo.day < firstOfMonthInfo.day);
+
+	const isEndAfterMonth =
+		endDateInfo.year > lastOfMonthInfo.year ||
+		(endDateInfo.year === lastOfMonthInfo.year && endDateInfo.month > lastOfMonthInfo.month) ||
+		(endDateInfo.year === lastOfMonthInfo.year &&
+			endDateInfo.month === lastOfMonthInfo.month &&
+			endDateInfo.day > lastOfMonthInfo.day);
+
+	// Determine final start and end days
+	const startDay = isStartBeforeMonth ? 1 : startDateInfo.day;
+	const endDay = isEndAfterMonth ? lastOfMonthInfo.day : endDateInfo.day;
+
+	// Format month name in the timezone
+	const targetMonthName =
+		firstOfMonth.toLocaleString("en-US", {
+			month: "short",
+			timeZone,
+		}) + ".";
+
+	return `${targetMonthName} ${startDay}-${endDay}`;
 }

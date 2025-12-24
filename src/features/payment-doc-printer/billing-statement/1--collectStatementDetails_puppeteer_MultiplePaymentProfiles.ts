@@ -1,10 +1,74 @@
+import { getResultId } from "df-backend-02/dist/functions/cdkapi/shared/result-msg";
 import { TCreateBillingStatementPdfParams } from "../../--IPMTDocPrinter";
+import { TSupportedLanguage } from "../../helpers/h.0--translations";
 import { TBillingStatementDetails } from "../../helpers/h.0--types";
+import { longDescriptions } from "./1--collectStatementDetails_puppeteer";
+
+export const balanceAdjustments: TBillingStatementDetails["balance_adjustments"] = [
+	{
+		bal_adj_id: "ba_g79pjBPzjhQHlr6t0dLwOE",
+		sub_acc_id: "b_25x4HMhX_1731613358261",
+		adj_amount: "9800",
+		adj_time: "2025-10-31T12:00:00.000Z",
+		applied_amount: "20000",
+		unapplied_amount: "7800",
+		notes: "note 2",
+		created_time_utc: "2025-07-26T12:00:00.000Z",
+		created_time: "2025-07-26T17:30:07.887Z",
+		created_by: "u_m7TgkH8NPdwk",
+		updated_time: "2025-07-27T01:30:07.887Z",
+		updated_by: "u_m7TgkH8NPdwk",
+	},
+	{
+		bal_adj_id: "ba_g79pmBPzjhQHlr6t0dLwOK",
+		sub_acc_id: "b_25x4HMhX_1731613358261",
+		adj_amount: "10000",
+		adj_time: "2025-10-31T12:00:00.000Z",
+		applied_amount: "9800",
+		unapplied_amount: "200",
+		notes: "note 2",
+		created_time_utc: "2025-07-26T12:00:00.000Z",
+		created_time: "2025-07-26T17:30:07.887Z",
+		created_by: "u_m7TgkH8NPdwk",
+		updated_time: "2025-07-27T01:30:07.887Z",
+		updated_by: "u_m7TgkH8NPdwk",
+	},
+	{
+		bal_adj_id: "ba_g79pmBPzjhQGlr4t0dLwOA",
+		sub_acc_id: "b_25x4HMhX_1731613358261",
+		adj_amount: "38000",
+		adj_time: "2025-10-31T12:00:00.000Z",
+		applied_amount: "28000",
+		unapplied_amount: "2000",
+		notes: "note 2",
+		created_time_utc: "2025-07-26T12:00:00.000Z",
+		created_time: "2025-07-26T17:30:07.887Z",
+		created_by: "u_m7TgkH8NPdwk",
+		updated_time: "2025-07-27T01:30:07.887Z",
+		updated_by: "u_m7TgkH8NPdwk",
+	},
+];
 
 export async function collectStatementDetails(
 	params: TCreateBillingStatementPdfParams,
 ): Promise<TBillingStatementDetails[]> {
 	const { sub_acc_id } = params;
+	const parts = sub_acc_id.split("|");
+	if (parts.length < 5)
+		throw getResultId(
+			"invalidParam",
+			'7 or more parameters are expected separated by "|": numRows_campaignSpends, numRows_payments, org_name, long_desc, payment_profile_type, has_balance_adj, pp_switch_count',
+		);
+	const numRows_campaignSpends = parseInt(parts[0]);
+	const numRows_payments = parseInt(parts[1]);
+	const org_name = parts[2];
+	const long_desc = parts[3].toLowerCase() === "true";
+	const payment_profile_type = parts[4].toLowerCase() as TPaymentProfile_Type;
+	const has_balance_adj = parts[5] !== "false"; // treat undefined as true, treat true as true, treat false as false,
+	const pp_switch_count = Number(parts[6]);
+	const language: TSupportedLanguage = (params.language as TSupportedLanguage) || "en"; // Default language is English
+
+	const longDescription = longDescriptions[language];
 
 	const account: TBillingStatementDetails["account"] = {
 		account_id: 2101715886,
@@ -38,9 +102,9 @@ export async function collectStatementDetails(
 		pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
 		sub_acc_id: "b_JJP3gMXt_1739228030676",
 		pmt_prf_name: "Tester's Manager account payment profile",
-		type: "individual",
+		type: payment_profile_type,
 		legal_name: "John Smith",
-		org_name: "Shen Yun USA HQ",
+		org_name: org_name,
 		email: "tester@ganjing.com",
 		phone: "+1234567890",
 		phone_country_code: "US",
@@ -54,45 +118,163 @@ export async function collectStatementDetails(
 		is_del: false,
 	};
 
-	const pmt_prf_link_history_1: TBillingStatementDetails["pmt_prf_link_history"] = [
-		{
-			linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
-			linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
-			sub_acc_id: "b_25x4HMhX_1731613358261",
-			link_time: "2025-05-12T00:00:00.000Z",
-			unlink_time: "2025-10-15T23:59:59.999Z",
-		},
-	];
-	const pmt_prf_link_history_2: TBillingStatementDetails["pmt_prf_link_history"] = [
-		{
-			linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
-			linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
-			sub_acc_id: "b_25x4HMhX_1731613358261",
-			link_time: "2025-10-16T00:00:00.000Z",
-			unlink_time: "2025-11-10T23:59:59.999Z",
-		},
-	];
+	const pmt_prf_link_history_1: TBillingStatementDetails["pmt_prf_link_history"] =
+		pp_switch_count === 2
+			? [
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-05-12T00:00:00.000Z",
+						unlink_time: "2025-10-15T23:59:59.999Z",
+					},
+			  ]
+			: pp_switch_count === 3
+			? [
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-05-12T00:00:00.000Z",
+						unlink_time: "2025-10-15T23:59:59.999Z",
+					},
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-22T00:00:00.000Z",
+						unlink_time: null,
+					},
+			  ]
+			: [
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-05-12T00:00:00.000Z",
+						unlink_time: "2025-10-02T23:59:59.999Z",
+					}, // 1st link
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-06T00:00:00.000Z",
+						unlink_time: "2025-10-08T00:00:00.000Z",
+					}, // 3rd link
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-12T00:00:00.000Z",
+						unlink_time: "2025-10-14T00:00:00.000Z",
+					}, // 5th link
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-18T00:00:00.000Z",
+						unlink_time: "2025-10-20T00:00:00.000Z",
+					}, // 7th link
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-24T00:00:00.000Z",
+						unlink_time: "2025-10-26T00:00:00.000Z",
+					}, // 9th link
+					{
+						linked_pmt_prf_id: "pp_9F7KW6w36jBmTC54PjGJwQ",
+						linked_pmt_sub_acc_id: "b_25x4HMhX_1731613358261",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-30T00:00:00.000Z",
+						unlink_time: "2025-10-31T00:00:00.000Z",
+					}, // 11th link
+			  ];
+	const pmt_prf_link_history_2: TBillingStatementDetails["pmt_prf_link_history"] =
+		pp_switch_count === 2
+			? [
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-16T00:00:00.000Z",
+						unlink_time: "2025-11-10T23:59:59.999Z",
+					},
+			  ]
+			: pp_switch_count === 3
+			? [
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-16T00:00:00.000Z",
+						unlink_time: "2025-10-21T23:59:59.999Z",
+					},
+			  ]
+			: [
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-03T00:00:00.000Z",
+						unlink_time: "2025-10-05T23:59:59.999Z",
+					}, // 2nd link
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-09T00:00:00.000Z",
+						unlink_time: "2025-10-11T23:59:59.999Z",
+					}, // 4th link
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-15T00:00:00.000Z",
+						unlink_time: "2025-10-17T23:59:59.999Z",
+					}, // 6th link
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-21T00:00:00.000Z",
+						unlink_time: "2025-10-23T23:59:59.999Z",
+					}, // 8th link
+					{
+						linked_pmt_prf_id: "pp_g9bNcRyLfKfrjPfhsFWjVQ",
+						linked_pmt_sub_acc_id: "b_JJP3gMXt_1739228030676",
+						sub_acc_id: "b_25x4HMhX_1731613358261",
+						link_time: "2025-10-27T00:00:00.000Z",
+						unlink_time: "2025-10-29T23:59:59.999Z",
+					}, // 10th link
+			  ];
 
 	const monthly_campaign_spends_1: Pick<
 		TFields_v2_monthly_campaign_spend_ui,
 		"sub_acc_id" | "cpgn_id" | "cpgn_name" | "cost" | "imp"
 	>[] = buildCampaignSpends({
-		subAccId: sub_acc_id,
 		profileIndex: 1,
+		numCampaignSpends: numRows_campaignSpends,
+		long_desc,
+		longDescription,
 	});
 
 	const monthly_campaign_spends_2: Pick<
 		TFields_v2_monthly_campaign_spend_ui,
 		"sub_acc_id" | "cpgn_id" | "cpgn_name" | "cost" | "imp"
 	>[] = buildCampaignSpends({
-		subAccId: sub_acc_id,
 		profileIndex: 2,
+		numCampaignSpends: numRows_campaignSpends,
+		long_desc,
+		longDescription,
 	});
 
 	const payments_received_1: TBillingStatementDetails["payments"] = buildPaymentsReceived({
+		numPayments: numRows_payments,
 		profileIndex: 1,
 	});
 	const payments_received_2: TBillingStatementDetails["payments"] = buildPaymentsReceived({
+		numPayments: numRows_payments,
 		profileIndex: 2,
 	});
 
@@ -114,36 +296,52 @@ export async function collectStatementDetails(
 		total_payments_received: "70000",
 	};
 
-	const balance_adjustments: TFields_v2_balance_adjustments[] = [
-		{
-			bal_adj_id: "ba_g79pjBPzjhQHlr6t0dLwOE",
-			sub_acc_id: "b_25x4HMhX_1731613358261",
-			adj_amount: "9800",
-			adj_time: "2025-10-26T12:00:00.000Z",
-			applied_amount: "20000",
-			unapplied_amount: "7800",
-			notes: "note 2",
-			created_time_utc: "2025-07-26T12:00:00.000Z",
-			created_time: "2025-07-26T17:30:07.887Z",
-			created_by: "u_m7TgkH8NPdwk",
-			updated_time: "2025-07-27T01:30:07.887Z",
-			updated_by: "u_m7TgkH8NPdwk",
-		},
-		{
-			bal_adj_id: "ba_g79pmBPzjhQHlr6t0dLwOK",
-			sub_acc_id: "b_25x4HMhX_1731613358261",
-			adj_amount: "10000",
-			adj_time: "2025-10-26T12:00:00.000Z",
-			applied_amount: "9800",
-			unapplied_amount: "200",
-			notes: "note 2",
-			created_time_utc: "2025-07-26T12:00:00.000Z",
-			created_time: "2025-07-26T17:30:07.887Z",
-			created_by: "u_m7TgkH8NPdwk",
-			updated_time: "2025-07-27T01:30:07.887Z",
-			updated_by: "u_m7TgkH8NPdwk",
-		},
-	];
+	const balance_adjustments: TFields_v2_balance_adjustments[] = has_balance_adj
+		? [
+				{
+					bal_adj_id: "ba_g79pjBPzjhQHlr6t0dLwOE",
+					sub_acc_id: "b_25x4HMhX_1731613358261",
+					adj_amount: "9800",
+					adj_time: "2025-10-31T12:00:00.000Z",
+					applied_amount: "20000",
+					unapplied_amount: "7800",
+					notes: "note 2",
+					created_time_utc: "2025-07-26T12:00:00.000Z",
+					created_time: "2025-07-26T17:30:07.887Z",
+					created_by: "u_m7TgkH8NPdwk",
+					updated_time: "2025-07-27T01:30:07.887Z",
+					updated_by: "u_m7TgkH8NPdwk",
+				},
+				{
+					bal_adj_id: "ba_g79pmBPzjhQHlr6t0dLwOK",
+					sub_acc_id: "b_25x4HMhX_1731613358261",
+					adj_amount: "10000",
+					adj_time: "2025-10-31T12:00:00.000Z",
+					applied_amount: "9800",
+					unapplied_amount: "200",
+					notes: "note 2",
+					created_time_utc: "2025-07-26T12:00:00.000Z",
+					created_time: "2025-07-26T17:30:07.887Z",
+					created_by: "u_m7TgkH8NPdwk",
+					updated_time: "2025-07-27T01:30:07.887Z",
+					updated_by: "u_m7TgkH8NPdwk",
+				},
+				{
+					bal_adj_id: "ba_g79pmBPzjhQGlr4t0dLwOA",
+					sub_acc_id: "b_25x4HMhX_1731613358261",
+					adj_amount: "38000",
+					adj_time: "2025-10-31T12:00:00.000Z",
+					applied_amount: "28000",
+					unapplied_amount: "2000",
+					notes: "note 2",
+					created_time_utc: "2025-07-26T12:00:00.000Z",
+					created_time: "2025-07-26T17:30:07.887Z",
+					created_by: "u_m7TgkH8NPdwk",
+					updated_time: "2025-07-27T01:30:07.887Z",
+					updated_by: "u_m7TgkH8NPdwk",
+				},
+		  ]
+		: [];
 
 	const statementDetails_1: TBillingStatementDetails = {
 		account,
@@ -158,7 +356,7 @@ export async function collectStatementDetails(
 		account,
 		payment_profile: payment_profile_2,
 		monthly_account_balance: monthly_account_balance_2,
-		balance_adjustments,
+		...(has_balance_adj && { balance_adjustments }),
 		monthly_campaign_spends: monthly_campaign_spends_2,
 		payments: payments_received_2,
 		pmt_prf_link_history: pmt_prf_link_history_2,
@@ -232,28 +430,34 @@ function createDeterministicRandom(seedInput: number): () => number {
 	};
 }
 
-function buildCampaignSpends(params: {
-	subAccId: string;
+export function buildCampaignSpends(params: {
 	profileIndex: number;
+	numCampaignSpends: number;
+	long_desc: boolean;
+	longDescription: string;
 }): TBillingStatementDetails["monthly_campaign_spends"] {
-	const { profileIndex, subAccId } = params;
+	const { profileIndex, numCampaignSpends, long_desc, longDescription } = params;
 	const costGenerator = createSequentialCost(10000 + profileIndex * 500, 175);
 
-	return Array.from({ length: 20 }, (_, index) => ({
-		sub_acc_id: subAccId,
+	return Array.from({ length: numCampaignSpends }, (_, index) => ({
+		sub_acc_id: "b_25x4HMhX_1731613358261",
 		cpgn_id: `m_${params.profileIndex}_${index}`,
-		cpgn_name: `Campaign ${index + 1}`,
-		cost: String(costGenerator()),
+		cpgn_name:
+			long_desc && (index % 5 === 0 || index % 6 === 0 || index % 17 === 0)
+				? longDescription
+				: `Campaign ${index + 1}`,
+		cost: long_desc ? "12345" : String(costGenerator()),
 		imp: String(2000 + params.profileIndex * 100 + index * 25),
 	}));
 }
 
-function buildPaymentsReceived(params: {
+export function buildPaymentsReceived(params: {
 	profileIndex: number;
+	numPayments: number;
 }): TBillingStatementDetails["payments"] {
-	const { profileIndex } = params;
-	const getNextDate = createSequentialDate(20, "2025-10-01", profileIndex + 1);
-	return Array.from({ length: 20 }, (_, index) => ({
+	const { profileIndex, numPayments } = params;
+	const getNextDate = createSequentialDate(numPayments, "2025-10-01", profileIndex + 1);
+	return Array.from({ length: numPayments }, (_, index) => ({
 		paid_time: getNextDate(),
 		description: ` Mastercard ***${String(8888 + params.profileIndex * 111 + index).slice(-4)}`,
 		total_amount: String(30000 + params.profileIndex * 2500 + index * 500),

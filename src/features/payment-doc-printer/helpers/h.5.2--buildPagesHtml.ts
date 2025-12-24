@@ -18,6 +18,8 @@ export function buildPagesHtml(
 		monthly_account_balance,
 		pmt_prf_link_history,
 		total_tax,
+		total_payments,
+		total_payments_with_tax,
 		activityPages,
 		paymentPages,
 		firstPageAvailableForActivity,
@@ -37,77 +39,92 @@ export function buildPagesHtml(
     ${generatePageHeader()}
     <div class="page-content">
 
-      <div class="bill-to section">
-        <h3>${translations.billTo}</h3>
-        <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
-        ${
-			paymentProfile.type === "organization"
-				? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
-				: ""
-		}
-        <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+      <div class="section">
+        <div class="details-summary-container">
+          <div class="bill-to">
+            <h3>${translations.billTo}</h3>
+            <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
+            ${
+				paymentProfile.type === "organization"
+					? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
+					: ""
+			}
+            <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+          </div>
+
+          <div class="gjw-info">
+            <h3>Gan Jing World</h3>
+            <p>33 Fulton Street</p>
+            <p>Middletown, New York 10940</p>
+            <p>United States</p>
+            <p>www.ganjingworld.com</p>
+            <p>help@ganjingworld.com</p>
+          </div>
+        </div>
       </div>
 
-      <div class="details-summary-container section">
-        <div class="details">
-          <h3>${translations.details}</h3>
-          <div class="detail-row">
-            <span class="detail-label">${translations.accountName}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${account.ads_sub_acc_name}</span>
+      <div class="section">
+        <div class="details-summary-container">
+          <div class="details">
+            <h3>${translations.details}</h3>
+            <div class="detail-row">
+              <span class="detail-label">${translations.accountName}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${account.ads_sub_acc_name}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${translations.accountId}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${account.account_id}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${translations.paymentsProfileId}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${translations.statementIssueDate}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${monthly_account_balance.created_time}</span>
+            </div>
           </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.accountId}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${account.account_id}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.paymentsProfileId}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.statementIssueDate}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${monthly_account_balance.created_time}</span>
-          </div>
-        </div>
 
-        <div class="summary">
-          <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${
+          <div class="summary">
+            <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${
 			monthly_account_balance.billing_period_end
 		}</h3>
-          <div class="summary-row">
-            <span class="summary-label">${translations.openingBalance}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+            <div class="summary-row">
+              <span class="summary-label">${translations.openingBalance}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">${translations.totalAdSpend}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.total_ad_spend_adjusted}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">${translations.totalPaymentsReceived}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">${translations.closingBalance}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+            </div>
           </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.totalAdSpend}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_ad_spend_adjusted}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.totalPaymentsReceived}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.closingBalance}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.closing_balance}</span>
-          </div>
-${
-	includeSummaryFootnotes
-		? `<div class="summary-footnotes">
-        <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${joinWithAnd(
-				pmt_prf_link_history?.map(hist => hist.active_period_display) ?? [],
-		  )}.</p>
-        <p>(2) Balances were carried over between active periods.</p>
-      </div>`
-		: ""
-}
         </div>
+          ${
+				includeSummaryFootnotes
+					? `<div class="summary-footnotes">
+                  <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${joinWithAnd(
+							pmt_prf_link_history?.map(hist => hist.active_period_display) ?? [],
+					  )}.</p>
+                  <p>(2) Balances were carried over between active periods.</p>
+                </div>`
+					: ""
+			}
       </div>
     </div>
   </div>`;
@@ -131,77 +148,94 @@ ${
 
 			if (isFirstPage) {
 				pagesHtml += `
-      <div class="bill-to section">
-        <h3>${translations.billTo}</h3>
-        <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
-        ${
-			paymentProfile.type === "organization"
-				? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
-				: ""
-		}
-        <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
-      </div>
-
-      <div class="details-summary-container section">
-        <div class="details">
-          <h3>${translations.details}</h3>
-          <div class="detail-row">
-            <span class="detail-label">${translations.accountName}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${account.ads_sub_acc_name}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.accountId}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${account.account_id}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.paymentsProfileId}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
-          </div>
-          <div class="detail-row">
-            <span class="detail-label">${translations.statementIssueDate}</span>
-            <span class="dot-fill"></span>
-            <span class="detail-value">${monthly_account_balance.created_time}</span>
-          </div>
-        </div>
-
-        <div class="summary">
-          <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${
-					monthly_account_balance.billing_period_end
-				}</h3>
-          <div class="summary-row">
-            <span class="summary-label">${translations.openingBalance}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.opening_balance}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.totalAdSpend}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_ad_spend_adjusted}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.totalPaymentsReceived}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
-          </div>
-          <div class="summary-row">
-            <span class="summary-label">${translations.closingBalance}</span>
-            <span class="dot-fill"></span>
-            <span class="summary-value">${monthly_account_balance.closing_balance}</span>
-          </div>
-          ${
-				includeSummaryFootnotes
-					? `<div class="summary-footnotes">
-                  <p>(1) Payment Profile "${paymentProfile.pmt_prf_name}" was active ${joinWithAnd(
-							pmt_prf_link_history?.map(hist => hist.active_period_display) ?? [],
-					  )}.</p>
-                  <p>(2) Balances were carried over between active periods.</p>
-                </div>`
+      <div class="section">
+        <div class="details-summary-container">
+          <div class="bill-to">
+            <h3>${translations.billTo}</h3>
+            <p class="bill-to subtitle">${paymentProfile.legal_name}</p>
+            ${
+				paymentProfile.type === "organization"
+					? `<p class="bill-to subtitle">${paymentProfile.org_name || ""}</p>`
 					: ""
 			}
+            <p>${paymentProfile.address_country}, ${paymentProfile.address_postal_code}</p>
+          </div>
+
+          <div class="gjw-info">
+            <h3>Gan Jing World</h3>
+            <p>33 Fulton Street</p>
+            <p>Middletown, New York 10940</p>
+            <p>United States</p>
+            <p>www.ganjingworld.com</p>
+            <p>help@ganjingworld.com</p>
+          </div>
         </div>
+      </div>
+
+      <div class="section">
+        <div class="details-summary-container">
+          <div class="details">
+            <h3>${translations.details}</h3>
+            <div class="detail-row">
+              <span class="detail-label">${translations.accountName}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${account.ads_sub_acc_name}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${translations.accountId}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${account.account_id}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${translations.paymentsProfileId}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${paymentProfile.pmt_prf_id}</span>
+            </div>
+            <div class="detail-row">
+              <span class="detail-label">${translations.statementIssueDate}</span>
+              <span class="dot-fill"></span>
+              <span class="detail-value">${monthly_account_balance.created_time}</span>
+            </div>
+          </div>
+
+          <div class="summary">
+            <h3>${translations.summaryFor} ${monthly_account_balance.billing_period_start} – ${
+					monthly_account_balance.billing_period_end
+				}</h3>
+            <div class="summary-row">
+              <span class="summary-label">${translations.openingBalance}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.opening_balance}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">${translations.totalAdSpend}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.total_ad_spend_adjusted}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">${translations.totalPaymentsReceived}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.total_payments_received}</span>
+            </div>
+            <div class="summary-row">
+              <span class="summary-label">${translations.closingBalance}</span>
+              <span class="dot-fill"></span>
+              <span class="summary-value">${monthly_account_balance.closing_balance}</span>
+            </div>
+          </div>
+        </div>
+            ${
+				includeSummaryFootnotes
+					? `<div class="summary-footnotes">
+                    <p>(1) Payment Profile "${
+						paymentProfile.pmt_prf_name
+					}" was active ${joinWithAnd(
+							pmt_prf_link_history?.map(hist => hist.active_period_display) ?? [],
+					  )}.</p>
+                    <p>(2) Balances were carried over between active periods.</p>
+                  </div>`
+					: ""
+			}
       </div>`;
 			}
 
@@ -225,12 +259,12 @@ ${
 					? `
             <tr class="subtotal-row">
               <td></td>
-              <td class="label" style="text-align: right;">${translations.subtotal}</td>
+              <td class="label" style="text-align: right;">${translations.subtotal} :</td>
               <td class="value">${monthly_account_balance.total_ad_spend_adjusted}</td>
             </tr>
             <tr class="total-row">
               <td></td>
-              <td class="label" style="text-align: right;">${translations.total}</td>
+              <td class="label" style="text-align: right;">${translations.total} :</td>
               <td class="value">${monthly_account_balance.total_ad_spend_adjusted}</td>
             </tr>`
 					: ""
@@ -256,17 +290,12 @@ ${
             <table>
               ${generatePaymentsTableHeader()}
               <tbody>
-              <tr class="subtotal-row">
-                      <td></td>
-                      <td style="text-align: right;">${translations.tax}</td>
-                      <td>${total_tax}</td>
-              </tr>
-              <tr class="total-row">
-                      <td></td>
-                      <td class="label" style="text-align: right;">${
-							translations.totalPaymentsReceived
-						}</td>
-                      <td class="value">${monthly_account_balance.total_payments_received}</td>
+                <tr class="subtotal-row">
+                  <td></td>
+                  <td style="text-align: right;" class="bold-cell">${translations.total} :</td>
+                  <td>${total_payments}</td>
+                  <td>${total_tax}</td>
+                  <td class="bold-cell">${total_payments_with_tax}</td>
                 </tr>
               </tbody>
             </table>
@@ -295,6 +324,8 @@ ${
               <td>${payment.paid_time}</td>
               <td>${payment.description}</td>
               <td>${payment.total_amount}</td>
+              <td>${payment.tax}</td>
+              <td>${payment.total_w_tax}</td>
             </tr>`,
 				)
 				.join("")}
@@ -303,13 +334,10 @@ ${
 					? `
             <tr class="subtotal-row">
               <td></td>
-              <td style="text-align: right;">${translations.tax}</td>
+              <td style="text-align: right;" class="bold-cell">${translations.total} :</td>
+              <td>${total_payments}</td>
               <td>${total_tax}</td>
-            </tr>
-            <tr class="total-row">
-              <td></td>
-              <td class="label" style="text-align: right;">${translations.totalPaymentsReceived}</td>
-              <td class="value">${monthly_account_balance.total_payments_received}</td>
+              <td class="bold-cell">${total_payments_with_tax}</td>
             </tr>`
 					: ""
 			}

@@ -11,6 +11,7 @@ initIntegrationTest(
 	[
 		ads_test_utils.db.users.tester_clean,
 		ads_test_utils.db.subaccounts.tester,
+		ads_test_utils.db.subaccounts.tester_pmt_prf_links,
 		ads_test_utils.db.extensions.tester.billing_statement,
 		ads_test_utils.db.extensions.tester.multi_payment_profile,
 	],

@@ -138,25 +138,42 @@ export function buildDocumentStyles(fontFamily: string): string {
       font-size: ${FONT_SIZE_H3};
       font-weight: ${FONT_WEIGHT_H3};
       color: ${TEXT_COLOR};
-      line-height: 19px;
+      line-height: 22px;
     }
 
     .bill-to p.subtitle {
       font-size: ${FONT_SIZE_H3};
       font-weight: ${FONT_WEIGHT_PARAGRAPH};
       color: ${TEXT_COLOR};
-      line-height: 19px;
+      line-height: 22px;
     }
 
     .bill-to p {
       font-size: ${FONT_SIZE_PARAGRAPH}px;
       color: ${TEXT_COLOR};
-      line-height: 17px;
+      line-height: 22px;
+    }
+
+    .gjw-info h3 {
+      font-size: ${FONT_SIZE_H3};
+      font-weight: ${FONT_WEIGHT_H3};
+      color: ${TEXT_COLOR};
+      line-height: 22px;
+      text-align: right;
+      flex: 0 0 auto;
+    }
+      
+    .gjw-info p {
+      font-size: ${FONT_SIZE_PARAGRAPH}px;
+      color: ${TEXT_COLOR};
+      line-height: 22px;
+      text-align: right;
+      flex: 0 0 auto;
     }
 
     .details-summary-container {
       display: grid;
-      grid-template-columns: 1fr 1fr;
+      grid-template-columns: 320px 1fr; /* left 320px, right fills remaining */
       column-gap: ${COLUMN_GAP}px; /* space between two columns */
       letter-spacing: 0px;
     }
@@ -166,7 +183,6 @@ export function buildDocumentStyles(fontFamily: string): string {
       font-weight: ${FONT_WEIGHT_H3};
       color: ${TEXT_COLOR};
       text-align: left;
-      overflow: visible;
       white-space: nowrap;
       padding-bottom: 5.47px; 
     }
@@ -178,8 +194,7 @@ export function buildDocumentStyles(fontFamily: string): string {
       justify-content: space-between;
       align-items: baseline;
       width: 100%;
-      gap: 4px; /* spacing between "Label" and "Value" inside each row */
-
+      gap: 2px; /* spacing between "Label" and "Value" inside each row */
       padding-top: 5.47px; 
       padding-bottom: 5.47px; 
     }
@@ -292,20 +307,21 @@ export function buildDocumentStyles(fontFamily: string): string {
       min-height: ${TBL_ROW_HEIGHT}px;
     }
 
-    tbody tr:nth-child(odd) {
+    tbody tr:nth-child(odd):not(.total-row) {
       background-color: white;
+      border-bottom: 1px solid ${TABLE_EVEN_ROW_COLOR};
     }
 
     tbody tr:nth-child(even) {
       background-color: ${TABLE_EVEN_ROW_COLOR};
     }
 
-    tbody tr:last-child:not(.total-row) {
+    .last-page .activity-details tbody tr:nth-last-child(3) {
       border-bottom: 1px solid ${TABLE_EVEN_ROW_COLOR} !important;
     }
-
-    .last-page tbody tr:nth-last-child(3) {
-      border-bottom: 1px solid ${DIVIDER_LINE_COLOR} !important;
+      
+    .last-page .payments-received tbody tr:nth-last-child(2) {
+      border-bottom: 1px solid ${TABLE_EVEN_ROW_COLOR} !important;
     }
 
     td {
@@ -321,12 +337,13 @@ export function buildDocumentStyles(fontFamily: string): string {
 
     .subtotal-row {
       background-color: white !important;
-      border-bottom: 1px solid ${DIVIDER_LINE_COLOR} !important;
+      border-bottom: 1px solid ${TABLE_EVEN_ROW_COLOR} !important;
     }
 
     .total-row {
       font-weight: ${FONT_WEIGHT_TOTAL} !important;
       background-color: white !important;
+
     }
 
     .total-row td.label {
@@ -337,6 +354,10 @@ export function buildDocumentStyles(fontFamily: string): string {
     .total-row td.value {
     font-weight: ${FONT_WEIGHT_TOTAL} !important;
       font-size: ${FONT_SIZE_TOTAL}px;
+    }
+
+    .bold-cell {
+      font-weight: bold;
     }
 
     /* Print-specific adjustments */

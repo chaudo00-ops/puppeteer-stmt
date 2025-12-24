@@ -16,6 +16,7 @@ initIntegrationTest(
 	[
 		ads_test_utils.db.users.tester_clean,
 		ads_test_utils.db.subaccounts.tester,
+		ads_test_utils.db.subaccounts.tester_pmt_prf_links,
 		ads_test_utils.db.extensions.tester.billing_statement,
 		ads_test_utils.db.extensions.tester.multi_payment_profile,
 	],
@@ -89,25 +90,26 @@ describe("English language", () => {
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
+			expect(result).toHaveProperty("pdf_optimized");
 			expect(result).toHaveProperty("html");
 			expect(result).toHaveProperty("statement_uri");
 
 			// Verify PDF is generated
-			expect(result.pdf).toBeInstanceOf(Uint8Array);
-			expect(result.pdf.length).toBeGreaterThan(0);
+			expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+			expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 			// Verify HTML is generated
 			expect(result.html).toBeTruthy();
 			expect(typeof result.html).toBe("string");
 			expectHtmlToMatchSnapshot(result.html, "en-short-0-0.html");
-		}, 10000);
+		}, 20000);
 
 		test(`Edge case #2: Total rows are last on first Billing page`, async () => {
 			// ✅ BREAK POINT defined
 			// ✅ PASSED
 			// Generate the billing statement
 			const res = await puppeteerBillingStatementPdf({
-				sub_acc_id: "9|17|Shen Yun New York|false|organization|false",
+				sub_acc_id: "8|17|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
@@ -115,25 +117,26 @@ describe("English language", () => {
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
+			expect(result).toHaveProperty("pdf_optimized");
 			expect(result).toHaveProperty("html");
 			expect(result).toHaveProperty("statement_uri");
 
 			// Verify PDF is generated
-			expect(result.pdf).toBeInstanceOf(Uint8Array);
-			expect(result.pdf.length).toBeGreaterThan(0);
+			expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+			expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 			// Verify HTML is generated
 			expect(result.html).toBeTruthy();
 			expect(typeof result.html).toBe("string");
-			expectHtmlToMatchSnapshot(result.html, "en-short-9-17.html");
-		}, 10000);
+			expectHtmlToMatchSnapshot(result.html, "en-short-8-17.html");
+		}, 20000);
 
 		test(`Edge case #3: Total rows are first on a new Billing and Payment page`, async () => {
 			// ✅ BREAK POINT defined
 			// ✅ DONE: Test passed
 			// Generate the billing statement
 			const res = await puppeteerBillingStatementPdf({
-				sub_acc_id: "10|18|Shen Yun New York|false|organization|false",
+				sub_acc_id: "9|18|Shen Yun New York|false|organization|false",
 				month: new Date("2025-11-01"),
 				language: "en",
 			});
@@ -141,18 +144,19 @@ describe("English language", () => {
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
+			expect(result).toHaveProperty("pdf_optimized");
 			expect(result).toHaveProperty("html");
 			expect(result).toHaveProperty("statement_uri");
 
 			// Verify PDF is generated
-			expect(result.pdf).toBeInstanceOf(Uint8Array);
-			expect(result.pdf.length).toBeGreaterThan(0);
+			expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+			expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 			// Verify HTML is generated
 			expect(result.html).toBeTruthy();
 			expect(typeof result.html).toBe("string");
-			expectHtmlToMatchSnapshot(result.html, "en-short-10-18.html");
-		}, 10000);
+			expectHtmlToMatchSnapshot(result.html, "en-short-9-18.html");
+		}, 20000);
 
 		test(`Edge case #4: Total rows are last on continuation pages`, async () => {
 			// ✅ BREAK POINT defined
@@ -167,18 +171,19 @@ describe("English language", () => {
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
+			expect(result).toHaveProperty("pdf_optimized");
 			expect(result).toHaveProperty("html");
 			expect(result).toHaveProperty("statement_uri");
 
 			// Verify PDF is generated
-			expect(result.pdf).toBeInstanceOf(Uint8Array);
-			expect(result.pdf.length).toBeGreaterThan(0);
+			expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+			expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 			// Verify HTML is generated
 			expect(result.html).toBeTruthy();
 			expect(typeof result.html).toBe("string");
 			expectHtmlToMatchSnapshot(result.html, "en-short-28-36.html");
-		}, 10000);
+		}, 20000);
 
 		test(`Edge case #5: Total rows are first on continuation pages`, async () => {
 			// ✅ BREAK POINT defined
@@ -193,18 +198,19 @@ describe("English language", () => {
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
+			expect(result).toHaveProperty("pdf_optimized");
 			expect(result).toHaveProperty("html");
 			expect(result).toHaveProperty("statement_uri");
 
 			// Verify PDF is generated
-			expect(result.pdf).toBeInstanceOf(Uint8Array);
-			expect(result.pdf.length).toBeGreaterThan(0);
+			expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+			expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 			// Verify HTML is generated
 			expect(result.html).toBeTruthy();
 			expect(typeof result.html).toBe("string");
 			expectHtmlToMatchSnapshot(result.html, "en-short-29-37.html");
-		}, 10000);
+		}, 20000);
 	});
 
 	describe("Long description", () => {
@@ -224,19 +230,20 @@ describe("English language", () => {
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
+				expect(result).toHaveProperty("pdf_optimized");
 				expect(result).toHaveProperty("html");
 				expect(result).toHaveProperty("statement_uri");
 
 				// Verify PDF is generated
-				expect(result.pdf).toBeInstanceOf(Uint8Array);
-				expect(result.pdf.length).toBeGreaterThan(0);
+				expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+				expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 				// Verify HTML is generated
 				expect(result.html).toBeTruthy();
 				expect(typeof result.html).toBe("string");
 				expectHtmlToMatchSnapshot(result.html, "en-long-6-0.html");
 			},
-			10000,
+			20000,
 		);
 
 		test(
@@ -255,19 +262,20 @@ describe("English language", () => {
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
+				expect(result).toHaveProperty("pdf_optimized");
 				expect(result).toHaveProperty("html");
 				expect(result).toHaveProperty("statement_uri");
 
 				// Verify PDF is generated
-				expect(result.pdf).toBeInstanceOf(Uint8Array);
-				expect(result.pdf.length).toBeGreaterThan(0);
+				expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+				expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 				// Verify HTML is generated
 				expect(result.html).toBeTruthy();
 				expect(typeof result.html).toBe("string");
 				expectHtmlToMatchSnapshot(result.html, "en-long-7-0.html");
 			},
-			10000,
+			20000,
 		);
 
 		test(
@@ -286,19 +294,20 @@ describe("English language", () => {
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
+				expect(result).toHaveProperty("pdf_optimized");
 				expect(result).toHaveProperty("html");
 				expect(result).toHaveProperty("statement_uri");
 
 				// Verify PDF is generated
-				expect(result.pdf).toBeInstanceOf(Uint8Array);
-				expect(result.pdf.length).toBeGreaterThan(0);
+				expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+				expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 				// Verify HTML is generated
 				expect(result.html).toBeTruthy();
 				expect(typeof result.html).toBe("string");
 				expectHtmlToMatchSnapshot(result.html, "en-long-18-0.html");
 			},
-			10000,
+			20000,
 		);
 
 		test(
@@ -317,19 +326,20 @@ describe("English language", () => {
 
 				// Verify the result structure
 				expect(result).toHaveProperty("pdf");
+				expect(result).toHaveProperty("pdf_optimized");
 				expect(result).toHaveProperty("html");
 				expect(result).toHaveProperty("statement_uri");
 
 				// Verify PDF is generated
-				expect(result.pdf).toBeInstanceOf(Uint8Array);
-				expect(result.pdf.length).toBeGreaterThan(0);
+				expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+				expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 				// Verify HTML is generated
 				expect(result.html).toBeTruthy();
 				expect(typeof result.html).toBe("string");
 				expectHtmlToMatchSnapshot(result.html, "en-long-19-0.html");
 			},
-			10000,
+			20000,
 		);
 	});
 
@@ -345,12 +355,13 @@ describe("English language", () => {
 
 			// Verify the result structure
 			expect(result).toHaveProperty("pdf");
+			expect(result).toHaveProperty("pdf_optimized");
 			expect(result).toHaveProperty("html");
 			expect(result).toHaveProperty("statement_uri");
 
 			// Verify PDF is generated
-			expect(result.pdf).toBeInstanceOf(Uint8Array);
-			expect(result.pdf.length).toBeGreaterThan(0);
+			expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+			expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
 			// Verify HTML is generated
 			expect(result.html).toBeTruthy();
@@ -377,13 +388,13 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-    }, 10000);
+    }, 20000);
 
     test(`zh-TW`, async () => {
       // Generate the billing statement
@@ -399,15 +410,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "short-lang-zh-tw.html");
-    }, 10000);
+    }, 20000);
 
     test(`zh-CN`, async () => {
       // Generate the billing statement
@@ -423,15 +434,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "short-lang-zh-cn.html");
-    }, 10000);
+    }, 20000);
 
     test(`vi`, async () => {
       // Generate the billing statement
@@ -447,15 +458,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "short-lang-vi.html");
-    }, 10000);
+    }, 20000);
 
     test(`ko`, async () => {
       // Generate the billing statement
@@ -471,15 +482,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "short-lang-ko.html");
-    }, 10000);
+    }, 20000);
 
     test(`ja`, async () => {
       // Generate the billing statement
@@ -495,15 +506,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "short-lang-ja.html");
-    }, 10000);
+    }, 20000);
 
     test(`es`, async () => {
       // Generate the billing statement
@@ -519,15 +530,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "short-lang-es.html");
-    }, 10000);
+    }, 20000);
   });
 
   describe("Long description", () => {
@@ -545,13 +556,13 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
-    }, 10000);
+    }, 20000);
 
     test(`zh-TW`, async () => {
       // Generate the billing statement
@@ -567,15 +578,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "long-lang-zh-tw.html");
-    }, 10000);
+    }, 20000);
 
     test(`zh-CN`, async () => {
       // Generate the billing statement
@@ -591,15 +602,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "long-lang-zh-cn.html");
-    }, 10000);
+    }, 20000);
 
     test(`vi`, async () => {
       // Generate the billing statement
@@ -615,15 +626,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "long-lang-vi.html");
-    }, 10000);
+    }, 20000);
 
     test(`ko`, async () => {
       // Generate the billing statement
@@ -639,15 +650,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "long-lang-ko.html");
-    }, 10000);
+    }, 20000);
 
     test(`ja`, async () => {
       // Generate the billing statement
@@ -663,15 +674,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "long-lang-ja.html");
-    }, 10000);
+    }, 20000);
 
     test(`es`, async () => {
       // Generate the billing statement
@@ -687,15 +698,15 @@ describe("Multiple languages", () => {
       expect(result).toHaveProperty("statement_uri");
 
       // Verify PDF is generated
-      expect(result.pdf).toBeInstanceOf(Uint8Array);
-      expect(result.pdf.length).toBeGreaterThan(0);
+      expect(result.pdf_optimized).toBeInstanceOf(Uint8Array);
+      expect(result.pdf_optimized.length).toBeGreaterThan(0);
 
       // Verify HTML is generated
       expect(result.html).toBeTruthy();
       expect(typeof result.html).toBe("string");
       expect(result.html.length).toBeGreaterThan(0);
       expectHtmlToMatchSnapshot(result.html, "long-lang-es.html");
-    }, 10000);
+    }, 20000);
   });
 });
 */

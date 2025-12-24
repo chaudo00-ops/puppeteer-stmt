@@ -12,17 +12,11 @@ cp "$SOURCE/billing-statement/2--drawPuppeteerStatementPdf.ts" "$DESTINATION/src
 cp -r "$SOURCE/billing-statement/__snapshots__/"* "$DESTINATION/src/features/payment-doc-printer/billing-statement/__snapshots__/"
 cp "$SOURCE/billing-statement/1--collectStatementDetails.test.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/1--collectStatementDetails.test.ts"
 
-# Copy helpers files
-cp "$SOURCE/helpers/h.0--types.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.0--types.ts"
-cp "$SOURCE/helpers/h.0--puppeteer-consts.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.0--puppeteer-consts.ts"
-cp "$SOURCE/helpers/h.0--translations.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.0--translations.ts"
-cp "$SOURCE/helpers/h.2--puppeteerRenderer.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.2--puppeteerRenderer.ts"
-cp "$SOURCE/helpers/h.2.1--puppeteerBillingRenderer.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.2.1--puppeteerBillingRenderer.ts"
-cp "$SOURCE/helpers/h.4--formatDocumentsDisplay.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.4--formatDocumentsDisplay.ts"
-cp "$SOURCE/helpers/h.5--generateHtmlTemplate.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.5--generateHtmlTemplate.ts"
-cp "$SOURCE/helpers/h.5.1--prepareTemplateContext.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.5.1--prepareTemplateContext.ts"
-cp "$SOURCE/helpers/h.5.2--buildPagesHtml.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.5.2--buildPagesHtml.ts"
-cp "$SOURCE/helpers/h.5.3--buildDocumentStyles.ts" "$DESTINATION/src/features/payment-doc-printer/helpers/h.5.3--buildDocumentStyles.ts"
+# Copy invoice files
+cp -r "$SOURCE/invoice/"* "$DESTINATION/src/features/payment-doc-printer/invoice/" 
+
+# Copy helper files
+cp -r "$SOURCE/helpers/"* "$DESTINATION/src/features/payment-doc-printer/helpers/"
 
 # Puppeteer multiple payment profiles
 cp "$SOURCE/billing-statement/--puppeteerBillingStatementPdf.ts" "$DESTINATION/src/features/payment-doc-printer/billing-statement/--puppeteerBillingStatementPdf.ts"
